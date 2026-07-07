@@ -1,21 +1,45 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Analysis Result</title>
-</head>
 <body>
 
-<h1>Medicine Uploaded Successfully</h1>
+    <h1>Medicine Analysis</h1>
 
-<img src="/uploads/{{ filename }}" width="300">
+    <h2>Uploaded Medicine</h2>
 
-<br><br>
+    <img src="/uploads/{{ filename }}" width="300">
 
-<p>OCR Result Coming Soon...</p>
+    <hr>
 
-<a href="/scan">
-    <button>Scan Another Medicine</button>
-</a>
+    <h2>OCR Extracted Text</h2>
+
+    <pre>
+<h2>Medicine Information</h2>
+
+<p><b>Name:</b> {{ medicine.medicine }}</p>
+
+<p><b>Manufacturer:</b> {{ medicine.manufacturer }}</p>
+
+<p><b>Strength:</b> {{ medicine.strength }}</p>
+    </pre>
+
+    <hr>
+
+    <h2>AI Explanation</h2>
+
+    <p>
+        AI explanation will appear here.
+    </p>
+
+    <hr>
+
+    <h2>Counterfeit Risk</h2>
+
+    <p>
+        Counterfeit analysis coming soon...
+    </p>
+
+    <br>
+
+    <a href="/scan">
+        <button>Scan Another Medicine</button>
+    </a>
 
 </body>
-</html>
