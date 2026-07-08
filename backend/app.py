@@ -42,9 +42,9 @@ def scan():
 
         image.save(image_path)
 
-        process_image(image_path)
+        processed_images = process_image(image_path)
 
-        ocr_text = extract_text(image_path)
+        ocr_text = extract_text(list(processed_images.values()))
 
         medicine_info = extract_medicine_info(ocr_text)
 

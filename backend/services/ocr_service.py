@@ -2,14 +2,18 @@ import easyocr
 
 reader = easyocr.Reader(['en'])
 
-def extract_text(image_path):
-
-    results = reader.readtext(image_path)
+def extract_text(image_paths):
 
     extracted_text = []
 
-    for result in results:
-        extracted_text.append(result[1])
+    for path in image_paths:
+
+        print(f"\nReading: {path}")
+
+        results = reader.readtext(path)
+
+        for result in results:
+            extracted_text.append(result[1])
 
     print("\n========== OCR TEXT ==========\n")
 
@@ -28,7 +32,7 @@ def extract_medicine_info(ocr_text):
 
         text = line.upper()
 
-        if "PANTOPRAZOLE" in text:
+        if "PHARMA" in text or "PHARM" in text:
             medicine = line
 
         if "PHARMACEUTICAL" in text:
