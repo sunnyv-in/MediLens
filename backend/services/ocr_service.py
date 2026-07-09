@@ -4,7 +4,7 @@ import re
 
 reader = easyocr.Reader(['en'])
 
-CONFIDENCE_THRESHOLD = 0.35
+CONFIDENCE_THRESHOLD = 0.15
 
 IMPORTANT_KEYWORDS = [
     "TABLET", "TABLETS",
@@ -144,12 +144,15 @@ def clean_ocr_text(detections):
 def rank_ocr_lines(cleaned_data):
 
     IMPORTANT_KEYWORDS = [
-        "TABLET", "TABLETS", "CAPSULE", "CAPSULES",
-        "SYRUP", "INJECTION",
-        "MG", "MCG", "ML",
-        "PHARMA", "PHARMACEUTICAL",
-        "MARKETED", "MANUFACTURED",
-        "USP", "IP"
+    "TABLET", "TABLETS", "CAPSULE", "CAPSULES",
+    "SYRUP", "INJECTION",
+    "MG", "MCG", "ML",
+    "PHARMA", "PHARMACEUTICAL",
+    "MARKETED", "MANUFACTURED",
+    "USP", "IP",
+    "B.NO", "BATCH", "LOT",
+    "MFG", "MFD",
+    "EXP", "EXPIRY"
     ]
 
     BAD_KEYWORDS = [
@@ -176,6 +179,29 @@ def rank_ocr_lines(cleaned_data):
         for word in IMPORTANT_KEYWORDS:
             if word in upper:
                 score += 5
+
+        DATE_KEYWORDS = [
+        "B.NO", "BATCH", "LOT",
+        "MFG", "MFD",
+        "EXP", "EXPIRY"
+        ]
+
+        for word in DATE_KEYWORDS:
+            if word in upper:
+                score += 10
+
+        # Give extra priority to date-like patterns
+        date_patterns = [
+            r"\b\d{1,2}[/-]\d{2,4}\b",   # 03/2026 or 03-2026
+            r"\b\d{2,4}[/-]\d{1,2}\b",   # 2026/03 or 2026-03
+            r"\b(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)[A-Z]*[\s./-]*\d{2,4}\b"
+        ]
+
+        for pattern in date_patterns:
+            if re.search(pattern, upper):
+                score += 10
+                break
+
 
         for word in BAD_KEYWORDS:
             if word in upper:

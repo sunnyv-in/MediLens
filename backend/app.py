@@ -5,6 +5,8 @@ from services.image_processor import process_image
 from services.ocr_service import extract_text, clean_ocr_text
 from services.gemini_service import extract_medicine_info_ai, get_ai_explanation
 from services.ocr_service import rank_ocr_lines
+from services.counterfeit_service import analyze_counterfeit_risk
+from services.medicine_record_service import build_medicine_record
 
 app = Flask(
     __name__,
@@ -49,17 +51,29 @@ def scan():
 
         ranked_data = rank_ocr_lines(cleaned_data)
 
-        gemini_input = [item["text"] for item in ranked_data]
-
-        medicine_info = extract_medicine_info_ai(gemini_input)
+        medicine_info = extract_medicine_info_ai(ranked_data)
 
         explanation = get_ai_explanation(medicine_info.get("medicine", ""))
+
+        counterfeit_result = analyze_counterfeit_risk(medicine_info)
+
+        medicine_record = build_medicine_record(
+            medicine_info=medicine_info,
+            explanation=explanation,
+            counterfeit_result=counterfeit_result,
+            image_filename=filename
+        )
+
+        print("\n========== STANDARD MEDICINE RECORD ==========")
+        print(medicine_record)
+        print("==============================================\n")
 
         return render_template(
             "result.html",
             filename=filename,
             medicine=medicine_info,
-            explanation=explanation
+            explanation=explanation,
+            counterfeit_result=counterfeit_result
         )
 
     return render_template("scan.html")

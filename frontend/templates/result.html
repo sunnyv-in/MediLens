@@ -18,23 +18,54 @@
 <p><b>Manufacturer:</b> {{ medicine.manufacturer }}</p>
 
 <p><b>Strength:</b> {{ medicine.strength }}</p>
+
+<p><strong>Batch Number:</strong> {{ medicine.batch_number }}</p>
+
+<p><strong>Manufacturing Date:</strong> {{ medicine.manufacturing_date }}</p>
+
+<p><strong>Expiry Date:</strong> {{ medicine.expiry_date }}</p>
     </pre>
 
     <hr>
 
     <h2>AI Explanation</h2>
 
-    <p>
-        AI explanation will appear here.
-    </p>
+    
+    <p>{{ explanation }}</p>
+    
 
     <hr>
 
-    <h2>Counterfeit Risk</h2>
+    <h2>Counterfeit Risk Analysis</h2>
 
-    <p>
-        Counterfeit analysis coming soon...
-    </p>
+<p>
+    <strong>Risk Level:</strong>
+    {{ counterfeit_result.risk_level }}
+</p>
+
+<p>
+    <strong>Risk Score:</strong>
+    {{ counterfeit_result.risk_score }}/100
+</p>
+
+<p>
+    <strong>Assessment Confidence:</strong>
+    {{ counterfeit_result.assessment_confidence }}
+</p>
+
+<h3>Checks</h3>
+
+<ul>
+    {% for check in counterfeit_result.checks %}
+        <li>{{ check }}</li>
+    {% endfor %}
+</ul>
+
+<p>
+    <strong>Note:</strong>
+    This risk assessment does not confirm whether a medicine is genuine or counterfeit.
+    Missing information may be caused by image quality, packaging layout, or OCR limitations.
+</p>
 
     <br>
 
