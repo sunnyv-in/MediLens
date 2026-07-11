@@ -1,6 +1,5 @@
-<<<<<<< HEAD
+{
 Flask-SQLAlchemy==3.1.1
-=======
 annotated-types==0.7.0
 anyio==4.14.1
 blinker==1.9.0
@@ -59,4 +58,4 @@ typing_extensions==4.16.0
 urllib3==2.7.0
 websockets==16.0
 Werkzeug==3.1.8
->>>>>>> origin/sunny-ai-scanner
+}
