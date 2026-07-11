@@ -11,24 +11,24 @@ from flask import (
 
 from werkzeug.utils import secure_filename
 
-from services.image_processor import process_image
+from backend.services.image_processor import process_image
 
-from services.ocr_service import (
+from backend.services.ocr_service import (
     extract_text,
     clean_ocr_text,
     rank_ocr_lines
 )
 
-from services.gemini_service import (
+from backend.services.gemini_service import (
     extract_medicine_info_ai,
     get_ai_explanation
 )
 
-from services.counterfeit_service import (
+from backend.services.counterfeit_service import (
     analyze_counterfeit_risk
 )
 
-from services.medicine_record_service import (
+from backend.services.medicine_record_service import (
     build_medicine_record
 )
 
@@ -109,6 +109,3 @@ def uploaded_file(filename):
         current_app.config["UPLOAD_FOLDER"],
         filename
     )
-
-
-
