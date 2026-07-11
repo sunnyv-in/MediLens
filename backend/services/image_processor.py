@@ -2,6 +2,19 @@ import cv2
 import os
 import numpy as np
 
+DEBUG = False
+
+# Keep True because OCR currently reads saved images.
+SAVE_DEBUG_IMAGES = True
+
+# Reusable kernels
+KERNEL = np.ones((5, 5), np.uint8)
+
+SHARPEN_KERNEL = np.array([
+    [0, -1, 0],
+    [-1, 5, -1],
+    [0, -1, 0]
+])
 
 def crop_medicine_region(img):
     """
@@ -23,12 +36,10 @@ def crop_medicine_region(img):
     )[1]
 
     # Remove tiny isolated noise
-    kernel = np.ones((5, 5), np.uint8)
-
     mask = cv2.morphologyEx(
         mask,
         cv2.MORPH_CLOSE,
-        kernel,
+        KERNEL,
         iterations=2
     )
 
@@ -98,16 +109,18 @@ def resize_for_ocr(img):
     max_side = max(h, w)
 
     # Small image -> upscale aggressively
-    if max_side < 1000:
+    if max_side < 900:
+
+        target_size = 1400
+
+    elif max_side < 1500:
+
         target_size = 1600
 
-    # Medium image -> moderate upscale
-    elif max_side < 1600:
+    else:
+
         target_size = 1800
 
-    # Already sufficiently large
-    else:
-        target_size = min(max_side, 2200)
 
     scale = target_size / max_side
 
@@ -131,7 +144,8 @@ def resize_for_ocr(img):
 
 def process_image(image_path):
 
-    print(f"\nProcessing image: {image_path}")
+    if DEBUG:
+        print(f"\nProcessing image: {image_path}")
 
     img = cv2.imread(image_path)
 
@@ -151,24 +165,18 @@ def process_image(image_path):
     # --------------------------------------------------
 
     cropped = crop_medicine_region(img)
-
-    print(
-        f"Original size: {img.shape[1]}x{img.shape[0]}"
-    )
-
-    print(
-        f"After crop: {cropped.shape[1]}x{cropped.shape[0]}"
-    )
+    if DEBUG:
+        print(f"Original Size : {img.shape[1]} x {img.shape[0]}")
+        print(f"Cropped Size  : {cropped.shape[1]} x {cropped.shape[0]}")
 
     # --------------------------------------------------
     # 2. Resize / upscale for OCR
     # --------------------------------------------------
 
     resized = resize_for_ocr(cropped)
+    if DEBUG:
+        print(f"OCR Size : {resized.shape[1]} x {resized.shape[0]}")
 
-    print(
-        f"OCR size: {resized.shape[1]}x{resized.shape[0]}"
-    )
 
     # --------------------------------------------------
     # 3. Grayscale
@@ -219,18 +227,11 @@ def process_image(image_path):
     # 7. Sharpen
     # --------------------------------------------------
 
-    sharpen_kernel = np.array([
-        [0, -1, 0],
-        [-1, 5, -1],
-        [0, -1, 0]
-    ])
-
     sharpen = cv2.filter2D(
         contrast_enhanced,
         -1,
-        sharpen_kernel
+        SHARPEN_KERNEL
     )
-
     # --------------------------------------------------
     # 8. Rotations for vertical/sideways medicine text
     # --------------------------------------------------
@@ -285,42 +286,24 @@ def process_image(image_path):
             "rotated_270.jpg"
         ),
     }
+    if SAVE_DEBUG_IMAGES:
 
-    cv2.imwrite(
-        paths["original"],
-        resized
-    )
+        cv2.imwrite(paths["original"], resized)
 
-    cv2.imwrite(
-        paths["gray"],
-        gray
-    )
+        cv2.imwrite(paths["gray"], gray)
 
-    cv2.imwrite(
-        paths["threshold"],
-        threshold
-    )
+        cv2.imwrite(paths["threshold"], threshold)
 
-    cv2.imwrite(
-        paths["adaptive"],
-        adaptive
-    )
+        cv2.imwrite(paths["adaptive"], adaptive)
 
-    cv2.imwrite(
-        paths["sharpen"],
-        sharpen
-    )
+        cv2.imwrite(paths["sharpen"], sharpen)
 
-    cv2.imwrite(
-        paths["rotated_90"],
-        rotated_90
-    )
+        cv2.imwrite(paths["rotated_90"], rotated_90)
 
-    cv2.imwrite(
-        paths["rotated_270"],
-        rotated_270
-    )
+        cv2.imwrite(paths["rotated_270"], rotated_270)
 
-    print("Images Saved Successfully")
+        if DEBUG:
+            print("Processed images saved successfully.")
+
 
     return paths

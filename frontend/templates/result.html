@@ -1,76 +1,189 @@
-<body>
+{% extends "base.html" %}
 
-    <h1>Medicine Analysis</h1>
+{% block title %}
+Medicine Analysis
+{% endblock %}
 
-    <h2>Uploaded Medicine</h2>
+{% block content %}
 
-    <img src="/uploads/{{ filename }}" width="300">
+<div class="result-page">
 
-    <hr>
+    <h1 class="page-title">
+        <i class="fa-solid fa-microscope"></i>
+        Medicine Analysis
+    </h1>
 
-    <h2>OCR Extracted Text</h2>
+    <div class="top-section">
 
-    <pre>
-<h2>Medicine Information</h2>
+        <!-- Uploaded Image -->
 
-<p><b>Name:</b> {{ medicine.medicine }}</p>
+        <div class="card image-card">
 
-<p><b>Manufacturer:</b> {{ medicine.manufacturer }}</p>
+            <h2>
+                <i class="fa-solid fa-image"></i>
+                Uploaded Medicine
+            </h2>
 
-<p><b>Strength:</b> {{ medicine.strength }}</p>
+            <img
+                src="{{ url_for('scan.uploaded_file', filename=filename) }}"
+                alt="Medicine Image"
+                class="medicine-image">
 
-<p><strong>Batch Number:</strong> {{ medicine.batch_number }}</p>
+        </div>
 
-<p><strong>Manufacturing Date:</strong> {{ medicine.manufacturing_date }}</p>
 
-<p><strong>Expiry Date:</strong> {{ medicine.expiry_date }}</p>
-    </pre>
+        <!-- Medicine Information -->
 
-    <hr>
+        <div class="card medicine-card">
 
-    <h2>AI Explanation</h2>
+            <h2>
+                <i class="fa-solid fa-capsules"></i>
+                Medicine Information
+            </h2>
 
-    
-    <p>{{ explanation }}</p>
-    
+            <div class="info-grid">
 
-    <hr>
+                <div class="info-item">
+                    <span>Name</span>
+                    <strong>{{ medicine.medicine or "Not Detected" }}</strong>
+                </div>
 
-    <h2>Counterfeit Risk Analysis</h2>
+                <div class="info-item">
+                    <span>Manufacturer</span>
+                    <strong>{{ medicine.manufacturer or "Not Detected" }}</strong>
+                </div>
 
-<p>
-    <strong>Risk Level:</strong>
-    {{ counterfeit_result.risk_level }}
-</p>
+                <div class="info-item">
+                    <span>Strength</span>
+                    <strong>{{ medicine.strength or "Not Detected" }}</strong>
+                </div>
 
-<p>
-    <strong>Risk Score:</strong>
-    {{ counterfeit_result.risk_score }}/100
-</p>
+                <div class="info-item">
+                    <span>Batch Number</span>
+                    <strong>{{ medicine.batch_number or "Not Detected" }}</strong>
+                </div>
 
-<p>
-    <strong>Assessment Confidence:</strong>
-    {{ counterfeit_result.assessment_confidence }}
-</p>
+                <div class="info-item">
+                    <span>MFG Date</span>
+                    <strong>{{ medicine.manufacturing_date or "Not Detected" }}</strong>
+                </div>
 
-<h3>Checks</h3>
+                <div class="info-item">
+                    <span>Expiry Date</span>
+                    <strong>{{ medicine.expiry_date or "Not Detected" }}</strong>
+                </div>
 
-<ul>
-    {% for check in counterfeit_result.checks %}
-        <li>{{ check }}</li>
-    {% endfor %}
-</ul>
+            </div>
 
-<p>
-    <strong>Note:</strong>
-    This risk assessment does not confirm whether a medicine is genuine or counterfeit.
-    Missing information may be caused by image quality, packaging layout, or OCR limitations.
-</p>
+        </div>
 
-    <br>
+    </div>
 
-    <a href="/scan">
-        <button>Scan Another Medicine</button>
-    </a>
 
-</body>
+    <!-- AI Explanation -->
+
+    <div class="card">
+
+        <h2>
+            <i class="fa-solid fa-robot"></i>
+            AI Explanation
+        </h2>
+
+        <p class="explanation">
+
+            {{ explanation }}
+
+        </p>
+
+    </div>
+
+
+    <!-- Counterfeit -->
+
+    <div class="card">
+
+        <h2>
+            <i class="fa-solid fa-shield-halved"></i>
+            Counterfeit Risk Analysis
+        </h2>
+
+        <div class="counterfeit-summary">
+
+            <div class="summary-box">
+
+                <span>Risk Level</span>
+
+                <strong class="risk">
+
+                    {{ counterfeit_result.risk_level }}
+
+                </strong>
+
+            </div>
+
+            <div class="summary-box">
+
+                <span>Risk Score</span>
+
+                <strong>
+
+                    {{ counterfeit_result.risk_score }}/100
+
+                </strong>
+
+            </div>
+
+            <div class="summary-box">
+
+                <span>Confidence</span>
+
+                <strong>
+
+                    {{ counterfeit_result.assessment_confidence }}
+
+                </strong>
+
+            </div>
+
+        </div>
+
+        <hr>
+
+        <h3>Checks</h3>
+
+        <ul class="checks">
+
+            {% for check in counterfeit_result.checks %}
+
+            <li>
+
+                <i class="fa-solid fa-circle-check"></i>
+
+                {{ check }}
+
+            </li>
+
+            {% endfor %}
+
+        </ul>
+
+        <div class="note">
+
+            {{ counterfeit_result.note }}
+
+        </div>
+
+    </div>
+
+    <div class="center">
+
+        <a href="{{ url_for('scan.scan') }}" class="primary-btn">
+
+            Scan Another Medicine
+
+        </a>
+
+    </div>
+
+</div>
+{% endblock %}

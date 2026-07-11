@@ -1,10 +1,34 @@
 import easyocr
 import difflib
 import re
+from concurrent.futures import ThreadPoolExecutor
+import os
 
-reader = easyocr.Reader(['en'])
+import torch
+
+USE_GPU = torch.cuda.is_available()
+
+print(f"EasyOCR GPU Enabled: {USE_GPU}")
+
+try:
+
+    reader = easyocr.Reader(
+        ['en'],
+        gpu=USE_GPU
+    )
+
+except Exception:
+
+    print("GPU unavailable. Using CPU.")
+
+    reader = easyocr.Reader(
+        ['en'],
+        gpu=False
+    )
 
 CONFIDENCE_THRESHOLD = 0.15
+DEBUG = False
+
 
 IMPORTANT_KEYWORDS = [
     "TABLET", "TABLETS",
@@ -47,45 +71,74 @@ BAD_KEYWORDS = [
     "PHONE"
 ]
 
+DATE_KEYWORDS = [
+
+    "B.NO",
+    "BATCH",
+    "LOT",
+    "MFG",
+    "MFD",
+    "EXP",
+    "EXPIRY"
+
+]
+
+def _read_single_image(path):
+
+    if DEBUG:
+        print(f"Reading: {os.path.basename(path)}")
+
+    results = reader.readtext(path)
+
+    detections = []
+
+    for bbox, text, confidence in results:
+
+        text = text.strip()
+
+        if not text:
+            continue
+
+        if len(text) == 1 and text.upper() not in ["C", "%"]:
+            continue
+
+        if confidence < CONFIDENCE_THRESHOLD:
+            continue
+
+        if not re.search(r"[A-Za-z0-9]", text):
+            continue
+
+        detections.append({
+
+            "text": text,
+
+            "confidence": confidence,
+
+            "source": os.path.basename(path)
+
+        })
+
+    if DEBUG:
+        print(f"{os.path.basename(path)} -> {len(detections)} detections")
+
+    return detections
+
+
 def extract_text(image_paths):
 
     detections = []
 
-    for path in image_paths:
+    workers = min(os.cpu_count() or 4, len(image_paths), 6)
 
-        print(f"\nReading: {path}")
+    with ThreadPoolExecutor(max_workers=workers) as executor:
 
-        results = reader.readtext(path)
+        results = executor.map(_read_single_image, image_paths)
 
-        print(f"Detected {len(results)} text regions")
+        for r in results:
+            detections.extend(r)
 
-        for bbox, text, confidence in results:
-
-            text = text.strip()
-
-            # Remove empty strings
-            if not text:
-                continue
-
-            # Remove single characters except units
-            if len(text) == 1 and text.upper() not in ["C", "%"]:
-                continue
-
-            # Remove garbage confidence
-            if confidence < CONFIDENCE_THRESHOLD:
-                continue
-
-            # Remove only-symbol text
-            if not re.search(r"[A-Za-z0-9]", text):
-                continue
-
-            detections.append({
-                "text": text,
-                "confidence": confidence,
-                "source": path.split("\\")[-1]
-            })
-
-    print(f"\nTotal Valid Detections : {len(detections)}")
+    if DEBUG:
+        print(f"\nTotal Valid Detections : {len(detections)}")
 
     return detections
 
@@ -103,10 +156,13 @@ def clean_ocr_text(detections):
 
             representative = group[0]["text"]
 
+            rep = re.sub(r'[^A-Z0-9]', '', representative.upper())
+            cur = re.sub(r'[^A-Z0-9]', '', text.upper())
+
             similarity = difflib.SequenceMatcher(
                 None,
-                representative.upper(),
-                text.upper()
+                rep,
+                cur
             ).ratio()
 
             if similarity >= 0.80:
@@ -119,7 +175,6 @@ def clean_ocr_text(detections):
 
     cleaned_lines = []
 
-    print("\n========== CLEANED OCR ==========\n")
 
     for group in groups:
 
@@ -133,36 +188,17 @@ def clean_ocr_text(detections):
             "votes": votes
         })
 
-        print(
-            f"{best['text']} | "
-            f"Confidence: {best['confidence']:.2f} | "
-            f"Votes: {votes}"
-        )
+        if DEBUG:
+            print(
+                f"{best['text']} | "
+                f"Confidence: {best['confidence']:.2f} | "
+                f"Votes: {votes}"
+            )
 
     return cleaned_lines
 
 def rank_ocr_lines(cleaned_data):
 
-    IMPORTANT_KEYWORDS = [
-    "TABLET", "TABLETS", "CAPSULE", "CAPSULES",
-    "SYRUP", "INJECTION",
-    "MG", "MCG", "ML",
-    "PHARMA", "PHARMACEUTICAL",
-    "MARKETED", "MANUFACTURED",
-    "USP", "IP",
-    "B.NO", "BATCH", "LOT",
-    "MFG", "MFD",
-    "EXP", "EXPIRY"
-    ]
-
-    BAD_KEYWORDS = [
-        "WARNING",
-        "STORE",
-        "KEEP",
-        "CHILDREN",
-        "CAUTION",
-        "SCHEDULE"
-    ]
 
     ranked = []
 
@@ -179,12 +215,6 @@ def rank_ocr_lines(cleaned_data):
         for word in IMPORTANT_KEYWORDS:
             if word in upper:
                 score += 5
-
-        DATE_KEYWORDS = [
-        "B.NO", "BATCH", "LOT",
-        "MFG", "MFD",
-        "EXP", "EXPIRY"
-        ]
 
         for word in DATE_KEYWORDS:
             if word in upper:
@@ -216,9 +246,9 @@ def rank_ocr_lines(cleaned_data):
 
     ranked.sort(key=lambda x: x["score"], reverse=True)
 
-    print("\n========== RANKED OCR ==========\n")
 
-    for item in ranked[:20]:
-        print(f'{item["score"]:.2f} | {item["text"]}')
+    if DEBUG:
+        for item in ranked[:20]:
+            print(f'{item["score"]:.2f} | {item["text"]}')
 
     return ranked

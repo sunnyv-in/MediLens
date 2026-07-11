@@ -1,27 +1,171 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MediLens</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-    <h1>MediLens</h1>
+{% block title %}
+MediLens
+{% endblock %}
 
-    <h2>AI Powered Medicine Scanner</h2>
+{% block content %}
 
-    <p>Scan any medicine to get AI explanation.</p>
+<!-- ================= HERO ================= -->
 
-    <br>
+<section class="hero">
 
-    <a href="/scan">
-        <button>Scan Medicine</button>
-    </a>
+    <div class="hero-text">
 
-    <br><br>
+        <span class="hero-tag">
 
-    <a href="/about">About</a>
+            AI Powered Medicine Scanner
 
-</body>
-</html>
+        </span>
+
+        <h1>
+
+            Understand Medicines
+            <span>Smarter.</span>
+
+        </h1>
+
+        <p>
+
+            Scan medicine strips using OCR and AI to identify
+            medicine information, understand usage,
+            and perform a basic counterfeit packaging analysis.
+
+        </p>
+
+        <a href="{{ url_for('scan.scan') }}"
+           class="primary-btn">
+
+            <i class="fa-solid fa-camera"></i>
+
+            Scan Medicine
+
+        </a>
+
+    </div>
+
+    <div class="hero-image">
+
+        <i class="fa-solid fa-capsules hero-icon"></i>
+
+    </div>
+
+</section>
+
+<!-- ================= PIPELINE ================= -->
+
+<section class="pipeline">
+
+    <div class="pipeline-box">
+
+        <i class="fa-solid fa-camera"></i>
+
+        <h3>Upload Image</h3>
+
+        <p>Capture or upload a medicine strip.</p>
+
+    </div>
+
+    <i class="fa-solid fa-arrow-right arrow"></i>
+
+    <div class="pipeline-box">
+
+        <i class="fa-solid fa-file-lines"></i>
+
+        <h3>OCR</h3>
+
+        <p>Extract text using EasyOCR.</p>
+
+    </div>
+
+    <i class="fa-solid fa-arrow-right arrow"></i>
+
+    <div class="pipeline-box">
+
+        <i class="fa-solid fa-brain"></i>
+
+        <h3>Gemini AI</h3>
+
+        <p>Understand medicine information.</p>
+
+    </div>
+
+    <i class="fa-solid fa-arrow-right arrow"></i>
+
+    <div class="pipeline-box">
+
+        <i class="fa-solid fa-shield-halved"></i>
+
+        <h3>Analysis</h3>
+
+        <p>Generate counterfeit assessment.</p>
+
+    </div>
+
+</section>
+
+<!-- ================= FEATURES ================= -->
+
+<section class="features">
+
+    <div class="feature-card">
+
+        <i class="fa-solid fa-file-lines"></i>
+
+        <h3>OCR Extraction</h3>
+
+        <p>
+
+            Multiple image preprocessing techniques
+            improve text extraction.
+
+        </p>
+
+    </div>
+
+    <div class="feature-card">
+
+        <i class="fa-solid fa-robot"></i>
+
+        <h3>AI Explanation</h3>
+
+        <p>
+
+            Gemini AI explains medicines in simple language.
+
+        </p>
+
+    </div>
+
+    <div class="feature-card">
+
+        <i class="fa-solid fa-shield-halved"></i>
+
+        <h3>Counterfeit Analysis</h3>
+
+        <p>
+
+            Packaging consistency checks help detect anomalies.
+
+        </p>
+
+    </div>
+
+    <div class="feature-card">
+
+        <i class="fa-solid fa-database"></i>
+
+        <h3>Medicine Record</h3>
+
+        <p>
+
+            Create a standardized medicine record
+            for future storage.
+
+        </p>
+
+    </div>
+
+</section>
+
+{% endblock %}
