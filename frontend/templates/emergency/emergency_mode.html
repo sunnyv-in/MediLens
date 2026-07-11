@@ -1,0 +1,99 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}
+Emergency Mode
+{% endblock %}
+
+{% block css %}
+<style>
+    .emergency-page {
+        background: #1a0000;
+        color: #fff;
+        padding: 24px;
+        border-radius: 8px;
+    }
+    .emergency-page h1 {
+        font-size: 2.2rem;
+        color: #ff4d4d;
+    }
+    .emergency-section {
+        margin-top: 24px;
+    }
+    .emergency-section h2 {
+        font-size: 1.4rem;
+        border-bottom: 2px solid #ff4d4d;
+        padding-bottom: 6px;
+    }
+    .emergency-med {
+        font-size: 1.1rem;
+        padding: 10px 0;
+        border-bottom: 1px solid #440000;
+    }
+    .emergency-warning {
+        background: #330000;
+        border-left: 6px solid #ff4d4d;
+        padding: 12px;
+        margin: 10px 0;
+        font-size: 1.1rem;
+    }
+    .status-expired { color: #ff4d4d; font-weight: bold; }
+    .status-expiring-soon { color: #ffb84d; font-weight: bold; }
+    .status-safe { color: #7CFC00; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="emergency-page">
+
+    <h1>EMERGENCY MODE</h1>
+
+    <p>Current medicines and active safety warnings.</p>
+
+    <div class="emergency-section">
+
+        <h2>Drug Interaction Warnings</h2>
+
+        {% if warnings %}
+            {% for w in warnings %}
+            <div class="emergency-warning">
+                <strong>{{ w.drug_one }} + {{ w.drug_two }}</strong>
+                — {{ w.severity }}
+                <br>
+                {{ w.description }}
+                <br>
+                <em>{{ w.recommendation }}</em>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>No known interaction risks among current medicines.</p>
+        {% endif %}
+
+    </div>
+
+    <div class="emergency-section">
+
+        <h2>Current Medicines</h2>
+
+        {% if medicines %}
+            {% for m in medicines %}
+            <div class="emergency-med">
+                <strong>{{ m.medicine_name }}</strong>
+                {% if m.dosage %} — {{ m.dosage }}{% endif %}
+                <br>
+                Expiry: {{ m.expiry_date if m.expiry_date else "Unknown" }}
+                —
+                <span class="status-{{ m.expiry_status | lower | replace(' ', '-') }}">
+                    {{ m.expiry_status }}
+                </span>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>No medicines on record.</p>
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

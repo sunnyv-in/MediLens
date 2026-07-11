@@ -16,6 +16,7 @@ from backend.routes.drug_interaction import drug_interaction_bp
 from backend.routes.medicine_history import medicine_history_bp
 from backend.routes.reminder_routes import reminder_bp
 from backend.routes.expiry_routes import expiry_bp
+from backend.routes.emergency_routes import emergency_bp
 from backend.routes.home_routes import home_bp
 from backend.routes.about_routes import about_bp
 from backend.routes.scan_routes import scan_bp
@@ -44,6 +45,7 @@ def create_app():
     app.register_blueprint(medicine_history_bp)
     app.register_blueprint(reminder_bp)
     app.register_blueprint(expiry_bp)
+    app.register_blueprint(emergency_bp)
     app.register_blueprint(home_bp)
     app.register_blueprint(about_bp)
     app.register_blueprint(scan_bp)
@@ -59,4 +61,3 @@ app = create_app()
 
 if __name__ == "__main__":
     app.run(debug=True)
-

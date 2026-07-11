@@ -1,0 +1,138 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}
+Medication Reminders
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <h1>Medication Reminders</h1>
+
+        <p>
+            Manage reminder times for your medicines.
+        </p>
+
+    </div>
+
+</div>
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<ul class="flash-messages">
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+
+<form
+    action="{{ url_for('reminder.add_reminder') }}"
+    method="POST"
+    class="reminder-form">
+
+    <input
+        type="number"
+        name="medicine_id"
+        placeholder="Medicine ID"
+        required>
+
+    <input
+        type="time"
+        name="reminder_time"
+        required>
+
+    <select name="frequency" required>
+        <option value="Daily">Daily</option>
+        <option value="Twice a day">Twice a day</option>
+        <option value="Weekly">Weekly</option>
+    </select>
+
+    <input
+        type="text"
+        name="instructions"
+        placeholder="Instructions (e.g. after food)">
+
+    <button type="submit" class="btn">
+        + Add Reminder
+    </button>
+
+</form>
+
+<br>
+
+{% if reminders %}
+
+<div class="medicine-grid">
+
+{% for reminder in reminders %}
+
+<div class="medicine-card">
+
+    <h2>{{ reminder.medicine_name }}</h2>
+
+    <p>
+        <strong>Time</strong>
+        <br>
+        {{ reminder.time }}
+    </p>
+
+    <p>
+        <strong>Frequency</strong>
+        <br>
+        {{ reminder.frequency }}
+    </p>
+
+    <p>
+        <strong>Instructions</strong>
+        <br>
+        {{ reminder.instructions or "-" }}
+    </p>
+
+    <p>
+        <strong>Status</strong>
+        <br>
+        {{ reminder.status }}
+    </p>
+
+    <div class="card-actions">
+
+        <form
+            action="{{ url_for('reminder.toggle_reminder', id=reminder.id) }}"
+            method="POST">
+
+            <button type="submit" class="btn-secondary">
+                {% if reminder.active %}Deactivate{% else %}Activate{% endif %}
+            </button>
+
+        </form>
+
+        <form
+            action="{{ url_for('reminder.delete_reminder', id=reminder.id) }}"
+            method="POST">
+
+            <button type="submit" class="btn-danger">
+                Delete
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% else %}
+
+<p>No reminders set yet.</p>
+
+{% endif %}
+
+{% endblock %}
