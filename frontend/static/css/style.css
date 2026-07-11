@@ -1,7 +1,6 @@
 /* ===========================
    RESET
 =========================== */
-=======
 /* ==========================================================
    MEDILENS UI DESIGN SYSTEM
    Part 1 - Global Layout & Components
@@ -1720,4 +1719,80 @@ grid-template-columns:1fr;
     0%   { box-shadow:0 0 6px rgba(255,77,77,0.5); }
     50%  { box-shadow:0 0 18px rgba(255,77,77,0.9); }
     100% { box-shadow:0 0 6px rgba(255,77,77,0.5); }
+}
+/* ===== Home Dashboard Widget ===== */
+
+.dashboard-widget{
+    padding:40px 0;
+}
+
+.dashboard-widget h2{
+    text-align:center;
+    margin-bottom:24px;
+    font-size:1.8rem;
+}
+
+.dashboard-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));
+    gap:16px;
+    margin-bottom:24px;
+}
+
+.dash-card{
+    background:#fff;
+    border-radius:12px;
+    padding:24px 16px;
+    text-align:center;
+    box-shadow:0 2px 8px rgba(0,0,0,0.08);
+    border-top:4px solid #2563eb;
+    transition:transform 0.2s ease;
+}
+
+.dash-card:hover{
+    transform:translateY(-4px);
+}
+
+.dash-card i{
+    font-size:1.6rem;
+    color:#2563eb;
+    margin-bottom:10px;
+    display:block;
+}
+
+.dash-card.dash-warning{
+    border-top-color:#f59e0b;
+}
+
+.dash-card.dash-warning i{
+    color:#f59e0b;
+}
+
+.dash-card.dash-danger{
+    border-top-color:#dc2626;
+}
+
+.dash-card.dash-danger i{
+    color:#dc2626;
+}
+
+.dash-number{
+    display:block;
+    font-size:2rem;
+    font-weight:700;
+    color:#1f2937;
+}
+
+.dash-label{
+    display:block;
+    font-size:0.85rem;
+    color:#64748b;
+    margin-top:4px;
+}
+
+.dashboard-actions{
+    display:flex;
+    justify-content:center;
+    gap:12px;
+    flex-wrap:wrap;
 }
