@@ -1,0 +1,180 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}
+Medicine Shelf
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <h1>Medicine Shelf</h1>
+
+        <p>
+            Manage all scanned medicines.
+        </p>
+
+    </div>
+
+    <a
+        href="{{ url_for('medicine_shelf.add_medicine_page') }}"
+        class="btn">
+
+        + Add Medicine
+
+    </a>
+
+</div>
+
+<input
+    type="text"
+    id="medicineSearch"
+    placeholder="Search medicine..."
+    onkeyup="searchMedicine()">
+
+<br><br>
+
+{% if medicines %}
+
+<div class="medicine-grid">
+
+{% for medicine in medicines %}
+
+<div class="medicine-card">
+
+    <h2>
+
+        {{ medicine.medicine_name }}
+
+    </h2>
+
+    <p>
+
+        <strong>Generic</strong>
+
+        <br>
+
+        {{ medicine.generic_name or "-" }}
+
+    </p>
+
+    <p>
+
+        <strong>Strength</strong>
+
+        <br>
+
+        {{ medicine.strength or "-" }}
+
+    </p>
+
+    <p>
+
+        <strong>Manufacturer</strong>
+
+        <br>
+
+        {{ medicine.manufacturer or "-" }}
+
+    </p>
+
+    <p>
+
+        <strong>Batch</strong>
+
+        <br>
+
+        {{ medicine.batch_number or "-" }}
+
+    </p>
+
+    <p>
+
+        <strong>Expiry</strong>
+
+        <br>
+
+        {{ medicine.expiry_date or "-" }}
+
+    </p>
+
+    <p>
+
+        <strong>Quantity</strong>
+
+        <br>
+
+        {{ medicine.quantity }}
+
+    </p>
+
+    <p>
+
+        <strong>Counterfeit Score</strong>
+
+        <br>
+
+        {{ medicine.counterfeit_score }}
+
+    </p>
+
+    <div class="card-actions">
+
+        <a
+            href="{{ url_for('medicine_shelf.medicine_details', medicine_id=medicine.id) }}">
+
+            View
+
+        </a>
+
+        <a
+            href="{{ url_for('medicine_shelf.edit_medicine_page', medicine_id=medicine.id) }}">
+
+            Edit
+
+        </a>
+
+        <form
+            action="{{ url_for('medicine_shelf.remove_medicine', medicine_id=medicine.id) }}"
+            method="POST"
+            onsubmit="return confirmDelete()">
+
+            <button type="submit">
+
+                Delete
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="medicine-card">
+
+    <h2>
+
+        No Medicines Found
+
+    </h2>
+
+    <p>
+
+        Start by adding your first medicine.
+
+    </p>
+
+</div>
+
+{% endif %}
+
+{% endblock %}

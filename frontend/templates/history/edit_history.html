@@ -1,0 +1,83 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}
+Edit History
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+<h1>
+
+Edit History
+
+</h1>
+
+<a
+href="{{ url_for('medicine_history.medicine_history') }}"
+class="btn">
+
+Back
+
+</a>
+
+</div>
+
+<form method="POST">
+
+<label>
+
+Medicine Name
+
+</label>
+
+<input
+type="text"
+name="medicine_name"
+value="{{ history.medicine_name }}">
+
+<label>
+
+Manufacturer
+
+</label>
+
+<input
+type="text"
+name="manufacturer"
+value="{{ history.manufacturer }}">
+
+<label>
+
+Expiry Date
+
+</label>
+
+<input
+type="text"
+name="expiry_date"
+value="{{ history.expiry_date }}">
+
+<label>
+
+Counterfeit Score
+
+</label>
+
+<input
+type="number"
+name="counterfeit_score"
+value="{{ history.counterfeit_score }}">
+
+<button
+class="btn"
+type="submit">
+
+Update History
+
+</button>
+
+</form>
+
+{% endblock %}

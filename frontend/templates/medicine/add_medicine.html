@@ -1,0 +1,187 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}
+Add Medicine
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <h1>Add Medicine</h1>
+
+        <p>
+
+            Add a medicine to your medicine shelf.
+
+        </p>
+
+    </div>
+
+    <a
+        href="{{ url_for('medicine_shelf.medicine_shelf') }}"
+        class="btn">
+
+        ← Back
+
+    </a>
+
+</div>
+
+<form
+    action="{{ url_for('medicine_shelf.add_medicine') }}"
+    method="POST">
+
+<div class="form-grid">
+
+<div>
+
+<label>
+
+Medicine Name
+
+</label>
+
+<input
+type="text"
+name="medicine_name"
+required>
+
+</div>
+
+<div>
+
+<label>
+
+Generic Name
+
+</label>
+
+<input
+type="text"
+name="generic_name">
+
+</div>
+
+<div>
+
+<label>
+
+Strength
+
+</label>
+
+<input
+type="text"
+name="strength">
+
+</div>
+
+<div>
+
+<label>
+
+Manufacturer
+
+</label>
+
+<input
+type="text"
+name="manufacturer">
+
+</div>
+
+<div>
+
+<label>
+
+Batch Number
+
+</label>
+
+<input
+type="text"
+name="batch_number">
+
+</div>
+
+<div>
+
+<label>
+
+Expiry Date
+
+</label>
+
+<input
+type="text"
+name="expiry_date"
+placeholder="DD/MM/YYYY">
+
+</div>
+
+<div>
+
+<label>
+
+Quantity
+
+</label>
+
+<input
+type="number"
+name="quantity"
+value="1"
+min="1">
+
+</div>
+
+<div>
+
+<label>
+
+Dosage
+
+</label>
+
+<input
+type="text"
+name="dosage">
+
+</div>
+
+</div>
+
+<label>
+
+Uses
+
+</label>
+
+<textarea
+name="usage"></textarea>
+
+<label>
+
+Side Effects
+
+</label>
+
+<textarea
+name="side_effects"></textarea>
+
+<br>
+
+<button
+type="submit"
+class="btn">
+
+Save Medicine
+
+</button>
+
+</form>
+
+{% endblock %}
