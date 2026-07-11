@@ -11,6 +11,7 @@ reminder_bp = Blueprint("reminder", __name__)
 
 @reminder_bp.route("/reminders")
 def reminders():
+    all_medicines = Medicine.query.all()
     all_reminders = MedicationReminder.query.all()
     reminder_data = []
     for reminder in all_reminders:
@@ -24,7 +25,7 @@ def reminders():
             "status": reminder_status(reminder),
             "active": reminder.is_active
         })
-    return render_template("reminders.html", reminders=reminder_data)
+    return render_template("reminders.html", reminders=reminder_data, medicines=all_medicines)
 
 
 @reminder_bp.route("/reminders/add", methods=["POST"])

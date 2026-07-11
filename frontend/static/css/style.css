@@ -345,7 +345,7 @@ textarea{
         width:100%;
         text-align:center;
     }
-=======
+
 html{
     scroll-behavior:smooth;
 }
@@ -1795,4 +1795,17 @@ grid-template-columns:1fr;
     justify-content:center;
     gap:12px;
     flex-wrap:wrap;
+}
+
+@media print{
+    .navbar, .dashboard-actions, button{
+        display:none !important;
+    }
+    .emergency-page{
+        background:#fff !important;
+        color:#000 !important;
+    }
+    .status-expired, .status-expiring-soon, .status-safe{
+        color:#000 !important;
+    }
 }

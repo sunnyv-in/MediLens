@@ -35,11 +35,12 @@ Medication Reminders
     method="POST"
     class="reminder-form">
 
-    <input
-        type="number"
-        name="medicine_id"
-        placeholder="Medicine ID"
-        required>
+    <select name="medicine_id" required>
+        <option value="" disabled selected>Select Medicine</option>
+        {% for medicine in medicines %}
+        <option value="{{ medicine.id }}">{{ medicine.medicine_name }}</option>
+        {% endfor %}
+    </select>
 
     <input
         type="time"
@@ -71,7 +72,7 @@ Medication Reminders
 
 {% for reminder in reminders %}
 
-<div class="medicine-card reminder-card" data-time="{{ reminder.time }}" data-active="{{ reminder.active | lower }}">
+<div class="medicine-card reminder-card" data-time="{{ reminder.time }}" data-active="{{ reminder.active | lower }}" data-medicine="{{ reminder.medicine_name }}" data-notified="false">
 
     <h2>{{ reminder.medicine_name }}</h2>
 
