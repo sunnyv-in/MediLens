@@ -1,6 +1,6 @@
 import os
 import time
-
+from backend.services.medicine_service import save_medicine
 from flask import (
     Blueprint,
     render_template,
@@ -90,6 +90,18 @@ def scan():
         print("\n========== STANDARD MEDICINE RECORD ==========")
         print(medicine_record)
         print("==============================================\n")
+        
+        db_record = {
+            "medicine_name": medicine_record["medicine_name"],
+            "strength": medicine_record["strength"],
+            "manufacturer": medicine_record["manufacturer"],
+            "batch_number": medicine_record["batch_number"],
+            "expiry_date": medicine_record["expiry_date"],
+            "counterfeit_score": medicine_record["counterfeit_analysis"].get("risk_score", 0),
+            "image_filename": medicine_record["scan_metadata"]["image_filename"]
+        }
+
+        saved_medicine = save_medicine(db_record)
 
         return render_template(
             "result.html",
