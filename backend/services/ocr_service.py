@@ -26,7 +26,7 @@ except Exception:
         gpu=False
     )
 
-CONFIDENCE_THRESHOLD = 0.15
+CONFIDENCE_THRESHOLD = 0.30
 DEBUG = False
 
 
@@ -64,8 +64,6 @@ BAD_KEYWORDS = [
     "SCHEDULE",
     "CAUTION",
     "READ",
-    "DOSAGE",
-    "PROTECT",
     "DISTRICT",
     "ROAD",
     "PHONE"
@@ -88,7 +86,16 @@ def _read_single_image(path):
     if DEBUG:
         print(f"Reading: {os.path.basename(path)}")
 
-    results = reader.readtext(path)
+    results = reader.readtext(
+        path,
+        detail=1,
+        paragraph=False,
+        decoder="beamsearch",
+        batch_size=8,
+        text_threshold=0.6,
+        low_text=0.3,
+        link_threshold=0.4
+    )
 
     detections = []
 
@@ -165,7 +172,7 @@ def clean_ocr_text(detections):
                 cur
             ).ratio()
 
-            if similarity >= 0.80:
+            if similarity >= 0.88:
                 group.append(detection)
                 placed = True
                 break
@@ -211,6 +218,16 @@ def rank_ocr_lines(cleaned_data):
 
         score += item["confidence"] * 10
         score += item["votes"] * 2
+        # Medicine names are usually short
+        # Medicine names are usually short
+        word_count = len(text.split())
+
+        if 1 <= word_count <= 3:
+            score += 3
+
+        # Reward medicine strengths
+        if re.search(r"\d+\s*(MG|MCG|ML|GM|G|IU)", upper):
+            score += 4
 
         for word in IMPORTANT_KEYWORDS:
             if word in upper:
@@ -218,7 +235,7 @@ def rank_ocr_lines(cleaned_data):
 
         for word in DATE_KEYWORDS:
             if word in upper:
-                score += 10
+                score += 4
 
         # Give extra priority to date-like patterns
         date_patterns = [
@@ -229,7 +246,7 @@ def rank_ocr_lines(cleaned_data):
 
         for pattern in date_patterns:
             if re.search(pattern, upper):
-                score += 10
+                score += 5
                 break
 
 
@@ -248,7 +265,7 @@ def rank_ocr_lines(cleaned_data):
 
 
     if DEBUG:
-        for item in ranked[:20]:
+        for item in ranked[:50]:
             print(f'{item["score"]:.2f} | {item["text"]}')
 
     return ranked

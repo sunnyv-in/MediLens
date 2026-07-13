@@ -15,8 +15,18 @@ client = genai.Client(api_key=api_key)
 
 
 def extract_medicine_info_ai(cleaned_data, ranked_data):
-    sequential_lines = [item["text"] for item in cleaned_data]
-    combined_text = "\n".join(sequential_lines)
+    all_lines = []
+
+    # Highest priority OCR lines
+    for item in ranked_data[:20]:
+        all_lines.append(item["text"])
+
+    # Add remaining cleaned lines
+    for item in cleaned_data:
+        if item["text"] not in all_lines:
+            all_lines.append(item["text"])
+
+    combined_text = "\n".join(all_lines)
 
     prompt = f"""
 You are an expert pharmacist and medicine identification assistant.
@@ -26,6 +36,22 @@ reading order. The OCR may contain spelling mistakes, missing letters,
 wrong characters, or partially detected company names.
 
 Your job is to infer the correct medicine information.
+Medicine names usually:
+
+- appear in the largest font
+- appear near the top of the package
+- are brand names
+- are often followed by their generic composition
+- should not be confused with the generic medicine name
+
+Examples:
+
+DOLO 650
+AZITHRAL 500
+DUOLIN
+MAHACEF
+ECOSPRIN AV 75
+MONOCEF-O
 
 Examples:
 MEOFZRD -> MEDOFORD
@@ -33,7 +59,12 @@ ALEMBLC -> ALEMBIC
 SUNPHARMA -> SUN PHARMA
 GLAXO -> GLAXOSMITHKLINE
 
-Do NOT simply copy OCR.
+Correct OCR mistakes only when there is strong evidence.
+
+If OCR already appears correct,
+preserve the original wording.
+
+Never invent information.
 Correct obvious OCR mistakes whenever possible.
 
 IMPORTANT RULES FOR BATCH NUMBER AND DATES:
@@ -64,19 +95,48 @@ IMPORTANT RULES FOR BATCH NUMBER AND DATES:
 - If there is insufficient OCR evidence for any field,
   return an empty string.
 
+OCR TEXT (highest-confidence lines appear first)
+
+The OCR may contain:
+
+- spelling mistakes
+- broken words
+- words split across multiple lines
+- duplicated text
+- rotated text
+- incomplete manufacturer names
+
+Use ALL OCR lines together before deciding that information is missing.
+
 OCR TEXT:
 
 {combined_text}
 
+The first lines are the most reliable OCR results.
+Lower lines may still contain useful missing information.
+Use all available OCR evidence before deciding a field is missing.
+
+Extract as many fields as possible.
+
+If one field is missing, continue extracting the remaining fields.
+
+Do not leave every field empty simply because one field cannot be determined.
+
 Return ONLY valid JSON.
 
 {{
-    "medicine": "",
-    "manufacturer": "",
-    "strength": "",
-    "batch_number": "",
-    "manufacturing_date": "",
-    "expiry_date": ""
+    "medicine":"",
+    "manufacturer":"",
+    "generic_name":"",
+    "strength":"",
+    "composition":"",
+    "batch_number":"",
+    "manufacturing_date":"",
+    "expiry_date":"",
+    "dosage":"",
+    "storage":"",
+    "warnings":"",
+    "pack_size":""
 }}
 """
 
@@ -86,10 +146,12 @@ Return ONLY valid JSON.
                 contents=prompt,
                 config={
                     "temperature": 0,
-                    "max_output_tokens": 300
+                    "max_output_tokens": 2048,
+                    "response_mime_type": "application/json",
+                    "thinking_config": {"thinking_budget": 0}
                 }
         )
-        raw = (response.text or "").strip()
+        raw = response.candidates[0].content.parts[0].text.strip()
 
         if not raw:
             raise ValueError("Gemini returned an empty response.")
@@ -109,9 +171,10 @@ Return ONLY valid JSON.
         return extract_medicine_info_fallback(cleaned_data, ranked_data)
 
 
-def get_ai_explanation(medicine_name):
+def get_ai_explanation(medicine_info):
     """Feature 3: AI Medicine Explanation"""
-
+    
+    medicine_name = medicine_info.get("medicine")
     if not medicine_name:
         return (
             "Medicine name could not be detected from the uploaded image. "
@@ -119,20 +182,51 @@ def get_ai_explanation(medicine_name):
         )
 
     prompt = f"""
-Explain the medicine "{medicine_name}" in simple language.
+You are an experienced pharmacist.
 
-Return only:
+Explain the medicine "{medicine_name}" in simple language that an ordinary patient can understand.
 
-• What it is used for
-• Common side effects
-• Important precautions
+Return the explanation in the following format:
 
-Maximum 100 words.
+## What is this medicine?
+Explain what this medicine is.
 
-Do not prescribe dosage.
+## Uses
+Mention what diseases or conditions it is commonly used to treat.
 
+## How to take it
+Explain generally how medicines of this type are usually taken.
+Do NOT prescribe an exact dosage.
+Mention that patients should always follow the doctor's prescription or the instructions on the medicine strip.
+
+## Common Side Effects
+Mention common side effects in bullet points.
+
+## Important Precautions
+Mention important precautions like:
+- Pregnancy
+- Alcohol
+- Driving
+- Kidney/Liver problems
+- Allergies
+- Drug interactions
+
+## Storage
+Explain how to store the medicine.
+
+## Important Note
 End with:
-'Consult a healthcare professional before using any medicine.'
+
+"This information is for educational purposes only. Always consult your doctor or pharmacist before starting or stopping any medicine."
+
+Use simple English.
+Minimum 100 words.
+Maximum 350 words.
+
+if you can explain the medicine in a way that is easy for an ordinary patient to understand, do so. If you cannot find enough information about this medicine, explain that the information is limited and provide general advice about consulting a doctor or pharmacist.
+
+Don't use any # symbols in the explanation use italic formatting instead.
+Return plain text only.
 """
 
     try:
@@ -140,8 +234,9 @@ End with:
             model="gemini-2.5-flash",
             contents=prompt,
             config={
-                "temperature": 0.2,
-                "max_output_tokens": 180
+                "temperature": 0.4,
+                "max_output_tokens": 900,
+                "thinking_config": {"thinking_budget": 0}
             }
         )
 

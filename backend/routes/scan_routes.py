@@ -72,9 +72,7 @@ def scan():
             ranked_data
         )
 
-        explanation = get_ai_explanation(
-            medicine_info.get("medicine", "")
-        )
+        explanation = get_ai_explanation(medicine_info)
 
         counterfeit_result = analyze_counterfeit_risk(
             medicine_info
