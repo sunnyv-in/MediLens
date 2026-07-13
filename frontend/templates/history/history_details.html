@@ -1,0 +1,115 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}
+History Details
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+<h1>
+
+History Details
+
+</h1>
+
+<a
+href="{{ url_for('medicine_history.medicine_history') }}"
+class="btn">
+
+Back
+
+</a>
+
+</div>
+
+<div class="details-card">
+
+<div class="details-grid">
+
+<div class="detail-box">
+
+<h3>
+
+Medicine
+
+</h3>
+
+<p>
+
+{{ history.medicine_name }}
+
+</p>
+
+</div>
+
+<div class="detail-box">
+
+<h3>
+
+Manufacturer
+
+</h3>
+
+<p>
+
+{{ history.manufacturer }}
+
+</p>
+
+</div>
+
+<div class="detail-box">
+
+<h3>
+
+Expiry
+
+</h3>
+
+<p>
+
+{{ history.expiry_date }}
+
+</p>
+
+</div>
+
+<div class="detail-box">
+
+<h3>
+
+Counterfeit Score
+
+</h3>
+
+<p>
+
+{{ history.counterfeit_score }}
+
+</p>
+
+</div>
+
+<div class="detail-box">
+
+<h3>
+
+Scan Time
+
+</h3>
+
+<p>
+
+{{ history.scan_time }}
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

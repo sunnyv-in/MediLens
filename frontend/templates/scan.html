@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}
+Scan Medicine
+{% endblock %}
+
+{% block content %}
+
+<div class="scan-page">
+
+    <div class="scan-header">
+
+        <h1>
+            <i class="fa-solid fa-camera"></i>
+            Scan Medicine
+        </h1>
+
+        <p>
+            Upload a medicine strip and let MediLens extract medicine
+            information using OCR and Gemini AI.
+        </p>
+
+    </div>
+
+
+    <form
+        method="POST"
+        enctype="multipart/form-data"
+        id="scanForm"
+    >
+
+        <div class="upload-card">
+
+            <label for="medicine_image" class="upload-box">
+
+                <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+
+                <h2>Drag & Drop Medicine Image</h2>
+
+                <p>or click here to browse</p>
+
+                <input
+                    type="file"
+                    id="medicine_image"
+                    name="medicine_image"
+                    accept="image/*"
+                    hidden
+                    required>
+
+            </label>
+
+            <div id="preview-container">
+
+                <img
+                    id="preview-image"
+                    src=""
+                    alt="Preview">
+
+            </div>
+
+            <button
+                type="submit"
+                class="primary-btn"
+                id="analyzeBtn"
+                disabled>
+
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+                Analyze Medicine
+
+            </button>
+
+        </div>
+
+        <!-- Loading Screen -->
+
+<div id="loadingOverlay">
+
+    <div class="loading-card">
+
+        <div class="spinner"></div>
+
+        <h2>Analyzing Medicine...</h2>
+
+        <p>Please wait while MediLens processes the medicine image.</p>
+
+        <div class="loading-steps">
+
+            <div>📷 Image Preprocessing</div>
+
+            <div>🔠 OCR Text Extraction</div>
+
+            <div>🤖 Gemini AI Analysis</div>
+
+            <div>🛡 Counterfeit Assessment</div>
+
+            <div>📄 Generating Result</div>
+
+        </div>
+
+    </div>
+
+</div>
+
+    </form>
+
+    
+
+
+    <div class="tips-card">
+
+        <h2>
+
+            <i class="fa-solid fa-circle-info"></i>
+
+            Best Results
+
+        </h2>
+
+        <ul>
+
+            <li>💡 Use good lighting</li>
+
+            <li>📷 Keep the entire medicine strip visible</li>
+
+            <li>🚫 Avoid blurry images</li>
+
+            <li>✋ Avoid covering the strip with fingers</li>
+
+            <li>🖼 White background gives better OCR accuracy</li>
+
+        </ul>
+
+    </div>
+
+</div>
+
+{% endblock %}

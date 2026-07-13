@@ -1,4 +1,16 @@
+# Python virtual environment
 venv/
-__pycache__/
+
+# Environment variables
 .env
-*.db
+
+# Python cache
+__pycache__/
+*.pyc
+
+# User-uploaded medicine images
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Generated processed OCR images
+backend/processed/*

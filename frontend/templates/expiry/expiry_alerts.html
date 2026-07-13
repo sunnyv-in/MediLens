@@ -1,0 +1,57 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}
+Expiry Alerts
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <h1>Expiry Alerts</h1>
+
+        <p>
+            Track which medicines are expired, expiring soon, or safe.
+        </p>
+
+    </div>
+
+</div>
+
+{% if alerts %}
+
+<div class="medicine-grid">
+
+{% for alert in alerts %}
+
+<div class="medicine-card status-{{ alert.status | lower | replace(' ', '-') }}">
+
+    <h2>{{ alert.medicine_name }}</h2>
+
+    <p>
+        <strong>Expiry Date</strong>
+        <br>
+        {{ alert.expiry_date if alert.expiry_date else "Unknown" }}
+    </p>
+
+    <p>
+        <strong>Status</strong>
+        <br>
+        {{ alert.status }}
+    </p>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% else %}
+
+<p>No medicines found. Scan a medicine first.</p>
+
+{% endif %}
+
+{% endblock %}

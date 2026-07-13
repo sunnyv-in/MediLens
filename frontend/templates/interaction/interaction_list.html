@@ -1,0 +1,122 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}
+Drug Interactions
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <h1>Drug Interactions</h1>
+
+        <p>
+            Manage all stored drug interactions.
+        </p>
+
+    </div>
+
+    <a
+        href="{{ url_for('drug_interaction.add_interaction_page') }}"
+        class="btn">
+
+        + Add Interaction
+
+    </a>
+
+</div>
+
+{% if interactions %}
+
+<div class="medicine-grid">
+
+{% for interaction in interactions %}
+
+<div class="medicine-card">
+
+    <h2>
+
+        {{ interaction.drug_one }}
+
+    </h2>
+
+    <p>
+
+        <strong>Interacts With</strong>
+
+        <br>
+
+        {{ interaction.drug_two }}
+
+    </p>
+
+    <p>
+
+        <strong>Severity</strong>
+
+        <br>
+
+        {{ interaction.severity }}
+
+    </p>
+
+    <div class="card-actions">
+
+        <a
+            href="{{ url_for('drug_interaction.interaction_details', interaction_id=interaction.id) }}">
+
+            View
+
+        </a>
+
+        <a
+            href="{{ url_for('drug_interaction.edit_interaction', interaction_id=interaction.id) }}">
+
+            Edit
+
+        </a>
+
+        <form
+            action="{{ url_for('drug_interaction.remove_interaction', interaction_id=interaction.id) }}"
+            method="POST"
+            onsubmit="return confirmDelete()">
+
+            <button type="submit">
+
+                Delete
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="medicine-card">
+
+    <h2>
+
+        No Drug Interactions
+
+    </h2>
+
+    <p>
+
+        Add your first interaction.
+
+    </p>
+
+</div>
+
+{% endif %}
+
+{% endblock %}
