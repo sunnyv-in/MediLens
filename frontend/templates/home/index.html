@@ -1,0 +1,316 @@
+{% extends "layouts/base.html" %} {% block title %} Home | MediLens {% endblock
+%} {% block content %}
+
+<!-- ================= HERO ================= -->
+<div class="home-background">
+  <section class="hero">
+    <div class="hero-left">
+      <span class="hero-badge"> AI Powered Medicine Scanner </span>
+
+      <h1>
+        Scan Medicines with
+        <span>OCR + Gemini AI</span>
+      </h1>
+
+      <p>
+        MediLens helps you identify medicines, understand their uses, analyze
+        counterfeit risks, organize your medicine shelf, maintain scan history,
+        and never miss a dose with smart reminders.
+      </p>
+
+      <div class="hero-buttons">
+        <a href="{{ url_for('scan.scan') }}" class="btn btn-primary">
+          <i class="fa-solid fa-camera"></i>
+
+          Scan Medicine
+        </a>
+
+        <a href="{{ url_for('about.about') }}" class="btn btn-secondary">
+          Learn More
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="hero-image">
+        <i class="fa-solid fa-capsules"></i>
+      </div>
+    </div>
+  </section>
+  <div class="home-page">
+    <!-- ================= FEATURES ================= -->
+
+    <section class="features">
+      <div class="section-title">
+        <span>FEATURES</span>
+
+        <h2>
+          Everything You Need For
+          <span>Medicine Management</span>
+        </h2>
+
+        <p>
+          MediLens combines OCR, Gemini AI and smart medicine management into
+          one easy-to-use platform.
+        </p>
+      </div>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fa-solid fa-camera"></i>
+          </div>
+
+          <h3>OCR Scanner</h3>
+
+          <p>
+            Scan medicine strips using advanced OCR technology and automatically
+            extract important information.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fa-solid fa-brain"></i>
+          </div>
+
+          <h3>Gemini AI</h3>
+
+          <p>
+            Understand medicine usage, dosage, precautions and side effects in
+            simple language.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fa-solid fa-shield-heart"></i>
+          </div>
+
+          <h3>Counterfeit Detection</h3>
+
+          <p>
+            Detect suspicious medicine packaging using intelligent AI-based
+            analysis.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fa-solid fa-pills"></i>
+          </div>
+
+          <h3>Medicine Shelf</h3>
+
+          <p>Organize all scanned medicines in one secure digital shelf.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fa-solid fa-bell"></i>
+          </div>
+
+          <h3>Smart Reminders</h3>
+
+          <p>Never miss your medicine with personalized daily reminders.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+
+          <h3>Drug Safety</h3>
+
+          <p>
+            Receive warnings about expiry dates, interactions and emergency
+            medicine information.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= HOW IT WORKS ================= -->
+    <!-- ================= HOW IT WORKS ================= -->
+
+    <section class="workflow">
+      <div class="section-title">
+        <span>WORKFLOW</span>
+
+        <h2>How <span>MediLens</span> Works</h2>
+
+        <p>
+          Upload your medicine strip and let AI analyze everything in seconds.
+        </p>
+      </div>
+
+      <div class="timeline">
+        <div class="timeline-line"></div>
+
+        <!-- STEP 1 -->
+
+        <div class="timeline-item">
+          <div class="timeline-circle">
+            <i class="fa-solid fa-camera"></i>
+          </div>
+
+          <h3>Upload</h3>
+
+          <p>Select a medicine image.</p>
+        </div>
+
+        <!-- STEP 2 -->
+
+        <div class="timeline-item">
+          <div class="timeline-circle">
+            <i class="fa-solid fa-file-lines"></i>
+          </div>
+
+          <h3>OCR</h3>
+
+          <p>Extract medicine text.</p>
+        </div>
+
+        <!-- STEP 3 -->
+
+        <div class="timeline-item">
+          <div class="timeline-circle">
+            <i class="fa-solid fa-brain"></i>
+          </div>
+
+          <h3>Gemini AI</h3>
+
+          <p>AI explains medicine.</p>
+        </div>
+
+        <!-- STEP 4 -->
+
+        <div class="timeline-item">
+          <div class="timeline-circle">
+            <i class="fa-solid fa-shield-heart"></i>
+          </div>
+
+          <h3>Analysis</h3>
+
+          <p>Analyze medicine safety.</p>
+        </div>
+
+        <!-- STEP 5 -->
+
+        <div class="timeline-item">
+          <div class="timeline-circle">
+            <i class="fa-solid fa-floppy-disk"></i>
+          </div>
+
+          <h3>Save</h3>
+
+          <p>Save to your medicine shelf.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= STATISTICS ================= -->
+
+    <section class="stats">
+      <div class="section-title">
+        <span>STATISTICS</span>
+
+        <h2>Trusted By <span>Medicine Users</span></h2>
+
+        <p>
+          MediLens delivers fast, intelligent and reliable medicine analysis
+          powered by OCR and Gemini AI.
+        </p>
+      </div>
+
+      <div class="stats-container">
+        <div class="stat-card">
+          <h3>98.7%</h3>
+
+          <p>OCR Accuracy</p>
+        </div>
+
+        <div class="stat-card">
+          <h3>12,500+</h3>
+
+          <p>Medicines Scanned</p>
+        </div>
+
+        <div class="stat-card">
+          <h3>6</h3>
+
+          <p>AI Analysis Modules</p>
+        </div>
+
+        <div class="stat-card">
+          <h3>24/7</h3>
+
+          <p>Always Available</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= DASHBOARD ================= -->
+
+    <section class="dashboard">
+      <h2>Dashboard Overview</h2>
+
+      <p class="section-subtitle">Your medicine statistics at a glance.</p>
+
+      <div class="dashboard-grid">
+        <div class="dashboard-card">
+          <i class="fa-solid fa-capsules"></i>
+
+          <h3>{{ dashboard.total_medicines }}</h3>
+
+          <p>Medicines</p>
+        </div>
+
+        <div class="dashboard-card">
+          <i class="fa-solid fa-hourglass-half"></i>
+
+          <h3>{{ dashboard.expiring_soon }}</h3>
+
+          <p>Expiring Soon</p>
+        </div>
+
+        <div class="dashboard-card">
+          <i class="fa-solid fa-circle-xmark"></i>
+
+          <h3>{{ dashboard.expired }}</h3>
+
+          <p>Expired</p>
+        </div>
+
+        <div class="dashboard-card">
+          <i class="fa-solid fa-bell"></i>
+
+          <h3>{{ dashboard.active_reminders }}</h3>
+
+          <p>Active Reminders</p>
+        </div>
+
+        <div class="dashboard-card">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+
+          <h3>{{ dashboard.interaction_warnings }}</h3>
+
+          <p>Interaction Warnings</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CTA ================= -->
+
+    <section class="cta">
+      <h2>Ready to Scan Your First Medicine?</h2>
+
+      <p>Experience AI-powered medicine analysis in seconds.</p>
+
+      <a href="{{ url_for('scan.scan') }}" class="btn btn-primary">
+        Start Scanning
+      </a>
+    </section>
+  </div>
+</div>
+{% endblock %}

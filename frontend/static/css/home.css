@@ -1,0 +1,1075 @@
+/* ==========================================================
+   BACKGROUND DECORATION
+========================================================== */
+.home-background {
+  position: relative;
+  overflow: hidden;
+  background: #f8fbff;
+}
+
+.animated-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.home-page {
+  position: relative;
+  z-index: 2;
+}
+
+/* ==========================================================
+   HOME PAGE CONTAINER
+========================================================== */
+
+.home-background {
+  position: relative;
+
+  overflow: hidden;
+}
+
+.home-page {
+  width: min(1700px, 96%);
+
+  margin: auto;
+}
+
+/* ==========================================
+                HERO SECTION
+========================================== */
+
+.hero {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  gap: 80px;
+
+  min-height: 85vh;
+
+  padding: 80px 0;
+
+  position: relative;
+}
+
+.hero::before {
+  content: "";
+
+  position: absolute;
+
+  width: 500px;
+
+  height: 500px;
+
+  right: -120px;
+
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  background: #2563eb;
+
+  opacity: 0.08;
+
+  filter: blur(120px);
+
+  border-radius: 50%;
+
+  z-index: -1;
+}
+
+/* Left */
+
+.hero-left {
+  flex: 1.1;
+}
+
+.hero-badge {
+  display: inline-block;
+
+  padding: 8px 18px;
+
+  border-radius: 50px;
+
+  background: #dbeafe;
+
+  color: #2563eb;
+
+  font-size: 0.95rem;
+
+  font-weight: 600;
+
+  margin-bottom: 25px;
+}
+
+.hero-left h1 {
+  font-size: 3.8rem;
+
+  line-height: 1.2;
+
+  font-weight: 700;
+
+  color: #1e293b;
+
+  margin-bottom: 25px;
+}
+
+.hero-left h1 span {
+  color: #2563eb;
+}
+
+.hero-left p {
+  font-size: 1.15rem;
+
+  color: #64748b;
+
+  line-height: 1.9;
+
+  max-width: 620px;
+
+  margin-bottom: 40px;
+}
+
+/* Buttons */
+
+.hero-buttons {
+  display: flex;
+
+  gap: 20px;
+
+  flex-wrap: wrap;
+}
+
+/* Right */
+
+.hero-right {
+  flex: 0.9;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+}
+
+/* Hero Illustration */
+
+.hero-image {
+  width: 340px;
+
+  height: 340px;
+
+  border-radius: 50%;
+
+  background: linear-gradient(135deg, #2563eb, #60a5fa);
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  box-shadow:
+    0 25px 70px rgba(37, 99, 235, 0.25),
+    0 0 90px rgba(37, 99, 235, 0.18);
+
+  animation: float 2.5s ease-in-out infinite;
+}
+
+.hero-image i {
+  font-size: 140px;
+
+  color: #fff;
+}
+
+/* Floating Animation */
+
+@keyframes float {
+  0% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================================
+   FEATURES SECTION
+========================================================== */
+
+.features {
+  width: 100%;
+
+  padding: 140px 5%;
+
+  background: #ffffff;
+
+  position: relative;
+}
+
+.section-title {
+  text-align: center;
+
+  max-width: 760px;
+
+  margin: auto;
+
+  margin-bottom: 70px;
+}
+
+.section-title span {
+  display: inline-block;
+
+  padding: 10px 22px;
+
+  border-radius: 50px;
+
+  background: #e8f0ff;
+
+  color: #2563eb;
+
+  font-weight: 600;
+
+  letter-spacing: 0.5px;
+
+  margin-bottom: 20px;
+}
+
+.section-title h2 {
+  font-size: 3rem;
+
+  color: #1f2937;
+
+  margin-bottom: 20px;
+
+  line-height: 1.2;
+}
+
+.section-title h2 span {
+  background: none;
+
+  padding: 0;
+
+  color: #2563eb;
+}
+
+.section-title p {
+  font-size: 1.1rem;
+
+  color: #64748b;
+
+  line-height: 1.8;
+}
+
+/* ==========================================================
+   FEATURE GRID
+========================================================== */
+
+.feature-grid {
+  display: grid;
+
+  grid-template-columns: repeat(3, minmax(320px, 1fr));
+
+  gap: 45px;
+
+  max-width: 1450px;
+
+  margin: auto;
+}
+
+/* ==========================================================
+   FEATURE CARD
+========================================================== */
+
+.feature-card {
+  background: #ffffff;
+
+  border-radius: 24px;
+
+  padding: 48px 38px;
+
+  min-height: 330px;
+
+  transition: 0.35s;
+
+  border: 1px solid #eef2ff;
+
+  box-shadow: 0 15px 40px rgba(37, 99, 235, 0.06);
+
+  position: relative;
+
+  overflow: hidden;
+}
+
+/* Blue Glow */
+
+.feature-card::before {
+  content: "";
+
+  position: absolute;
+
+  width: 220px;
+
+  height: 220px;
+
+  background: rgba(37, 99, 235, 0.08);
+
+  border-radius: 50%;
+
+  top: -120px;
+
+  right: -120px;
+
+  transition: 0.4s;
+}
+
+/* Hover */
+
+.feature-card:hover {
+  transform: translateY(-12px);
+
+  box-shadow: 0 25px 60px rgba(37, 99, 235, 0.18);
+}
+
+.feature-card:hover::before {
+  transform: scale(1.2);
+}
+
+/* ==========================================================
+   ICON
+========================================================== */
+
+.feature-icon {
+  width: 82px;
+
+  height: 82px;
+
+  border-radius: 20px;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  background: linear-gradient(135deg, #2563eb, #5b8cff);
+
+  color: white;
+
+  font-size: 2rem;
+
+  margin-bottom: 25px;
+
+  transition: 0.35s;
+}
+
+.feature-card:hover .feature-icon {
+  transform: rotate(-8deg) scale(1.08);
+}
+
+/* ==========================================================
+   TEXT
+========================================================== */
+
+.feature-card h3 {
+  font-size: 1.65rem;
+
+  color: #1f2937;
+
+  margin-bottom: 15px;
+}
+
+.feature-card p {
+  color: #64748b;
+
+  line-height: 2;
+
+  font-size: 1rem;
+}
+
+/* ==========================================================
+   HOW IT WORKS
+========================================================== */
+
+.workflow {
+  padding: 140px 5%;
+
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+
+  position: relative;
+}
+
+/* ==========================================================
+   HOW IT WORKS
+========================================================== */
+
+.workflow {
+  padding: 140px 0;
+
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+
+  overflow: hidden;
+}
+
+/* ==========================================================
+   TIMELINE
+========================================================== */
+
+.timeline {
+  position: relative;
+
+  margin-top: 65px;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: flex-start;
+
+  gap: 20px;
+}
+
+/* ==========================================================
+   CENTER LINE
+========================================================== */
+
+.timeline-line {
+  position: absolute;
+
+  top: 42px;
+
+  left: 8%;
+
+  right: 8%;
+
+  height: 3px;
+
+  background: linear-gradient(90deg, #bfdbfe, #3b82f6, #bfdbfe);
+
+  border-radius: 50px;
+
+  z-index: 0;
+}
+
+/* ==========================================================
+   ITEM
+========================================================== */
+
+.timeline-item {
+  position: relative;
+
+  z-index: 2;
+
+  flex: 1;
+
+  text-align: center;
+
+  transition: 0.35s;
+}
+
+.timeline-item {
+  transition: 0.35s;
+}
+
+.timeline-item:hover {
+  transform: translateY(-12px);
+}
+
+/* ==========================================================
+   CIRCLE
+========================================================== */
+
+.timeline-circle {
+  width: 72px;
+
+  height: 72px;
+
+  margin: auto;
+
+  border-radius: 50%;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  background: linear-gradient(135deg, #2563eb, #5b8cff);
+
+  color: #fff;
+
+  font-size: 1.7rem;
+
+  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.18);
+
+  transition: 0.35s;
+}
+
+.timeline-item:hover .timeline-circle {
+  transform: scale(1.12);
+
+  box-shadow: 0 18px 45px rgba(37, 99, 235, 0.35);
+}
+
+/* ==========================================================
+   TITLE
+========================================================== */
+
+.timeline-item h3 {
+  margin-top: 25px;
+
+  margin-bottom: 15px;
+
+  font-size: 1.4rem;
+
+  color: #1f2937;
+}
+
+/* ==========================================================
+   DESCRIPTION
+========================================================== */
+
+.timeline-item p {
+  max-width: 180px;
+
+  margin: auto;
+
+  color: #64748b;
+
+  line-height: 1.8;
+
+  font-size: 0.98rem;
+}
+
+/* ==========================================================
+   STATISTICS
+========================================================== */
+
+.stats {
+  padding: 140px 0;
+
+  background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+
+  position: relative;
+}
+
+/* ==========================================================
+   STATS CONTAINER
+========================================================== */
+
+.stats-container {
+  max-width: 1200px;
+
+  margin: 80px auto 0;
+
+  display: grid;
+
+  grid-template-columns: repeat(4, 1fr);
+
+  gap: 30px;
+}
+
+/* ==========================================================
+   STAT CARD
+========================================================== */
+
+.stat-card {
+  background: #ffffff;
+
+  padding: 45px 30px;
+
+  border-radius: 24px;
+
+  text-align: center;
+
+  border: 1px solid rgba(37, 99, 235, 0.08);
+
+  box-shadow: 0 18px 45px rgba(37, 99, 235, 0.08);
+
+  transition: 0.35s;
+
+  position: relative;
+
+  overflow: hidden;
+}
+
+/* ==========================================================
+   TOP DECORATION
+========================================================== */
+
+.stat-card::before {
+  content: "";
+
+  position: absolute;
+
+  width: 180px;
+
+  height: 180px;
+
+  border-radius: 50%;
+
+  background: rgba(37, 99, 235, 0.06);
+
+  top: -110px;
+
+  right: -110px;
+
+  transition: 0.35s;
+}
+
+/* ==========================================================
+   HOVER
+========================================================== */
+
+.stat-card:hover {
+  transform: translateY(-10px);
+
+  box-shadow: 0 25px 60px rgba(37, 99, 235, 0.18);
+}
+
+.stat-card:hover::before {
+  transform: scale(1.2);
+}
+
+/* ==========================================================
+   NUMBER
+========================================================== */
+
+.stat-card h3 {
+  font-size: 3rem;
+
+  font-weight: 700;
+
+  color: #2563eb;
+
+  margin-bottom: 12px;
+
+  transition: 0.35s;
+}
+
+.stat-card:hover h3 {
+  transform: scale(1.08);
+}
+
+/* ==========================================================
+   TEXT
+========================================================== */
+
+.stat-card p {
+  font-size: 1.05rem;
+
+  color: #64748b;
+
+  font-weight: 500;
+
+  line-height: 1.6;
+}
+
+/* ===========================
+   GLOWING BACKGROUND ORBS
+=========================== */
+
+.gradient-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.35;
+  animation: floatOrb 16s ease-in-out infinite;
+}
+
+/* Top Right */
+
+.orb1 {
+  width: 520px;
+  height: 520px;
+
+  top: -120px;
+  right: -150px;
+
+  background: #3b82f6;
+}
+
+/* Middle Left */
+
+.orb2 {
+  width: 420px;
+  height: 420px;
+
+  top: 900px;
+  left: -180px;
+
+  background: #60a5fa;
+
+  animation-delay: 4s;
+}
+
+/* Bottom Right */
+
+.orb3 {
+  width: 500px;
+  height: 500px;
+
+  bottom: -180px;
+  right: -220px;
+
+  background: #2563eb;
+
+  animation-delay: 8s;
+}
+
+@keyframes floatOrb {
+  0% {
+    transform: translateY(0px) translateX(0px);
+  }
+
+  50% {
+    transform: translateY(-50px) translateX(30px);
+  }
+
+  100% {
+    transform: translateY(0px) translateX(0px);
+  }
+}
+
+/* Floating Particles */
+
+.particles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.particles span {
+  position: absolute;
+
+  width: 5px;
+  height: 5px;
+
+  border-radius: 50%;
+
+  background: #4f8cff;
+
+  opacity: 0.18;
+
+  animation: particleFloat linear infinite;
+}
+
+.particles span:nth-child(1) {
+  left: 8%;
+  top: 90%;
+  animation-duration: 20s;
+}
+
+.particles span:nth-child(2) {
+  left: 18%;
+  top: 70%;
+  animation-duration: 24s;
+}
+
+.particles span:nth-child(3) {
+  left: 28%;
+  top: 95%;
+  animation-duration: 18s;
+}
+
+.particles span:nth-child(4) {
+  left: 40%;
+  top: 80%;
+  animation-duration: 22s;
+}
+
+.particles span:nth-child(5) {
+  left: 55%;
+  top: 90%;
+  animation-duration: 19s;
+}
+
+.particles span:nth-child(6) {
+  left: 65%;
+  top: 65%;
+  animation-duration: 21s;
+}
+
+.particles span:nth-child(7) {
+  left: 78%;
+  top: 88%;
+  animation-duration: 23s;
+}
+
+.particles span:nth-child(8) {
+  left: 88%;
+  top: 75%;
+  animation-duration: 20s;
+}
+
+.particles span:nth-child(9) {
+  left: 48%;
+  top: 100%;
+  animation-duration: 17s;
+}
+
+.particles span:nth-child(10) {
+  left: 95%;
+  top: 95%;
+  animation-duration: 26s;
+}
+
+@keyframes particleFloat {
+  0% {
+    transform: translateY(0px);
+    opacity: 0;
+  }
+
+  15% {
+    opacity: 0.2;
+  }
+
+  85% {
+    opacity: 0.2;
+  }
+
+  100% {
+    transform: translateY(-1200px);
+    opacity: 0;
+  }
+}
+
+.dashboard {
+  padding: 140px 0;
+  text-align: center;
+}
+
+.dashboard h2 {
+  font-size: 3rem;
+  color: #1f2937;
+  margin-bottom: 15px;
+}
+
+.section-subtitle {
+  color: #64748b;
+  margin-bottom: 70px;
+  font-size: 1.1rem;
+}
+
+.dashboard-grid {
+  display: grid;
+
+  grid-template-columns: repeat(5, 1fr);
+
+  gap: 25px;
+
+  max-width: 1400px;
+
+  margin: auto;
+}
+
+.dashboard-card {
+  background: #fff;
+
+  border-radius: 24px;
+
+  padding: 40px 20px;
+
+  border: 1px solid #edf2ff;
+
+  box-shadow: 0 18px 40px rgba(37, 99, 235, 0.08);
+
+  transition: 0.35s;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-10px);
+
+  box-shadow: 0 25px 55px rgba(37, 99, 235, 0.18);
+}
+
+.dashboard-card i {
+  font-size: 42px;
+
+  color: #2563eb;
+
+  margin-bottom: 20px;
+}
+
+.dashboard-card h3 {
+  font-size: 2.8rem;
+
+  color: #2563eb;
+
+  margin-bottom: 10px;
+}
+
+.dashboard-card p {
+  color: #64748b;
+
+  font-size: 1.05rem;
+}
+
+.cta {
+  margin: 140px auto;
+
+  max-width: 1200px;
+
+  background: linear-gradient(135deg, #2563eb, #4f8cff);
+
+  border-radius: 32px;
+
+  text-align: center;
+
+  padding: 80px 20px;
+
+  color: white;
+
+  box-shadow: 0 30px 70px rgba(37, 99, 235, 0.25);
+}
+
+.cta h2 {
+  font-size: 3rem;
+
+  margin-bottom: 20px;
+
+  color: white;
+}
+
+.cta p {
+  font-size: 1.15rem;
+
+  opacity: 0.9;
+
+  margin-bottom: 45px;
+}
+
+.cta .btn {
+  background: white;
+
+  color: #2563eb;
+
+  font-weight: 700;
+
+  padding: 18px 45px;
+
+  border-radius: 14px;
+}
+
+.cta .btn:hover {
+  transform: translateY(-4px);
+
+  background: #f8fbff;
+}
+
+/* ==========================================================
+                        FOOTER
+========================================================== */
+
+.footer {
+  margin-top: 40px;
+
+  background: #0f172a;
+
+  color: #cbd5e1;
+}
+
+.footer-container {
+  width: min(1400px, 92%);
+
+  margin: auto;
+
+  display: grid;
+
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+
+  gap: 60px;
+
+  padding: 70px 0;
+}
+
+/* Brand */
+
+.footer-brand h2 {
+  color: white;
+
+  font-size: 2rem;
+
+  margin-bottom: 20px;
+}
+
+.footer-brand h2 i {
+  color: #3b82f6;
+
+  margin-right: 10px;
+}
+
+.footer-brand p {
+  color: #94a3b8;
+
+  line-height: 1.8;
+
+  max-width: 350px;
+}
+
+/* Titles */
+
+.footer h4 {
+  color: white;
+
+  margin-bottom: 20px;
+
+  font-size: 1.1rem;
+}
+
+/* Links */
+
+.footer-links {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 12px;
+}
+
+.footer-links a {
+  color: #94a3b8;
+
+  text-decoration: none;
+
+  transition: 0.3s;
+}
+
+.footer-links a:hover {
+  color: #60a5fa;
+
+  padding-left: 6px;
+}
+
+/* Team */
+
+.footer-team p,
+.footer-tech p {
+  color: #94a3b8;
+
+  margin-bottom: 10px;
+
+  line-height: 1.6;
+}
+
+/* Bottom */
+
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+
+  text-align: center;
+
+  padding: 25px;
+
+  color: #94a3b8;
+
+  font-size: 0.95rem;
+}

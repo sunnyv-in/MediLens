@@ -39,4 +39,4 @@ def home():
         "interaction_warnings": warning_count
     }
 
-    return render_template("index.html", dashboard=dashboard)
+    return render_template("home/index.html", dashboard=dashboard)

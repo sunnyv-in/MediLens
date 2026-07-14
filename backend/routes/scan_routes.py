@@ -38,45 +38,74 @@ scan_bp = Blueprint("scan", __name__)
 @scan_bp.route("/scan", methods=["GET", "POST"])
 def scan():
 
+    print("1")
+
     if request.method == "POST":
+
+        print("2")
 
         image = request.files.get("medicine_image")
 
+        print("3")
+
         if not image or image.filename == "":
+            print("NO IMAGE")
             return render_template(
-                "scan.html",
+                "scan/scan.html",
                 error="Please select an image."
             )
 
+        print("4")
+
         filename = secure_filename(image.filename)
+
+        print("5")
 
         image_path = os.path.join(
             current_app.config["UPLOAD_FOLDER"],
             filename
         )
 
+        print("6")
+
         image.save(image_path)
 
+        print("7")
+
         processed_images = process_image(image_path)
+
+        print("8")
 
         detections = extract_text(
             list(processed_images.values())
         )
 
+        print("9")
+
         cleaned_data = clean_ocr_text(detections)
 
+        print("10")
+
         ranked_data = rank_ocr_lines(cleaned_data)
+
+        print("11")
 
         medicine_info = extract_medicine_info_ai(
             cleaned_data,
             ranked_data
         )
 
+        print("12")
+
         explanation = get_ai_explanation(medicine_info)
+
+        print("13")
 
         counterfeit_result = analyze_counterfeit_risk(
             medicine_info
         )
+
+        print("14")
 
         medicine_record = build_medicine_record(
             medicine_info=medicine_info,
@@ -85,31 +114,17 @@ def scan():
             image_filename=filename
         )
 
-        print("\n========== STANDARD MEDICINE RECORD ==========")
-        print(medicine_record)
-        print("==============================================\n")
-        
-        db_record = {
-            "medicine_name": medicine_record["medicine_name"],
-            "strength": medicine_record["strength"],
-            "manufacturer": medicine_record["manufacturer"],
-            "batch_number": medicine_record["batch_number"],
-            "expiry_date": medicine_record["expiry_date"],
-            "counterfeit_score": medicine_record["counterfeit_analysis"].get("risk_score", 0),
-            "image_filename": medicine_record["scan_metadata"]["image_filename"]
-        }
-
-        saved_medicine = save_medicine(db_record)
+        print("15")
 
         return render_template(
-            "result.html",
+            "scan/result.html",
             filename=filename,
             medicine=medicine_info,
             explanation=explanation,
             counterfeit_result=counterfeit_result
         )
 
-    return render_template("scan.html")
+    return render_template("scan/scan.html")
 
 
 @scan_bp.route("/uploads/<filename>")

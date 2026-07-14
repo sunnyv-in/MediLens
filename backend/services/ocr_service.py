@@ -1,7 +1,6 @@
 import easyocr
 import difflib
 import re
-from concurrent.futures import ThreadPoolExecutor
 import os
 
 import torch
@@ -135,17 +134,9 @@ def extract_text(image_paths):
 
     detections = []
 
-    workers = min(os.cpu_count() or 4, len(image_paths), 6)
+    for path in image_paths:
 
-    with ThreadPoolExecutor(max_workers=workers) as executor:
-
-        results = executor.map(_read_single_image, image_paths)
-
-        for r in results:
-            detections.extend(r)
-
-    if DEBUG:
-        print(f"\nTotal Valid Detections : {len(detections)}")
+        detections.extend(_read_single_image(path))
 
     return detections
 
@@ -267,5 +258,9 @@ def rank_ocr_lines(cleaned_data):
     if DEBUG:
         for item in ranked[:50]:
             print(f'{item["score"]:.2f} | {item["text"]}')
+
+    print("\nTOP OCR LINES")
+    for item in ranked[:20]:
+        print(item["text"])
 
     return ranked

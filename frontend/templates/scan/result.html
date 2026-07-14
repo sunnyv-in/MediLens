@@ -1,0 +1,177 @@
+{% extends "layouts/base.html" %} {% block title %} Medicine Analysis Result |
+MediLens {% endblock %} {% block content %}
+
+<section class="result-page">
+  <!-- ================= HEADER ================= -->
+
+  <div class="result-header">
+    <span class="section-badge"> Analysis Complete </span>
+
+    <h1>Medicine <span>Analysis</span></h1>
+
+    <p>
+      Your medicine has been analyzed using EasyOCR, Gemini AI and MediLens
+      intelligent analysis.
+    </p>
+  </div>
+
+  <!-- ================= RESULT GRID ================= -->
+
+  <div class="result-grid">
+    <!-- Uploaded Image -->
+
+    <div class="result-card">
+      <h2>Uploaded Image</h2>
+
+      <div class="uploaded-image">
+        <img
+          src="{{ url_for('scan.uploaded_file', filename=filename) }}"
+          alt="Medicine Image"
+        />
+      </div>
+    </div>
+
+    <!-- Medicine Information -->
+
+    <div class="result-card">
+      <h2>Medicine Information</h2>
+
+      <div class="info-table">
+        <div class="info-row">
+          <span>Medicine Name</span>
+          <strong>{{ medicine.medicine }}</strong>
+        </div>
+
+        <div class="info-row">
+          <span>Generic Name</span>
+          <strong>{{ medicine.generic_name }}</strong>
+        </div>
+
+        <div class="info-row">
+          <span>Strength</span>
+          <strong>{{ medicine.strength }}</strong>
+        </div>
+
+        <div class="info-row">
+          <span>Composition</span>
+          <strong>{{ medicine.composition }}</strong>
+        </div>
+
+        <div class="info-row">
+          <span>Manufacturer</span>
+          <strong>{{ medicine.manufacturer }}</strong>
+        </div>
+
+        <div class="info-row">
+          <span>Batch Number</span>
+          <strong>{{ medicine.batch_number }}</strong>
+        </div>
+
+        <div class="info-row">
+          <span>Manufacturing Date</span>
+          <strong>{{ medicine.manufacturing_date }}</strong>
+        </div>
+
+        <div class="info-row">
+          <span>Expiry Date</span>
+          <strong>{{ medicine.expiry_date }}</strong>
+        </div>
+
+        <div class="info-row">
+          <span>Dosage</span>
+          <strong>{{ medicine.dosage }}</strong>
+        </div>
+
+        <div class="info-row">
+          <span>Storage</span>
+          <strong>{{ medicine.storage }}</strong>
+        </div>
+
+        <div class="info-row">
+          <span>Warnings</span>
+          <strong>{{ medicine.warnings }}</strong>
+        </div>
+
+        <div class="info-row">
+          <span>Pack Size</span>
+          <strong>{{ medicine.pack_size }}</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= AI EXPLANATION ================= -->
+
+  <div class="result-card full-width">
+    <h2>Gemini AI Explanation</h2>
+
+    <div class="ai-box">
+      <pre>{{ explanation }}</pre>
+    </div>
+  </div>
+
+  <!-- ================= COUNTERFEIT ================= -->
+
+  <div class="result-card full-width">
+    <h2>Counterfeit Risk Analysis</h2>
+
+    <div class="counterfeit-grid">
+      <div class="counterfeit-item">
+        <span>Risk Score</span>
+
+        <strong> {{ counterfeit_result.risk_score }}% </strong>
+      </div>
+
+      <div class="counterfeit-item">
+        <span>Risk Level</span>
+
+        <strong> {{ counterfeit_result.risk_level }} </strong>
+      </div>
+
+      <div class="counterfeit-item">
+        <span>Confidence</span>
+
+        <strong> {{ counterfeit_result.assessment_confidence }} </strong>
+      </div>
+    </div>
+
+    <div class="checks">
+      <h3>Packaging Validation</h3>
+
+      <ul>
+        {% for check in counterfeit_result.checks %}
+
+        <li>{{ check }}</li>
+
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="analysis-note">
+      <strong>Important Note</strong>
+
+      <p>{{ counterfeit_result.note }}</p>
+    </div>
+  </div>
+
+  <!-- ================= ACTIONS ================= -->
+
+  <div class="result-actions">
+    <a href="{{ url_for('scan.scan') }}" class="btn btn-secondary">
+      <i class="fa-solid fa-camera"></i>
+
+      Scan Another
+    </a>
+
+    <a
+      href="{{ url_for('medicine_shelf.medicine_shelf') }}"
+      class="btn btn-primary"
+    >
+      <i class="fa-solid fa-pills"></i>
+
+      Medicine Shelf
+    </a>
+  </div>
+</section>
+
+{% endblock %}

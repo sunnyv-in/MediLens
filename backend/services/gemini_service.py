@@ -3,6 +3,7 @@ import json
 from google import genai
 from dotenv import load_dotenv
 from backend.services.fallback_extractor import extract_medicine_info_fallback
+import traceback
 
 load_dotenv()
 
@@ -12,6 +13,7 @@ if not api_key:
     raise ValueError("GEMINI_API_KEY not found.")
 
 client = genai.Client(api_key=api_key)
+print("Loaded API Key:", api_key[:20])
 
 
 def extract_medicine_info_ai(cleaned_data, ranked_data):
@@ -27,6 +29,9 @@ def extract_medicine_info_ai(cleaned_data, ranked_data):
             all_lines.append(item["text"])
 
     combined_text = "\n".join(all_lines)
+    print("\n================ CURRENT OCR ================\n")
+    print(combined_text)
+    print("\n=============================================\n")
 
     prompt = f"""
 You are an expert pharmacist and medicine identification assistant.
@@ -36,13 +41,35 @@ reading order. The OCR may contain spelling mistakes, missing letters,
 wrong characters, or partially detected company names.
 
 Your job is to infer the correct medicine information.
-Medicine names usually:
+IMPORTANT:
 
-- appear in the largest font
-- appear near the top of the package
-- are brand names
-- are often followed by their generic composition
-- should not be confused with the generic medicine name
+medicine_name means the COMMERCIAL BRAND NAME printed on the package.
+
+Examples:
+
+Brand Name:
+"DOLO 650,
+AZITHRAL 500,
+DUOLIN 3,
+ECOSPRIN AV 75,
+AUGMENTIN 625"
+
+Remember, do not confuse the generic composition with the medicine_name.
+and also only use Examples for reference, do not copy them. unles or until they are present in the OCR text.
+
+NOT medicine_name:
+Paracetamol
+Azithromycin
+Ipratropium Bromide
+Levosalbutamol Sulphate
+
+The medicine_name should ALWAYS be the marketed brand printed prominently.
+
+If both a brand name and generic composition exist, choose the BRAND NAME.
+
+For the uploaded OCR, "Duolin 3" is the medicine name while
+"Ipratropium Bromide and Levosalbutamol Sulphate"
+is the generic name.
 
 Examples:
 
@@ -125,7 +152,7 @@ Do not leave every field empty simply because one field cannot be determined.
 Return ONLY valid JSON.
 
 {{
-    "medicine":"",
+    "medicine_name":"",
     "manufacturer":"",
     "generic_name":"",
     "strength":"",
@@ -142,7 +169,7 @@ Return ONLY valid JSON.
 
     try:
         response = client.models.generate_content(
-                model="gemini-2.5-flash",
+                model="gemini-3.5-flash",
                 contents=prompt,
                 config={
                     "temperature": 0,
@@ -151,6 +178,9 @@ Return ONLY valid JSON.
                     "thinking_config": {"thinking_budget": 0}
                 }
         )
+        print("\n================ OCR SENT TO GEMINI ================\n")
+        print(combined_text)
+        print("\n====================================================\n")
         raw = response.candidates[0].content.parts[0].text.strip()
 
         if not raw:
@@ -165,16 +195,15 @@ Return ONLY valid JSON.
         print("Gemini returned invalid JSON. Using general fallback extractor.")
         return extract_medicine_info_fallback(cleaned_data, ranked_data)
 
-    except Exception as e:
-        print(f"Gemini medicine extraction error: {e}")
-        print("Using general fallback extractor.")
+    except Exception:                             #Return with ctrl +z if nothing happen 
+        traceback.print_exc()
         return extract_medicine_info_fallback(cleaned_data, ranked_data)
 
 
 def get_ai_explanation(medicine_info):
     """Feature 3: AI Medicine Explanation"""
     
-    medicine_name = medicine_info.get("medicine")
+    medicine_name = medicine_info.get("medicine_name")
     if not medicine_name:
         return (
             "Medicine name could not be detected from the uploaded image. "
@@ -231,7 +260,7 @@ Return plain text only.
 
     try:
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-3.5-flash",
             contents=prompt,
             config={
                 "temperature": 0.4,

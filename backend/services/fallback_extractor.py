@@ -111,7 +111,7 @@ COMPOSITION_CONTEXT_PATTERN = re.compile(
 
 STRENGTH_PATTERN = re.compile(
     r"(\d+(?:\.\d+)?)\s*"
-    r"(MG|MCG|UG|G|ML|IU|I\.U\.|%|MG/ML|MCG/ML)\b",
+    r"(MG/ML|MCG/ML|MG|MCG|UG|G|ML|IU|I\.U\.|%)\b",
     re.IGNORECASE
 )
 
@@ -190,6 +190,9 @@ BARE_VALUE = re.compile(
     re.IGNORECASE
 )
 
+# Short alpha prefix + digits = looks like a batch/lot code, not a brand
+CODE_LIKE_PATTERN = re.compile(r"^[A-Z]{1,4}\d{2,}[A-Z0-9]*$", re.IGNORECASE)
+
 
 # ============================================================
 # BASIC HELPERS
@@ -220,12 +223,16 @@ def get_words(text):
 
 
 def contains_manufacturer_suffix(text):
-    upper = text.upper()
+    # Strip periods before matching so "PVT. LTD." and "LTD" behave
+    # consistently, and so trailing punctuation doesn't break \b.
+    normalized = re.sub(r"\.", "", text.upper())
 
-    return any(
-        suffix in upper
-        for suffix in MANUFACTURER_SUFFIXES
-    )
+    for suffix in MANUFACTURER_SUFFIXES:
+        suffix_normalized = re.sub(r"\.", "", suffix.upper())
+        if re.search(rf"\b{re.escape(suffix_normalized)}\b", normalized):
+            return True
+
+    return False
 
 
 def is_date_value(text):
@@ -310,6 +317,10 @@ def is_valid_brand_candidate(text):
     # Reject manufacturer/company lines.
     if contains_manufacturer_suffix(upper):
         return False
+    
+    # Reject alphanumeric codes (e.g. GP2409A) — batch/lot style, not a brand
+    if CODE_LIKE_PATTERN.match(upper.replace(" ", "")):
+        return False
 
     if MANUFACTURER_LABEL_PATTERN.search(upper):
         return False
@@ -387,7 +398,7 @@ def calculate_brand_score(item):
         score += 0.15
 
     # Mixed alphabetic/alphanumeric brand forms are common.
-    if re.fullmatch(r"[A-Za-z][A-Za-z0-9\-]*", text):
+    if re.fullmatch(r"[A-Za-z][A-Za-z0-9\-]*(?:\s[A-Za-z][A-Za-z0-9\-]*)?", text):
         score += 0.20
 
     # All-uppercase packaging text may indicate prominent brand text,
@@ -408,33 +419,47 @@ def extract_brand_name(ranked_data):
     without using a known medicine database.
     """
 
-    candidates = []
+    grouped = {}
 
     for item in ranked_data:
         text = normalize_spaces(item.get("text", ""))
 
+        candidate = STRENGTH_PATTERN.sub("", text).strip()
+        if candidate:
+            text = candidate
+
         if not is_valid_brand_candidate(text):
             continue
 
-        score = calculate_brand_score(item)
+        key = text.upper()
 
-        candidates.append({
-            "text": text,
-            "score": score
-        })
+        scored_item = dict(item)
+        scored_item["text"] = text
+        score = calculate_brand_score(scored_item)
 
-    if not candidates:
+        if key not in grouped:
+            grouped[key] = {"text": text, "score": score, "count": 1}
+        else:
+            grouped[key]["score"] = max(grouped[key]["score"], score)
+            grouped[key]["count"] += 1
+
+    if not grouped:
         return ""
 
-    candidates.sort(
-        key=lambda item: item["score"],
-        reverse=True
-    )
+    candidates = list(grouped.values())
+
+    for candidate in candidates:
+        # Same text detected multiple times across OCR passes is
+        # stronger evidence than one high-confidence lucky read.
+        candidate["final_score"] = (
+            candidate["score"] + min(candidate["count"] - 1, 3) * 0.15
+        )
+
+    candidates.sort(key=lambda item: item["final_score"], reverse=True)
 
     best = candidates[0]
 
-    # Conservative acceptance threshold.
-    if best["score"] < 0.60:
+    if best["final_score"] < 0.60:
         return ""
 
     return best["text"]
@@ -1075,10 +1100,16 @@ def extract_medicine_info_fallback(cleaned_data, ranked_data):
     )
 
     return {
-        "medicine": brand or generic,
-        "manufacturer": manufacturer,
-        "strength": strength,
-        "batch_number": batch_number,
-        "manufacturing_date": manufacturing_date,
-        "expiry_date": expiry_date
-    }
+    "medicine_name": brand or generic,
+    "manufacturer": manufacturer,
+    "generic_name": generic,
+    "strength": strength,
+    "composition": "",
+    "batch_number": batch_number,
+    "manufacturing_date": manufacturing_date,
+    "expiry_date": expiry_date,
+    "dosage": "",
+    "storage": "",
+    "warnings": "",
+    "pack_size": ""
+}

@@ -1,86 +1,230 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<head>
+    <title>{% block title %} MediLens {% endblock %}</title>
 
-    <meta charset="UTF-8">
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
-
-    <title>
-
-        {% block title %}
-
-        MediLens
-
-        {% endblock %}
-
-    </title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
     <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/style.css') }}">
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
 
-    {% block css %}
+    <!-- Font Awesome -->
 
-    {% endblock %}
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
 
-</head>
+    <!-- CSS -->
 
-<body>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/base.css') }}"
+    />
 
-<header class="navbar">
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/navbar.css') }}"
+    />
 
-    <div class="logo">
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/home.css') }}"
+    />
 
-        <a href="/">💊 MediLens</a>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/scan.css') }}"
+    />
 
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/result.css') }}"
+    />
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/medicine.css') }}"
+    />
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/history.css') }}"
+    />
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/reminder.css') }}"
+    />
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/responsive.css') }}"
+    />
+
+    {% block css %} {% endblock %}
+  </head>
+
+  <body>
+    <!-- ================= NAVBAR ================= -->
+
+    <header>
+      <nav class="navbar">
+        <div class="logo">
+          <i class="fa-solid fa-capsules"></i>
+
+          <span>MediLens</span>
+        </div>
+
+        <ul class="nav-links">
+          <li>
+            <a href="{{ url_for('home.home') }}">Home</a>
+          </li>
+
+          <li>
+            <a href="{{ url_for('scan.scan') }}">Scan</a>
+          </li>
+
+          <!-- Medicines Dropdown -->
+
+          <li class="dropdown">
+            <a href="javascript:void(0)">
+              Medicines
+              <i class="fa-solid fa-chevron-down"></i>
+            </a>
+
+            <ul class="dropdown-menu">
+              <li>
+                <a href="{{ url_for('medicine_shelf.medicine_shelf') }}">
+                  Medicine Shelf
+                </a>
+              </li>
+
+              <li>
+                <a href="{{ url_for('medicine_history.medicine_history') }}">
+                  History
+                </a>
+              </li>
+
+              <li>
+                <a href="{{ url_for('reminder.reminders') }}"> Reminders </a>
+              </li>
+            </ul>
+          </li>
+
+          <!-- Safety Dropdown -->
+
+          <li class="dropdown">
+            <a href="#">
+              Safety
+              <i class="fa-solid fa-chevron-down"></i>
+            </a>
+
+            <ul class="dropdown-menu">
+              <li>
+                <a href="{{ url_for('drug_interaction.interaction_list') }}">
+                  Drug Interactions
+                </a>
+              </li>
+
+              <li>
+                <a href="{{ url_for('expiry.expiry_alerts') }}">
+                  Expiry Alerts
+                </a>
+              </li>
+
+              <li>
+                <a href="{{ url_for('emergency.emergency_mode') }}">
+                  Emergency Mode
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <a href="{{ url_for('about.about') }}"> About </a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- ================= FLASH MESSAGES ================= -->
+
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %}
+
+    <div class="flash-container">
+      {% for category, message in messages %}
+
+      <div class="flash {{ category }}">{{ message }}</div>
+
+      {% endfor %}
     </div>
 
-    <nav>
+    {% endif %} {% endwith %}
 
-        <a href="/">Home</a>
+    <!-- ================= MAIN ================= -->
 
-        <a href="{{ url_for('medicine_shelf.medicine_shelf') }}">
+    <main class="container">{% block content %} {% endblock %}</main>
 
-            Medicine Shelf
+    <!-- ================= FOOTER ================= -->
 
-        </a>
+    <footer class="footer">
+      <div class="footer-container">
+        <div class="footer-brand">
+          <h2><i class="fa-solid fa-capsules"></i> MediLens</h2>
 
-        <a href="{{ url_for('drug_interaction.interaction_list') }}">
+          <p>
+            AI Powered Medicine Scanner using OCR, EasyOCR, Gemini AI and Flask.
+          </p>
+        </div>
 
-            Drug Interactions
+        <div class="footer-links">
+          <h4>Quick Links</h4>
 
-        </a>
+          <a href="{{ url_for('home.home') }}">Home</a>
+          <a href="{{ url_for('scan.scan') }}">Scan</a>
+          <a href="{{ url_for('about.about') }}">About</a>
+        </div>
 
-        <a href="{{ url_for('medicine_history.medicine_history') }}">
+        <div class="footer-team">
+          <h4>Hackathon Team</h4>
 
-            History
+          <p><strong>Sunny</strong> — OCR & AI Pipeline</p>
+          <p><strong>Nikhil</strong> — Medicine Database</p>
+          <p><strong>Ankush</strong> — Safety & Dashboard</p>
+        </div>
 
-        </a>
+        <div class="footer-tech">
+          <h4>Built With</h4>
 
-    </nav>
+          <p>Python</p>
+          <p>Flask</p>
+          <p>EasyOCR</p>
+          <p>Gemini AI</p>
+          <p>SQLite</p>
+        </div>
+      </div>
 
-</header>
+      <div class="footer-bottom">
+        <p>
+          © 2026 MediLens • Built for Hackathon • Made with ❤️ by Team MediLens
+        </p>
+      </div>
+    </footer>
 
-<div class="page">
+    <!-- ================= JS ================= -->
 
-    {% block content %}
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
-    {% endblock %}
-
-</div>
-
-<script
-    src="{{ url_for('static', filename='js/app.js') }}">
-</script>
-
-{% block js %}
-
-{% endblock %}
-
-</body>
-
+    {% block js %} {% endblock %}
+  </body>
 </html>

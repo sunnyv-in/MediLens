@@ -1,0 +1,133 @@
+{% extends "layouts/base.html" %} {% block title %} Scan Medicine | MediLens {%
+endblock %} {% block content %}
+
+<section class="scan-page">
+  <!-- Header -->
+  <div class="scan-header">
+    <span class="section-badge"> AI Medicine Scanner </span>
+
+    <h1>Scan Your <span>Medicine</span></h1>
+
+    <p>
+      Upload a medicine strip or bottle image and let MediLens analyze it using
+      OCR and Gemini AI.
+    </p>
+  </div>
+
+  <!-- Upload Card -->
+  <div class="upload-card">
+    <form
+            id="scanForm"
+            action="{{ url_for('scan.scan') }}"
+            method="POST"
+            enctype="multipart/form-data"
+            >
+            <input
+                type="file"
+                id="imageInput"
+                name="medicine_image"
+                accept="image/*"
+                capture="environment"
+                hidden
+            />
+
+            <label for="imageInput" class="upload-area">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+
+                <h3>Drag & Drop Medicine Image</h3>
+
+                <p>or click to browse files</p>
+
+                <span> Supported: JPG • PNG • JPEG </span>
+            </label>
+            
+        </div>
+
+        <!-- Action Buttons -->
+
+        <div class="scan-actions">
+            <button class="btn btn-primary" id="browseBtn">
+            <i class="fa-solid fa-folder-open"></i>
+
+            Browse Files
+            </button>
+
+            <button class="btn btn-secondary" id="cameraBtn">
+            <i class="fa-solid fa-camera"></i>
+
+            Open Camera
+            </button>
+        </div>
+    
+            <!-- Preview -->
+
+        <div class="preview-card">
+            <h2>Image Preview</h2>
+
+            <div class="preview-box">
+            <img id="previewImage" />
+            <button id="removeImage" class="remove-image">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div id="placeholder">
+                <i class="fa-solid fa-image"></i>
+
+                <p>No image selected</p>
+            </div>
+            </div>
+        </div>
+        
+
+        <!-- Image Information -->
+
+        <div class="image-info">
+            <h2>Image Information</h2>
+
+            <div class="info-grid">
+            <div class="info-item">
+                <span>Filename</span>
+
+                <strong id="fileName">-</strong>
+            </div>
+
+            <div class="info-item">
+                <span>File Size</span>
+
+                <strong id="fileSize">-</strong>
+            </div>
+
+            <div class="info-item">
+                <span>Resolution</span>
+
+                <strong id="resolution">-</strong>
+            </div>
+            </div>
+        </div>
+
+        <!-- Analyze -->
+
+        <div class="analyze-section">
+            <button id="analyzeBtn" class="btn btn-primary btn-large" disabled>
+            <i class="fa-solid fa-magnifying-glass"></i>
+
+            Analyze Medicine
+            </button>
+        </div>
+  </form>
+
+</section>
+
+<div id="loadingOverlay" class="loading-overlay">
+  <div class="loading-card">
+    <div class="loader"></div>
+
+    <h2>Analyzing Medicine...</h2>
+
+    <p id="loadingText">Preparing Image...</p>
+  </div>
+</div>
+{% endblock %}
+{% block js %}
+<script src="{{ url_for('static', filename='js/scan.js') }}"></script>
+{% endblock %}

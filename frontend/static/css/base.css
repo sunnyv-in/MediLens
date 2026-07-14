@@ -1,0 +1,157 @@
+/* ==========================
+   GOOGLE FONT
+========================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap");
+
+/* ==========================
+   RESET
+========================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ==========================
+   ROOT COLORS
+========================== */
+
+:root {
+  --primary: #2563eb;
+
+  --primary-light: #3b82f6;
+
+  --secondary: #64748b;
+
+  --success: #22c55e;
+
+  --warning: #f59e0b;
+
+  --danger: #ef4444;
+
+  --dark: #1e293b;
+
+  --light: #f8fafc;
+
+  --white: #ffffff;
+
+  --border: #e5e7eb;
+
+  --shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* ==========================
+   BODY
+========================== */
+
+body {
+  font-family: "Poppins", sans-serif;
+
+  background: var(--light);
+
+  color: var(--dark);
+
+  overflow-x: hidden;
+}
+
+/* ==========================
+   CONTAINER
+========================== */
+
+.container {
+  width: min(1200px, 92%);
+
+  margin: auto;
+}
+
+/* ==========================
+   LINKS
+========================== */
+
+a {
+  text-decoration: none;
+
+  color: inherit;
+}
+
+/* ==========================
+   BUTTONS
+========================== */
+
+.btn {
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 10px;
+
+  padding: 14px 30px;
+
+  border-radius: 12px;
+
+  font-size: 16px;
+
+  font-weight: 600;
+
+  transition: 0.3s;
+
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: var(--primary);
+
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--primary-light);
+
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background: white;
+
+  color: var(--primary);
+
+  border: 2px solid var(--primary);
+}
+
+.btn-secondary:hover {
+  background: var(--primary);
+
+  color: white;
+}
+
+/* ==========================
+   SECTION
+========================== */
+
+section {
+  padding: 90px 0;
+}
+
+section h2 {
+  font-size: 38px;
+
+  margin-bottom: 25px;
+
+  text-align: center;
+}
+
+/* ==========================
+   CARDS
+========================== */
+
+.card {
+  background: white;
+
+  border-radius: 18px;
+
+  box-shadow: var(--shadow);
+}
