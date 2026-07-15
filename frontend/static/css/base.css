@@ -155,3 +155,16 @@ section h2 {
 
   box-shadow: var(--shadow);
 }
+
+
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#f5f7fb;
+}
+
+.container{
+    width:90%;
+    max-width:1200px;
+    margin:30px auto;
+}

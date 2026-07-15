@@ -25,7 +25,7 @@ def reminders():
             "status": reminder_status(reminder),
             "active": reminder.is_active
         })
-    return render_template("reminders.html", reminders=reminder_data, medicines=all_medicines)
+    return render_template("reminder/reminders.html", reminders=reminder_data, medicines=all_medicines)
 
 
 @reminder_bp.route("/reminders/add", methods=["POST"])
