@@ -1,0 +1,247 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}
+Medicine Reminders
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <h1>Medicine Reminders</h1>
+
+        <p>
+
+            Schedule reminders for your medicines.
+
+        </p>
+
+    </div>
+
+</div>
+
+<div class="form-card">
+
+    <h2>
+
+        Add Reminder
+
+    </h2>
+
+    <form
+        action="{{ url_for('reminder.add_new_reminder') }}"
+        method="POST">
+
+        <label>
+
+            Medicine
+
+        </label>
+
+        <select
+            name="medicine_id"
+            required>
+
+            {% for medicine in medicines %}
+
+            <option
+                value="{{ medicine.id }}">
+
+                {{ medicine.medicine_name }}
+
+            </option>
+
+            {% endfor %}
+
+        </select>
+
+        <label>
+
+            Reminder Time
+
+        </label>
+
+        <input
+            type="time"
+            name="reminder_time"
+            required>
+
+        <label>
+
+            Frequency
+
+        </label>
+
+        <select
+            name="frequency">
+
+            <option>Daily</option>
+
+            <option>Twice Daily</option>
+
+            <option>Weekly</option>
+
+            <option>Monthly</option>
+
+        </select>
+
+        <label>
+
+            Instructions
+
+        </label>
+
+        <textarea
+            name="instructions"
+            placeholder="Take after food..."></textarea>
+
+        <button
+            class="btn"
+            type="submit">
+
+            Add Reminder
+
+        </button>
+
+    </form>
+
+</div>
+
+<br>
+
+<h2>
+
+Current Reminders
+
+</h2>
+
+{% if reminders %}
+
+<div class="reminder-grid">
+
+{% for reminder in reminders %}
+
+<div class="reminder-card">
+
+    <h3>
+
+        {{ reminder.medicine.medicine_name }}
+
+    </h3>
+
+    <p>
+
+        <strong>Time</strong>
+
+        <br>
+
+        {{ reminder.reminder_time }}
+
+    </p>
+
+    <p>
+
+        <strong>Frequency</strong>
+
+        <br>
+
+        {{ reminder.frequency }}
+
+    </p>
+
+    <p>
+
+        <strong>Status</strong>
+
+        <br>
+
+        {% if reminder.is_active %}
+
+        Active
+
+        {% else %}
+
+        Disabled
+
+        {% endif %}
+
+    </p>
+
+    <p>
+
+        <strong>Instructions</strong>
+
+        <br>
+
+        {{ reminder.instructions }}
+
+    </p>
+
+    <div class="card-actions">
+
+        <a
+            href="{{ url_for('reminder.edit_reminder', reminder_id=reminder.id) }}">
+
+            Edit
+
+        </a>
+
+        <form
+            action="{{ url_for('reminder.remove_reminder', reminder_id=reminder.id) }}"
+            method="POST">
+
+            <button
+                type="submit">
+
+                Delete
+
+            </button>
+
+        </form>
+
+        <form
+            action="{{ url_for('reminder.toggle_reminder_status', reminder_id=reminder.id) }}"
+            method="POST">
+
+            <button
+                type="submit">
+
+                {% if reminder.is_active %}
+
+                Disable
+
+                {% else %}
+
+                Enable
+
+                {% endif %}
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="medicine-card">
+
+    <h3>
+
+        No reminders added yet.
+
+    </h3>
+
+</div>
+
+{% endif %}
+
+{% endblock %}
