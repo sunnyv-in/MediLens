@@ -34,9 +34,11 @@ def create_app():
 
     UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), "uploads")
     app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
     PROCESSED_FOLDER = os.path.join(os.path.dirname(__file__), "processed")
     app.config["PROCESSED_FOLDER"] = PROCESSED_FOLDER
+    os.makedirs(PROCESSED_FOLDER, exist_ok=True)
 
     db.init_app(app)
 
