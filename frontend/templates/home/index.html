@@ -26,17 +26,105 @@
         </a>
 
         <a href="{{ url_for('about.about') }}" class="btn btn-secondary">
+          <i class="fa-solid fa-circle-info"></i>
           Learn More
         </a>
       </div>
     </div>
 
     <div class="hero-right">
-      <div class="hero-image">
-        <i class="fa-solid fa-capsules"></i>
+      <div class="lens-visual" aria-hidden="true">
+        <svg
+          class="lens-ring"
+          viewBox="0 0 440 440"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <defs>
+            <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#14b8a6" />
+              <stop offset="100%" stop-color="#6c5ce7" />
+            </linearGradient>
+          </defs>
+          <circle
+            cx="220"
+            cy="220"
+            r="200"
+            fill="none"
+            stroke="url(#ringGrad)"
+            stroke-width="1.5"
+            stroke-dasharray="4 10"
+          />
+          <circle
+            cx="220"
+            cy="220"
+            r="160"
+            fill="none"
+            stroke="rgba(20,184,166,0.18)"
+            stroke-width="1"
+          />
+        </svg>
+
+        <span class="lens-chip lens-chip--1"
+          ><i class="fa-solid fa-pills"></i
+        ></span>
+        <span class="lens-chip lens-chip--2"
+          ><i class="fa-solid fa-brain"></i
+        ></span>
+        <span class="lens-chip lens-chip--3"
+          ><i class="fa-solid fa-shield-heart"></i
+        ></span>
+        <span class="lens-chip lens-chip--4"
+          ><i class="fa-solid fa-bell"></i
+        ></span>
+
+        <div class="scan-panel">
+          <div class="scan-panel__frame">
+            <span class="scan-panel__corner scan-panel__corner--tl"></span>
+            <span class="scan-panel__corner scan-panel__corner--tr"></span>
+            <span class="scan-panel__corner scan-panel__corner--bl"></span>
+            <span class="scan-panel__corner scan-panel__corner--br"></span>
+
+            <div class="scan-panel__stage">
+              <div class="scan-panel__raw">
+                AZITHRO... 500MG TAB<br />
+                B.NO AZ7731X EXP 11/2026<br />
+                MFD BY XXXX PHARMA...
+              </div>
+              <div class="scan-panel__clean">
+                <div class="scan-panel__row">
+                  <span>Medicine</span><strong>Azithromycin 500mg</strong>
+                </div>
+                <div class="scan-panel__row">
+                  <span>Batch</span><strong>AZ7731X</strong>
+                </div>
+                <div class="scan-panel__row">
+                  <span>Expiry</span><strong>11/2026</strong>
+                </div>
+                <div class="scan-panel__row scan-panel__row--safe">
+                  <span>Risk</span><strong>Low</strong>
+                </div>
+              </div>
+            </div>
+
+            <div class="scan-panel__line"></div>
+          </div>
+          <span class="scan-panel__tag">Live OCR + AI Pipeline</span>
+        </div>
       </div>
     </div>
   </section>
+
+  <section class="tech-strip">
+    <span class="tech-strip__label">Powered by</span>
+    <div class="tech-strip__items">
+      <span><i class="fa-solid fa-camera-retro"></i> EasyOCR</span>
+      <span><i class="fa-solid fa-brain"></i> Gemini AI</span>
+      <span><i class="fa-solid fa-eye"></i> OpenCV</span>
+      <span><i class="fa-solid fa-bolt"></i> Flask</span>
+      <span><i class="fa-solid fa-database"></i> SQLite</span>
+    </div>
+  </section>
+
   <div class="home-page">
     <!-- ================= FEATURES ================= -->
 

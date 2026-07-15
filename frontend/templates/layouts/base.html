@@ -16,6 +16,11 @@
       rel="stylesheet"
     />
 
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
     <!-- Font Awesome -->
 
     <link
@@ -58,6 +63,11 @@
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/history.css') }}"
+    />
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/about.css') }}"
     />
 
     <link
@@ -181,10 +191,12 @@
       <div class="footer-container">
         <div class="footer-brand">
           <h2><i class="fa-solid fa-capsules"></i> MediLens</h2>
-
           <p>
             AI Powered Medicine Scanner using OCR, EasyOCR, Gemini AI and Flask.
           </p>
+          <span class="footer-credit"
+            >Built by 3 AI/ML Engineering Students</span
+          >
         </div>
 
         <div class="footer-links">
@@ -197,10 +209,18 @@
 
         <div class="footer-team">
           <h4>Hackathon Team</h4>
-
-          <p><strong>Sunny</strong> — OCR & AI Pipeline</p>
-          <p><strong>Nikhil</strong> — Medicine Database</p>
-          <p><strong>Ankush</strong> — Safety & Dashboard</p>
+          <div class="team-chip">
+            <span class="team-avatar">S</span>
+            <p><strong>Sunny</strong> — OCR & AI Pipeline</p>
+          </div>
+          <div class="team-chip">
+            <span class="team-avatar">N</span>
+            <p><strong>Nikhil</strong> — Medicine Database</p>
+          </div>
+          <div class="team-chip">
+            <span class="team-avatar">A</span>
+            <p><strong>Ankush</strong> — Safety & Dashboard</p>
+          </div>
         </div>
 
         <div class="footer-tech">

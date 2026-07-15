@@ -15,31 +15,34 @@
 }
 
 /* ==========================
-   ROOT COLORS
+   ROOT COLORS — "Scan → Signal" identity
+   --primary now points at teal instead of blue, so any page
+   already using var(--primary)/var(--secondary)/etc. picks up
+   the refresh automatically without needing its own edits.
 ========================== */
 
 :root {
-  --primary: #2563eb;
+  --primary: #14b8a6;
+  --primary-light: #2dd4bf;
+  --primary-dark: #0e7c6f;
 
-  --primary-light: #3b82f6;
+  --accent-ai: #6c5ce7;
 
-  --secondary: #64748b;
+  --secondary: #56637a;
 
   --success: #22c55e;
-
   --warning: #f59e0b;
-
   --danger: #ef4444;
 
-  --dark: #1e293b;
-
-  --light: #f8fafc;
-
+  --dark: #0a0e1a;
+  --light: #f6f8fb;
   --white: #ffffff;
 
-  --border: #e5e7eb;
+  --border: #e7ecf3;
+  --shadow: 0 8px 30px rgba(10, 14, 26, 0.08);
 
-  --shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  --font-display: "Space Grotesk", "Poppins", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
 }
 
 /* ==========================
@@ -48,11 +51,8 @@
 
 body {
   font-family: "Poppins", sans-serif;
-
   background: var(--light);
-
   color: var(--dark);
-
   overflow-x: hidden;
 }
 
@@ -62,7 +62,6 @@ body {
 
 .container {
   width: min(1200px, 92%);
-
   margin: auto;
 }
 
@@ -72,7 +71,6 @@ body {
 
 a {
   text-decoration: none;
-
   color: inherit;
 }
 
@@ -82,49 +80,35 @@ a {
 
 .btn {
   display: inline-flex;
-
   align-items: center;
-
   justify-content: center;
-
   gap: 10px;
-
   padding: 14px 30px;
-
   border-radius: 12px;
-
   font-size: 16px;
-
   font-weight: 600;
-
   transition: 0.3s;
-
   cursor: pointer;
 }
 
 .btn-primary {
   background: var(--primary);
-
   color: white;
 }
 
 .btn-primary:hover {
   background: var(--primary-light);
-
   transform: translateY(-2px);
 }
 
 .btn-secondary {
   background: white;
-
   color: var(--primary);
-
   border: 2px solid var(--primary);
 }
 
 .btn-secondary:hover {
   background: var(--primary);
-
   color: white;
 }
 
@@ -138,9 +122,7 @@ section {
 
 section h2 {
   font-size: 38px;
-
   margin-bottom: 25px;
-
   text-align: center;
 }
 
@@ -150,21 +132,6 @@ section h2 {
 
 .card {
   background: white;
-
   border-radius: 18px;
-
   box-shadow: var(--shadow);
-}
-
-
-body{
-    margin:0;
-    font-family:Arial, sans-serif;
-    background:#f5f7fb;
-}
-
-.container{
-    width:90%;
-    max-width:1200px;
-    margin:30px auto;
 }

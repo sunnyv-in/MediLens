@@ -95,6 +95,9 @@ def scan():
             ranked_data
         )
 
+        print("\nMEDICINE INFO")
+        print(medicine_info)
+
         print("12")
 
         explanation = get_ai_explanation(medicine_info)

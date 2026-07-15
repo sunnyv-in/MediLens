@@ -1,5 +1,6 @@
 import os
 import json
+from PIL.ImagePalette import raw
 from google import genai
 from dotenv import load_dotenv
 from backend.services.fallback_extractor import extract_medicine_info_fallback
@@ -13,7 +14,7 @@ if not api_key:
     raise ValueError("GEMINI_API_KEY not found.")
 
 client = genai.Client(api_key=api_key)
-print("Loaded API Key:", api_key[:20])
+
 
 
 def extract_medicine_info_ai(cleaned_data, ranked_data):
@@ -29,9 +30,7 @@ def extract_medicine_info_ai(cleaned_data, ranked_data):
             all_lines.append(item["text"])
 
     combined_text = "\n".join(all_lines)
-    print("\n================ CURRENT OCR ================\n")
-    print(combined_text)
-    print("\n=============================================\n")
+    
 
     prompt = f"""
 You are an expert pharmacist and medicine identification assistant.
@@ -178,9 +177,7 @@ Return ONLY valid JSON.
                     "thinking_config": {"thinking_budget": 0}
                 }
         )
-        print("\n================ OCR SENT TO GEMINI ================\n")
-        print(combined_text)
-        print("\n====================================================\n")
+        
         raw = response.candidates[0].content.parts[0].text.strip()
 
         if not raw:
@@ -188,6 +185,8 @@ Return ONLY valid JSON.
 
         if raw.startswith("```"):
             raw = raw.replace("```json", "").replace("```", "").strip()
+        
+        
 
         return json.loads(raw)
 
