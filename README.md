@@ -1,4 +1,3 @@
-Yes. Here is the complete README.md in one go, with clearly marked image spaces/placeholders already included. You can directly copy everything below and paste it into your README.md.
 
 # 💊 MediLens
 
