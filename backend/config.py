@@ -11,7 +11,7 @@ BASE_DIR = os.path.abspath(
 
 class Config:
 
-    SECRET_KEY = "medilens-secret-key"
+    SECRET_KEY = os.getenv("SECRET_KEY", "medilens-secret-key")
 
     SQLALCHEMY_DATABASE_URI = (
         "sqlite:///" +

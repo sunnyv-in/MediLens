@@ -1,16 +1,17 @@
-# Python virtual environment
 venv/
-
-# Environment variables
 .env
 
-# Python cache
 __pycache__/
 *.pyc
 
-# User-uploaded medicine images
-backend/uploads/*
-!backend/uploads/.gitkeep
+backend/uploads/
+backend/processed/
 
-# Generated processed OCR images
-backend/processed/*
+instance/
+
+*.db
+
+.vscode/
+.idea/
+
+.DS_Store
