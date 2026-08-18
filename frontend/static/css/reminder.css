@@ -102,6 +102,69 @@
 
 }
 
+
+/* ===========================
+   Reminder Form
+=========================== */
+
+.form-card{
+
+    background:#ffffff;
+
+    padding:25px;
+
+    border-radius:12px;
+
+    box-shadow:0 4px 10px rgba(0,0,0,.08);
+
+    margin-bottom:30px;
+
+}
+
+.form-card label{
+
+    display:block;
+
+    font-weight:600;
+
+    margin-top:15px;
+
+    margin-bottom:8px;
+
+}
+
+.form-card input,
+.form-card select,
+.form-card textarea{
+
+    width:100%;
+
+    padding:10px;
+
+    border:1px solid #d1d5db;
+
+    border-radius:6px;
+
+    margin-bottom:15px;
+
+    box-sizing:border-box;
+
+}
+
+.form-card textarea{
+
+    min-height:100px;
+
+    resize:vertical;
+
+}
+
+.form-card .btn{
+
+    margin-top:10px;
+
+}
+
 @media(max-width:768px){
 
 .reminder-grid{

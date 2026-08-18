@@ -6,6 +6,7 @@ from backend.models.medicine import Medicine
 from backend.models.reminder import MedicationReminder
 from backend.services.reminder_service import reminder_status
 
+
 home_bp = Blueprint("home", __name__)
 
 

@@ -1,0 +1,149 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}
+Edit Reminder
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <h1>Edit Reminder</h1>
+
+        <p>
+
+            Update your medicine reminder.
+
+        </p>
+
+    </div>
+
+    <a
+        href="{{ url_for('reminder.reminders') }}"
+        class="btn">
+
+        ← Back
+
+    </a>
+
+</div>
+
+<div class="form-card">
+
+<form
+    action="{{ url_for('reminder.edit_reminder', reminder_id=reminder.id) }}"
+    method="POST">
+
+<label>
+
+Medicine
+
+</label>
+
+<select
+    name="medicine_id"
+    required>
+
+{% for medicine in medicines %}
+
+<option
+value="{{ medicine.id }}"
+{% if medicine.id == reminder.medicine_id %}
+selected
+{% endif %}>
+
+{{ medicine.medicine_name }}
+
+</option>
+
+{% endfor %}
+
+</select>
+
+<label>
+
+Reminder Time
+
+</label>
+
+<input
+type="time"
+name="reminder_time"
+value="{{ reminder.reminder_time.strftime('%H:%M') }}"
+required>
+
+<label>
+
+Frequency
+
+</label>
+
+<select
+name="frequency">
+
+<option
+{% if reminder.frequency=="Daily" %}
+selected
+{% endif %}>
+
+Daily
+
+</option>
+
+<option
+{% if reminder.frequency=="Twice Daily" %}
+selected
+{% endif %}>
+
+Twice Daily
+
+</option>
+
+<option
+{% if reminder.frequency=="Weekly" %}
+selected
+{% endif %}>
+
+Weekly
+
+</option>
+
+<option
+{% if reminder.frequency=="Monthly" %}
+selected
+{% endif %}>
+
+Monthly
+
+</option>
+
+</select>
+
+<label>
+
+Instructions
+
+</label>
+
+<textarea
+name="instructions">
+
+{{ reminder.instructions }}
+
+</textarea>
+
+<button
+class="btn"
+type="submit">
+
+Update Reminder
+
+</button>
+
+</form>
+
+</div>
+
+{% endblock %}

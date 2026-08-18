@@ -22,6 +22,8 @@ from backend.routes.about_routes import about_bp
 from backend.routes.scan_routes import scan_bp
 
 
+
+
 def create_app():
 
     app = Flask(
@@ -51,6 +53,7 @@ def create_app():
     app.register_blueprint(home_bp)
     app.register_blueprint(about_bp)
     app.register_blueprint(scan_bp)
+    
 
     with app.app_context():
         db.create_all()
