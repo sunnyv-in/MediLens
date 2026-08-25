@@ -1,18 +1,35 @@
-# Python virtual environment
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
 venv/
+.venv/
 
 # Environment variables
 .env
+.env.*
 
-# Python cache
-__pycache__/
-*.pyc
+# Database
+database/*.db
+database/*.sqlite
+database/*.sqlite3
+instance/
 
-# User-uploaded medicine images
-backend/uploads/*
-!backend/uploads/.gitkeep
-
-# Generated processed OCR images
+# Uploaded files
+backend/uploads/
+backend/processed/
 backend/processed/*
 
-database
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
