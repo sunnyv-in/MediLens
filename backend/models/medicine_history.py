@@ -7,33 +7,20 @@ class MedicineHistory(db.Model):
 
     __tablename__ = "medicine_history"
 
-    id = db.Column(
-        db.Integer,
-        primary_key=True
-    )
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
 
-    medicine_name = db.Column(
-        db.String(120),
-        nullable=False
-    )
+    guest_id = db.Column(db.String(36), nullable=True, index=True)
 
-    scan_time = db.Column(
-        db.DateTime,
-        default=datetime.utcnow
-    )
+    id = db.Column(db.Integer, primary_key=True)
 
-    expiry_date = db.Column(
-        db.String(30)
-    )
+    medicine_name = db.Column(db.String(120), nullable=False)
 
-    manufacturer = db.Column(
-        db.String(120)
-    )
+    scan_time = db.Column(db.DateTime, default=datetime.utcnow)
 
-    counterfeit_score = db.Column(
-        db.Integer
-    )
+    expiry_date = db.Column(db.String(30))
 
-    image_filename = db.Column(
-        db.String(255)
-    )
+    manufacturer = db.Column(db.String(120))
+
+    counterfeit_score = db.Column(db.Integer)
+
+    image_filename = db.Column(db.String(255))

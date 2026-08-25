@@ -1,0 +1,489 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}
+My Account | MediLens
+{% endblock %}
+
+
+{% block css %}
+
+<style>
+    .account-page {
+        max-width: 1000px;
+        margin: 50px auto;
+        padding: 20px;
+    }
+
+    .account-header {
+        margin-bottom: 30px;
+    }
+
+    .account-header h1 {
+        font-size: 36px;
+        margin-bottom: 8px;
+    }
+
+    .account-header p {
+        opacity: 0.7;
+    }
+
+
+    /* PROFILE */
+
+    .profile-card {
+
+        display: flex;
+        align-items: center;
+        gap: 25px;
+
+        padding: 30px;
+
+        margin-bottom: 25px;
+
+        border-radius: 20px;
+
+        background: rgba(255, 255, 255, 0.05);
+
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+
+    .account-avatar {
+
+        width: 85px;
+        height: 85px;
+
+        border-radius: 50%;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        font-size: 34px;
+        font-weight: 700;
+
+        color: white;
+
+        background: linear-gradient(135deg,
+                #2563eb,
+                #6366f1);
+    }
+
+
+    .profile-info h2 {
+        margin: 0 0 8px;
+    }
+
+    .profile-info p {
+        margin: 5px 0;
+        opacity: 0.7;
+    }
+
+
+    /* SECTIONS */
+
+    .account-section {
+
+        margin-top: 25px;
+
+        padding: 25px;
+
+        border-radius: 20px;
+
+        background: rgba(255, 255, 255, 0.04);
+
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+
+    .account-section h2 {
+
+        margin-top: 0;
+        margin-bottom: 20px;
+
+    }
+
+
+    /* OPTIONS */
+
+    .account-options {
+
+        display: grid;
+
+        grid-template-columns:
+            repeat(auto-fit, minmax(220px, 1fr));
+
+        gap: 15px;
+    }
+
+
+    .account-option {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 15px;
+
+        padding: 18px;
+
+        border-radius: 14px;
+
+        text-decoration: none;
+
+        color: inherit;
+
+        background: rgba(255, 255, 255, 0.04);
+
+        border: 1px solid rgba(255, 255, 255, 0.08);
+
+        transition: 0.2s ease;
+    }
+
+
+    .account-option:hover {
+
+        transform: translateY(-2px);
+
+        border-color: #2563eb;
+
+    }
+
+
+    .option-icon {
+
+        width: 42px;
+        height: 42px;
+
+        border-radius: 10px;
+
+        display: flex;
+
+        align-items: center;
+        justify-content: center;
+
+        background: rgba(37, 99, 235, 0.15);
+
+        color: #4f8cff;
+
+    }
+
+
+    .option-content strong {
+
+        display: block;
+
+        margin-bottom: 4px;
+
+    }
+
+
+    .option-content span {
+
+        font-size: 13px;
+
+        opacity: 0.6;
+
+    }
+
+
+    /* LOGOUT */
+
+    .logout-option {
+
+        color: #ef4444;
+    }
+
+
+    .logout-option .option-icon {
+
+        background: rgba(239, 68, 68, 0.12);
+
+        color: #ef4444;
+    }
+
+
+    /* MOBILE */
+
+    @media (max-width: 600px) {
+
+        .profile-card {
+
+            flex-direction: column;
+
+            text-align: center;
+        }
+
+        .account-options {
+
+            grid-template-columns: 1fr;
+        }
+
+    }
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="account-page">
+
+
+    <!-- HEADER -->
+
+    <div class="account-header">
+
+        <h1>
+            My Account
+        </h1>
+
+        <p>
+            Manage your MediLens profile, security and medicine data.
+        </p>
+
+    </div>
+
+
+    <!-- PROFILE -->
+
+    <div class="profile-card">
+
+        <div class="account-avatar">
+
+            {{ user.name[0]|upper }}
+
+        </div>
+
+
+        <div class="profile-info">
+
+            <h2>
+                {{ user.name }}
+            </h2>
+
+            <p>
+                {{ user.email }}
+            </p>
+
+            <p>
+                <i class="fa-solid fa-circle-check"></i>
+                Registered MediLens Account
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- SECURITY -->
+
+    <div class="account-section">
+
+        <h2>
+            <i class="fa-solid fa-shield-halved"></i>
+            Security
+        </h2>
+
+
+        <div class="account-options">
+
+            <a href="{{ url_for('auth.change_password') }}" class="account-option">
+
+                <div class="option-icon">
+
+                    <i class="fa-solid fa-key"></i>
+
+                </div>
+
+                <div class="option-content">
+
+                    <strong>
+                        Change Password
+                    </strong>
+
+                    <span>
+                        Update your account password
+                    </span>
+
+                </div>
+
+            </a>
+
+
+            <a href="{{ url_for('auth.forgot_password') }}" class="account-option">
+
+                <div class="option-icon">
+
+                    <i class="fa-solid fa-envelope"></i>
+
+                </div>
+
+                <div class="option-content">
+
+                    <strong>
+                        Reset Password
+                    </strong>
+
+                    <span>
+                        Recover access to your account
+                    </span>
+
+                </div>
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- MEDICINE DATA -->
+
+    <div class="account-section">
+
+        <h2>
+            <i class="fa-solid fa-pills"></i>
+            My Medicine Data
+        </h2>
+
+
+        <div class="account-options">
+
+            <a href="{{ url_for('medicine_shelf.medicine_shelf') }}" class="account-option">
+
+                <div class="option-icon">
+
+                    <i class="fa-solid fa-capsules"></i>
+
+                </div>
+
+                <div class="option-content">
+
+                    <strong>
+                        Medicine Shelf
+                    </strong>
+
+                    <span>
+                        View your saved medicines
+                    </span>
+
+                </div>
+
+            </a>
+
+
+            <a href="{{ url_for('medicine_history.medicine_history') }}" class="account-option">
+
+                <div class="option-icon">
+
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+
+                </div>
+
+                <div class="option-content">
+
+                    <strong>
+                        Scan History
+                    </strong>
+
+                    <span>
+                        View previous medicine scans
+                    </span>
+
+                </div>
+
+            </a>
+
+
+            <a href="{{ url_for('reminder.reminders') }}" class="account-option">
+
+                <div class="option-icon">
+
+                    <i class="fa-solid fa-bell"></i>
+
+                </div>
+
+                <div class="option-content">
+
+                    <strong>
+                        Reminders
+                    </strong>
+
+                    <span>
+                        Manage medication reminders
+                    </span>
+
+                </div>
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- ACCOUNT -->
+
+    <div class="account-section">
+
+        <h2>
+            <i class="fa-solid fa-user-gear"></i>
+            Account
+        </h2>
+
+
+        <div class="account-options">
+
+            <a href="{{ url_for('home.home') }}" class="account-option">
+
+                <div class="option-icon">
+
+                    <i class="fa-solid fa-house"></i>
+
+                </div>
+
+                <div class="option-content">
+
+                    <strong>
+                        Back to Home
+                    </strong>
+
+                    <span>
+                        Return to MediLens home
+                    </span>
+
+                </div>
+
+            </a>
+
+
+            <a href="{{ url_for('auth.logout') }}" class="account-option logout-option">
+
+                <div class="option-icon">
+
+                    <i class="fa-solid fa-right-from-bracket"></i>
+
+                </div>
+
+                <div class="option-content">
+
+                    <strong>
+                        Logout
+                    </strong>
+
+                    <span>
+                        Sign out of your account
+                    </span>
+
+                </div>
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

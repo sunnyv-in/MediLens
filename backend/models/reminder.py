@@ -7,37 +7,20 @@ class MedicationReminder(db.Model):
 
     __tablename__ = "medication_reminders"
 
-    id = db.Column(
-        db.Integer,
-        primary_key=True
-    )
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
 
-    medicine_id = db.Column(
-        db.Integer,
-        db.ForeignKey("medicines.id"),
-        nullable=False
-    )
+    guest_id = db.Column(db.String(36), nullable=True, index=True)
 
-    reminder_time = db.Column(
-        db.Time,
-        nullable=False
-    )
+    id = db.Column(db.Integer, primary_key=True)
 
-    frequency = db.Column(
-        db.String(50),
-        nullable=False
-    )
+    medicine_id = db.Column(db.Integer, db.ForeignKey("medicines.id"), nullable=False)
 
-    instructions = db.Column(
-        db.Text
-    )
+    reminder_time = db.Column(db.Time, nullable=False)
 
-    is_active = db.Column(
-        db.Boolean,
-        default=True
-    )
+    frequency = db.Column(db.String(50), nullable=False)
 
-    medicine = db.relationship(
-        "Medicine",
-        backref="reminders"
-    )
+    instructions = db.Column(db.Text)
+
+    is_active = db.Column(db.Boolean, default=True)
+
+    medicine = db.relationship("Medicine", backref="reminders")
