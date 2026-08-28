@@ -140,6 +140,284 @@ def extract_text(image_paths):
 
     return detections
 
+def _is_ocr_sufficient(detections):
+    """
+    Conservative medicine-specific OCR quality check.
+
+    This function only decides whether the current OCR
+    result is strong enough to stop additional OCR passes.
+
+    It does NOT identify or modify medicine information.
+
+    Existing OCR cleaning, ranking, Gemini extraction,
+    and database logic remain unchanged.
+    """
+
+    if not detections:
+        return False
+
+    # --------------------------------------------------
+    # 1. Keep reasonably confident OCR detections
+    # --------------------------------------------------
+
+    useful = [
+        item
+        for item in detections
+        if item["confidence"] >= 0.45
+    ]
+
+    if len(useful) < 3:
+        return False
+
+    # --------------------------------------------------
+    # 2. Ignore obvious non-medicine text
+    # --------------------------------------------------
+
+    ignored_terms = [
+        "CAUTION",
+        "WARNING",
+        "STORE",
+        "KEEP",
+        "CHILDREN",
+        "PRESCRIPTION",
+        "PHYSICIAN",
+        "REGISTERED",
+        "SCHEDULE",
+        "READ",
+        "DISTRICT",
+        "ROAD",
+        "PHONE",
+        "LIC",
+        "LICENSE",
+        "MFG",
+        "MFD",
+        "EXP",
+        "EXPIRY",
+        "BATCH",
+        "LOT"
+    ]
+
+    medicine_candidates = []
+
+    for item in useful:
+
+        text = item["text"].strip()
+        upper = text.upper()
+
+        # Ignore very short fragments
+        if len(text) < 5:
+            continue
+
+        # --------------------------------------------------
+        # Ignore lines that contain only a strength/unit
+        # --------------------------------------------------
+
+        strength_only = re.fullmatch(
+            r"\s*\d+(?:\.\d+)?\s*(MG|MCG|ML|GM|G|IU)\s*",
+            upper
+        )
+
+        if strength_only:
+            continue
+
+        # --------------------------------------------------
+        # Require meaningful alphabetic content
+        # --------------------------------------------------
+
+        alphabetic_count = sum(
+            character.isalpha()
+            for character in text
+        )
+
+        if alphabetic_count < 3:
+            continue
+
+        # Ignore very short all-uppercase fragments
+        # that are unlikely to be a medicine/brand name.
+        if len(text) <= 4 and text.isupper():
+            continue
+
+        # --------------------------------------------------
+        # Ignore obvious instructions, warnings,
+        # addresses and manufacturing information.
+        # --------------------------------------------------
+
+        if any(
+            term in upper
+            for term in ignored_terms
+        ):
+            continue
+
+        medicine_candidates.append(item)
+
+    # --------------------------------------------------
+    # 3. We need at least one plausible medicine-like line
+    # --------------------------------------------------
+
+    if not medicine_candidates:
+        return False
+
+    # --------------------------------------------------
+    # 4. Find strongest medicine-like candidate
+    # --------------------------------------------------
+
+    best_candidate = max(
+        medicine_candidates,
+        key=lambda item: item["confidence"]
+    )
+
+    best_confidence = best_candidate["confidence"]
+
+    # --------------------------------------------------
+    # 5. Detect medicine strength
+    # --------------------------------------------------
+
+    combined_text = " ".join(
+        item["text"]
+        for item in useful
+    ).upper()
+
+    has_strength = bool(
+        re.search(
+            r"\b\d+(?:\.\d+)?\s*(MG|MCG|ML|GM|G|IU)\b",
+            combined_text
+        )
+    )
+
+    # --------------------------------------------------
+    # 6. Detect pharmaceutical/package terminology
+    # --------------------------------------------------
+
+    pharmaceutical_keywords = [
+        "TABLET",
+        "TABLETS",
+        "CAPSULE",
+        "CAPSULES",
+        "SYRUP",
+        "INJECTION",
+        "CREAM",
+        "OINTMENT",
+        "GEL",
+        "PHARMA",
+        "PHARMACEUTICAL",
+        "LABORATORIES",
+        "LIMITED",
+        "LTD"
+    ]
+
+    pharmaceutical_keyword_count = sum(
+        1
+        for keyword in pharmaceutical_keywords
+        if keyword in combined_text
+    )
+
+    # --------------------------------------------------
+    # 7. Strong stopping condition
+    #
+    # A medicine-like line must have reasonable
+    # confidence AND either a strength or pharmaceutical
+    # context.
+    # --------------------------------------------------
+
+    if best_confidence >= 0.65:
+
+        if has_strength:
+            return True
+
+        if pharmaceutical_keyword_count >= 1:
+            return True
+
+    # --------------------------------------------------
+    # 8. Very strong OCR can stop even without a strength
+    #
+    # Require multiple pharmaceutical signals.
+    # --------------------------------------------------
+
+    if (
+        best_confidence >= 0.80
+        and pharmaceutical_keyword_count >= 2
+    ):
+        return True
+
+    # --------------------------------------------------
+    # 9. Otherwise continue to fallback OCR
+    # --------------------------------------------------
+
+    return False
+
+def extract_text_fast(image_paths):
+    """
+    Fast OCR path.
+
+    Runs OCR on the primary image first.
+    If the result appears insufficient, progressively
+    processes additional variants.
+
+    IMPORTANT:
+    The returned detection format is identical to
+    extract_text(), so downstream OCR cleaning,
+    ranking, Gemini extraction, and database logic
+    remain unchanged.
+    """
+
+    if not image_paths:
+        return []
+
+    detections = []
+
+    # --------------------------------------------------
+    # 1. Primary OCR pass
+    # --------------------------------------------------
+
+    primary_path = image_paths[0]
+
+    if DEBUG:
+        print("\nFAST OCR - Primary pass")
+        print(f"Image: {os.path.basename(primary_path)}")
+
+    primary_detections = _read_single_image(primary_path)
+
+    detections.extend(primary_detections)
+
+    # --------------------------------------------------
+    # 2. Check whether the primary OCR is useful
+    # --------------------------------------------------
+
+    if _is_ocr_sufficient(primary_detections):
+
+        if DEBUG:
+            print("FAST OCR - Primary result sufficient.")
+            print("FAST OCR - Skipping fallback images.")
+
+        return detections
+
+    # --------------------------------------------------
+    # 3. Fallback OCR
+    # --------------------------------------------------
+
+    if DEBUG:
+        print("FAST OCR - Primary result insufficient.")
+        print("FAST OCR - Running fallback OCR.")
+
+    for path in image_paths[1:]:
+
+        fallback_detections = _read_single_image(path)
+
+        detections.extend(fallback_detections)
+
+        # Stop early if enough useful OCR has been obtained
+        if _is_ocr_sufficient(detections):
+
+            if DEBUG:
+                print(
+                    "FAST OCR - Sufficient OCR obtained from:",
+                    os.path.basename(path)
+                )
+
+            break
+
+    return detections
+
 def clean_ocr_text(detections):
 
     groups = []

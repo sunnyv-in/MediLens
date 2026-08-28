@@ -159,8 +159,11 @@ uploadArea.addEventListener("drop", function (e) {
 // ANALYZE BUTTON
 // ======================================================
 
-analyzeBtn.addEventListener("click", function () {
+analyzeBtn.addEventListener("click", function (event) {
   console.log("STEP 1");
+
+  // Prevent the browser's default form submission.
+  event.preventDefault();
 
   if (imageInput.files.length === 0) {
     console.log("NO IMAGE");
@@ -169,12 +172,15 @@ analyzeBtn.addEventListener("click", function () {
 
   console.log("STEP 2");
 
-  loadingOverlay.style.display = "flex";
+  // Prevent accidental double-click submissions.
+  analyzeBtn.disabled = true;
 
   console.log("STEP 3");
 
-  setTimeout(function () {
-    console.log("STEP 4");
-    scanForm.submit();
-  }, 3000);
+  loadingOverlay.style.display = "flex";
+
+  console.log("STEP 4");
+
+  // Submit only once.
+  scanForm.submit();
 });
