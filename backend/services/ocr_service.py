@@ -4,6 +4,9 @@ import re
 import os
 
 import torch
+import subprocess
+import json
+
 
 USE_GPU = torch.cuda.is_available()
 
@@ -27,6 +30,27 @@ except Exception:
 
 CONFIDENCE_THRESHOLD = 0.30
 DEBUG = False
+PADDLE_WORKER = os.path.abspath(
+    os.path.join(
+        os.path.dirname(__file__),
+        "..",
+        "workers",
+        "paddle_worker.py"
+    )
+)
+
+PADDLE_PYTHON = os.path.abspath(
+    os.path.join(
+        os.path.dirname(__file__),
+        "..",
+        "..",
+        "experiments",
+        "paddleocr",
+        "paddle_venv",
+        "Scripts",
+        "python.exe"
+    )
+)
 
 
 IMPORTANT_KEYWORDS = [
@@ -128,6 +152,122 @@ def _read_single_image(path):
         print(f"{os.path.basename(path)} -> {len(detections)} detections")
 
     return detections
+
+# ============================================================
+# PERSISTENT PADDLEOCR WORKER
+# ============================================================
+
+_paddle_process = None
+
+
+def _get_paddle_worker():
+
+    global _paddle_process
+
+    if _paddle_process is not None:
+        if _paddle_process.poll() is None:
+            return _paddle_process
+
+    paddle_root = os.path.abspath(
+        os.path.join(
+            os.path.dirname(__file__),
+            "..",
+            "..",
+            "experiments",
+            "paddleocr",
+            "paddle_venv"
+        )
+    )
+
+    paddle_cuda_bin = os.path.join(
+        paddle_root,
+        "Lib",
+        "site-packages",
+        "nvidia",
+        "cu13",
+        "bin",
+        "x86_64"
+    )
+
+    worker_env = os.environ.copy()
+
+    worker_env["PATH"] = (
+        paddle_cuda_bin
+        + os.pathsep
+        + worker_env.get("PATH", "")
+    )
+
+    _paddle_process = subprocess.Popen(
+        [
+            PADDLE_PYTHON,
+            PADDLE_WORKER
+        ],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        bufsize=1,
+        env=worker_env
+    )
+
+    return _paddle_process
+
+
+def _read_paddle_image(path):
+
+    try:
+
+        worker = _get_paddle_worker()
+
+        request = json.dumps({
+            "image_path": path
+        })
+
+        worker.stdin.write(
+            request + "\n"
+        )
+
+        worker.stdin.flush()
+
+        response_line = worker.stdout.readline()
+
+        if not response_line:
+
+            print(
+                "PaddleOCR worker returned no response."
+            )
+
+            return []
+
+        data = json.loads(
+            response_line
+        )
+
+        if not data.get(
+            "success",
+            False
+        ):
+
+            print(
+                "PaddleOCR error:",
+                data.get("error")
+            )
+
+            return []
+
+        return data.get(
+            "detections",
+            []
+        )
+
+    except Exception as e:
+
+        print(
+            "PaddleOCR bridge error:",
+            e
+        )
+
+        return []
 
 
 def extract_text(image_paths):
@@ -347,76 +487,115 @@ def _is_ocr_sufficient(detections):
 
 def extract_text_fast(image_paths):
     """
-    Fast OCR path.
+    FAST OCR PIPELINE
 
-    Runs OCR on the primary image first.
-    If the result appears insufficient, progressively
-    processes additional variants.
+    Primary:
+        PaddleOCR
 
-    IMPORTANT:
-    The returned detection format is identical to
-    extract_text(), so downstream OCR cleaning,
-    ranking, Gemini extraction, and database logic
-    remain unchanged.
+    Fallback:
+        Existing EasyOCR pipeline
+
+    Returns:
+        List of detections in the existing MediLens format.
     """
 
-    if not image_paths:
-        return []
-
-    detections = []
+    print("\nFAST OCR - Starting PaddleOCR primary pass")
 
     # --------------------------------------------------
-    # 1. Primary OCR pass
+    # PADDLEOCR PRIMARY
     # --------------------------------------------------
 
     primary_path = image_paths[0]
 
-    if DEBUG:
-        print("\nFAST OCR - Primary pass")
-        print(f"Image: {os.path.basename(primary_path)}")
+    print(
+        f"FAST OCR - PaddleOCR primary image: "
+        f"{os.path.basename(primary_path)}"
+    )
 
-    primary_detections = _read_single_image(primary_path)
+    paddle_detections = _read_paddle_image(
+        primary_path
+    )
 
-    detections.extend(primary_detections)
-
-    # --------------------------------------------------
-    # 2. Check whether the primary OCR is useful
-    # --------------------------------------------------
-
-    if _is_ocr_sufficient(primary_detections):
-
-        if DEBUG:
-            print("FAST OCR - Primary result sufficient.")
-            print("FAST OCR - Skipping fallback images.")
-
-        return detections
+    print(
+        f"FAST OCR - PaddleOCR detections: "
+        f"{len(paddle_detections)}"
+    )
 
     # --------------------------------------------------
-    # 3. Fallback OCR
+    # CHECK WHETHER PADDLEOCR RESULT IS SUFFICIENT
     # --------------------------------------------------
 
-    if DEBUG:
-        print("FAST OCR - Primary result insufficient.")
-        print("FAST OCR - Running fallback OCR.")
+    if _is_ocr_sufficient(
+        paddle_detections
+    ):
 
-    for path in image_paths[1:]:
+        print(
+            "FAST OCR - PaddleOCR result sufficient."
+        )
 
-        fallback_detections = _read_single_image(path)
+        return paddle_detections
 
-        detections.extend(fallback_detections)
+    # --------------------------------------------------
+    # PADDLEOCR RESULT INSUFFICIENT
+    # --------------------------------------------------
 
-        # Stop early if enough useful OCR has been obtained
-        if _is_ocr_sufficient(detections):
+    print(
+        "FAST OCR - PaddleOCR result insufficient."
+    )
 
-            if DEBUG:
-                print(
-                    "FAST OCR - Sufficient OCR obtained from:",
-                    os.path.basename(path)
-                )
+    print(
+        "FAST OCR - Running EasyOCR fallback."
+    )
 
-            break
+    # --------------------------------------------------
+    # EXISTING EASYOCR FALLBACK
+    # --------------------------------------------------
 
-    return detections
+    fallback_detections = []
+
+    for path in image_paths:
+
+        detections = _read_single_image(
+            path
+        )
+
+        fallback_detections.extend(
+            detections
+        )
+
+    # --------------------------------------------------
+    # COMBINE PADDLE + EASYOCR
+    # --------------------------------------------------
+
+    combined = (
+        paddle_detections
+        + fallback_detections
+    )
+
+    print(
+        f"FAST OCR - Combined detections: "
+        f"{len(combined)}"
+    )
+
+    # --------------------------------------------------
+    # FINAL SUFFICIENCY CHECK
+    # --------------------------------------------------
+
+    if _is_ocr_sufficient(
+        combined
+    ):
+
+        print(
+            "FAST OCR - Sufficient OCR obtained."
+        )
+
+        return combined
+
+    print(
+        "FAST OCR - Returning all available detections."
+    )
+
+    return combined
 
 def clean_ocr_text(detections):
 

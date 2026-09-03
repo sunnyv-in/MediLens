@@ -2,6 +2,7 @@ import os
 import time
 from backend.services.medicine_service import save_medicine
 
+
 from flask import (
     Blueprint,
     render_template,
@@ -106,7 +107,7 @@ def scan():
         t2 = time.perf_counter()
 
         print(
-            f"TIME - EasyOCR (fast/fallback): "
+            f"TIME - Fast OCR (PaddleOCR primary / EasyOCR fallback): "
             f"{t2 - t1:.2f}s"
         )
 

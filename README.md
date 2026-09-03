@@ -1,21 +1,21 @@
-![Python](https://img.shields.io/badge/Python-3.12+-blue?logo=python)
+![Python](https://img.shields.io/badge/Python-3.13+-blue?logo=python)
 ![Flask](https://img.shields.io/badge/Flask-3.x-black?logo=flask)
+![PaddleOCR](https://img.shields.io/badge/OCR-PaddleOCR-orange)
 ![EasyOCR](https://img.shields.io/badge/OCR-EasyOCR-green)
 ![Gemini AI](https://img.shields.io/badge/AI-Gemini-blueviolet)
+![OpenCV](https://img.shields.io/badge/Image%20Processing-OpenCV-red?logo=opencv)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 
 # 💊 MediLens
 
 <p align="center">
 
-<!-- Replace this with your logo -->
-
 <img src="assets/logo.png" width="180">
 
 </p>
 
 <h3 align="center">
-AI-Powered Medicine Scanner using EasyOCR, OpenCV & Gemini AI
+AI-Powered Medicine Scanner using PaddleOCR, EasyOCR, OpenCV & Gemini AI
 </h3>
 
 <p align="center">
@@ -30,9 +30,13 @@ Scan • Identify • Explain • Verify
 
 MediLens is an AI-powered medicine analysis web application that helps users scan medicine packaging using an image and automatically extract useful medicine information.
 
-Using **EasyOCR**, **OpenCV**, and **Google Gemini AI**, MediLens can identify medicines, explain them in simple language, analyze counterfeit risks, organize medicine records, and help users manage their medications.
+MediLens combines **PaddleOCR**, **EasyOCR**, **OpenCV**, and **Google Gemini AI** to analyze medicine packaging and provide structured medicine information, AI-generated explanations, and counterfeit-risk analysis.
+
+The system uses **PaddleOCR as the primary OCR engine** and automatically falls back to **EasyOCR** when the primary OCR result is insufficient.
 
 This project was built as a hackathon solution to make medicine information more accessible, understandable, and safer for everyone.
+
+> ⚠️ **Disclaimer:** MediLens is an educational and hackathon project. Its results should not be considered a substitute for professional medical advice, diagnosis, or treatment.
 
 ---
 
@@ -40,16 +44,20 @@ This project was built as a hackathon solution to make medicine information more
 
 ## 🔍 AI Medicine Scanner
 
-- Upload medicine image
-- Automatic OCR extraction
-- Intelligent preprocessing
-- High accuracy medicine recognition
+- Upload medicine images
+- Drag & drop image upload
+- Camera-based image capture
+- Automatic image preprocessing
+- PaddleOCR primary text extraction
+- EasyOCR fallback OCR
+- OCR text cleaning and ranking
+- AI-powered medicine recognition
 
 ---
 
 ## 💊 Medicine Information
 
-Extracts:
+MediLens can extract and structure information such as:
 
 - Brand Name
 - Generic Name
@@ -68,47 +76,54 @@ Extracts:
 
 ## 🤖 Gemini AI Medicine Explanation
 
-Generates easy-to-understand explanations including:
+Gemini AI generates easy-to-understand medicine information including:
 
 - What the medicine is
 - Uses
 - How to take it
-- Side Effects
+- Common side effects
 - Precautions
-- Storage
-- Important Notes
+- Storage information
+- Important notes
 
 ---
 
 ## 🛡 Counterfeit Risk Analysis
 
-Automatically checks
+MediLens performs packaging-level validation using available medicine information.
 
+It checks signals such as:
+
+- Medicine name detected
 - Manufacturer detected
-- Batch number validity
+- Medicine strength detected
+- Batch number format
 - Manufacturing date
 - Expiry date
-- Packaging consistency
-- Overall counterfeit risk score
+- Manufacturing/expiry date consistency
+- Packaging information consistency
+- Overall risk score
 - Confidence level
+
+> **Important:** The counterfeit analysis provides a risk assessment based on the available packaging information. It does not prove that a medicine is genuine or counterfeit.
 
 ---
 
 ## 📚 Medicine Shelf
 
-Save medicines for future reference.
+Save medicines for future reference and organize scanned medicine records.
 
 ---
 
 ## 📜 Medicine History
 
-Track previously scanned medicines.
+Keep track of previously scanned medicines and access previous analysis results.
 
 ---
 
 ## ⏰ Medication Reminders
 
-Create reminders so users never miss a dose.
+Create medication reminders to help users remember scheduled doses.
 
 ---
 
@@ -116,69 +131,76 @@ Create reminders so users never miss a dose.
 
 ## 🏠 Home Page
 
-![Home](docs/images/home.png)
+![MediLens Home Page](docs/images/home.png)
 
 ---
 
 ## 📷 Medicine Scanner
 
-![Scanner](docs/images/scanner.png)
+![Medicine Scanner](docs/images/scanner.png)
+
+---
+
+## 🖼 Image Preview
+
+![Image Preview](docs/images/image-preview.png)
+
+---
+
+## 📋 Image Information
+
+![Image Information](docs/images/image-information.png)
+
+---
+
+## 🔄 Medicine Analysis
+
+![Medicine Analysis](docs/images/analysis.png)
 
 ---
 
 ## 📊 Analysis Result
 
-![Result](docs/images/result.png)
+![Medicine Analysis Result](docs/images/result.png)
 
 ---
 
-## 🤖 AI Explanation
+## 🤖 Gemini AI Explanation
 
-![AI Explanation](docs/images/ai-explanation.png)
-
----
-
-## 🛡 Counterfeit Analysis
-
-![Counterfeit](docs/images/counterfeit.png)
+![Gemini AI Explanation](docs/images/ai-explanation.png)
 
 ---
 
-## 📚 Medicine Shelf
+## 🛡 Counterfeit Risk Analysis
 
-![Shelf](docs/images/shelf.png)
-
----
-
-## ℹ About Page
-
-![About](docs/images/about.png)
+![Counterfeit Risk Analysis](docs/images/counterfeit.png)
 
 ---
 
 # 🛠 Built With
 
-### Backend
+## Backend
 
 - Python
 - Flask
 - SQLAlchemy
 
-### AI
+## OCR & AI
 
-- Google Gemini AI
+- PaddleOCR
 - EasyOCR
+- Google Gemini AI
 
-### Image Processing
+## Image Processing
 
 - OpenCV
 - Pillow
 
-### Database
+## Database
 
 - SQLite
 
-### Frontend
+## Frontend
 
 - HTML5
 - CSS3
@@ -186,45 +208,53 @@ Create reminders so users never miss a dose.
 
 ---
 
-# 📂 Project Structure
+# 🧠 OCR Architecture
+
+MediLens uses a two-stage OCR pipeline.
 
 ```text
-MediLens
-│
-├── assets/
-│
-├── backend/
-│   ├── models/
-│   ├── routes/
-│   ├── services/
-│   ├── uploads/
-│   ├── processed/
-│   ├── app.py
-│   └── config.py
-│
-├── database/
-│
-├── docs/
-│   └── images/
-│
-├── frontend/
-│   ├── static/
-│   └── templates/
-│
-├── .env.example
-├── .gitignore
-├── LICENSE
-├── Procfile
-├── README.md
-├── requirements.txt
-└── run.py
-```
+                    Medicine Image
+                          │
+                          ▼
+                  OpenCV Preprocessing
+                          │
+                          ▼
+                     PaddleOCR
+                    Primary OCR
+                          │
+                          ▼
+                Is OCR Result Sufficient?
+                     /            \
+                   YES             NO
+                    │               │
+                    │               ▼
+                    │          EasyOCR
+                    │          Fallback OCR
+                    │               │
+                    └───────┬───────┘
+                            ▼
+                    OCR Text Cleaning
+                            │
+                            ▼
+                     OCR Line Ranking
+                            │
+                            ▼
+                     Gemini AI Analysis
+                            │
+                            ▼
+                  Structured Medicine Data
+                            │
+                            ▼
+                  Counterfeit Risk Analysis
+                            │
+                            ▼
+                       Final Result
+````
 
----
 
-# ⚙ Installation
+# ⚙️ Installation
 
-## Clone Repository
+## 1. Clone Repository
 
 ```bash
 git clone https://github.com/YOUR_USERNAME/MediLens.git
@@ -232,7 +262,7 @@ git clone https://github.com/YOUR_USERNAME/MediLens.git
 
 ---
 
-## Move into Project
+## 2. Move into Project
 
 ```bash
 cd MediLens
@@ -240,7 +270,7 @@ cd MediLens
 
 ---
 
-## Create Virtual Environment
+## 3. Create Virtual Environment
 
 ### Windows
 
@@ -256,11 +286,11 @@ python3 -m venv venv
 
 ---
 
-## Activate Virtual Environment
+## 4. Activate Virtual Environment
 
-### Windows
+### Windows PowerShell
 
-```bash
+```powershell
 venv\Scripts\activate
 ```
 
@@ -272,7 +302,7 @@ source venv/bin/activate
 
 ---
 
-## Install Dependencies
+## 5. Install MediLens Dependencies
 
 ```bash
 pip install -r requirements.txt
@@ -280,15 +310,49 @@ pip install -r requirements.txt
 
 ---
 
-## Create Environment File
+# 🔧 PaddleOCR Setup
 
-Create a file named
+MediLens uses **PaddleOCR as the primary OCR engine**.
 
+The PaddleOCR worker is located at:
+
+```text
+backend/workers/paddle_worker.py
 ```
+
+The worker runs separately from the main Flask environment.
+
+The tested development environment currently uses:
+
+```text
+Python             3.13.15
+PaddleOCR          3.7.0
+PaddlePaddle-GPU   3.3.1
+```
+
+The local PaddleOCR virtual environment is intentionally **not included in the Git repository**.
+
+Detailed PaddleOCR setup information is available here:
+
+```text
+docs/paddleocr-setup.md
+```
+
+> **Development note:** The currently tested PaddleOCR environment is a local GPU environment. Production deployment will use a reproducible Linux/Docker GPU environment rather than relying on a developer's local virtual environment.
+
+---
+
+# 🔐 Environment Variables
+
+Create a file named:
+
+```text
 .env
 ```
 
-Copy the following:
+in the project root.
+
+Add:
 
 ```env
 GEMINI_API_KEY=YOUR_GEMINI_API_KEY
@@ -298,19 +362,23 @@ SECRET_KEY=YOUR_SECRET_KEY
 DATABASE_URL=sqlite:///database/medilens.db
 ```
 
+### Important
+
+Never commit your `.env` file or API keys to GitHub.
+
 ---
 
-## Run Application
+# ▶️ Run Application
+
+Start MediLens with:
 
 ```bash
 python run.py
 ```
 
----
+The application will be available at:
 
-Visit
-
-```
+```text
 http://127.0.0.1:5000
 ```
 
@@ -318,39 +386,131 @@ http://127.0.0.1:5000
 
 # 🧠 How It Works
 
-1. User uploads medicine image.
+### 1. Image Upload
 
-2. OpenCV preprocesses the image.
+The user uploads a medicine package image or captures an image using the camera.
 
-3. EasyOCR extracts text.
+### 2. Image Preprocessing
 
-4. OCR results are cleaned and ranked.
+OpenCV prepares the image for OCR through preprocessing operations.
 
-5. Gemini AI extracts structured medicine information.
+### 3. Primary OCR
 
-6. Gemini AI generates medicine explanation.
+PaddleOCR analyzes the primary image and extracts visible text.
 
-7. Counterfeit Analyzer validates packaging information.
+### 4. OCR Sufficiency Check
 
-8. Medicine is saved into local database.
+MediLens evaluates whether the PaddleOCR result contains enough useful information.
 
-9. Results are displayed to the user.
+### 5. OCR Fallback
+
+If the PaddleOCR result is insufficient, EasyOCR is used as the fallback OCR engine.
+
+### 6. OCR Cleaning
+
+Detected text is cleaned, deduplicated, and normalized.
+
+### 7. OCR Ranking
+
+Important OCR lines are ranked using confidence scores and medicine-related keywords.
+
+### 8. Gemini AI Extraction
+
+The cleaned OCR information is sent to Gemini AI to extract structured medicine information.
+
+### 9. AI Explanation
+
+Gemini generates an easy-to-understand explanation of the medicine.
+
+### 10. Counterfeit Risk Analysis
+
+MediLens evaluates available packaging information and generates a counterfeit-risk assessment.
+
+### 11. Medicine Record
+
+The extracted medicine information can be stored in the local database.
+
+### 12. Result Display
+
+The final medicine information, AI explanation, and risk analysis are presented to the user.
+
+---
+
+# 📂 Project Structure
+
+```text
+MediLens/
+│
+├── assets/
+│   └── logo.png
+│
+├── backend/
+│   ├── models/
+│   ├── routes/
+│   ├── schema/
+│   ├── services/
+│   ├── utils/
+│   ├── workers/
+│   │   └── paddle_worker.py
+│   ├── uploads/
+│   ├── processed/
+│   ├── app.py
+│   ├── config.py
+│   └── extensions.py
+│
+├── database/
+│
+├── docs/
+│   ├── api.md
+│   ├── architecture.md
+│   ├── database.md
+│   ├── paddleocr-setup.md
+│   └── images/
+│       ├── home.png
+│       ├── scanner.png
+│       ├── image-preview.png
+│       ├── image-information.png
+│       ├── analysis.png
+│       ├── result.png
+│       ├── ai-explanation.png
+│       └── counterfeit.png
+│
+├── frontend/
+│   ├── static/
+│   │   ├── css/
+│   │   ├── js/
+│   │   └── images/
+│   └── templates/
+│
+├── .env
+├── .gitignore
+├── LICENSE
+├── Procfile
+├── README.md
+├── requirements.txt
+└── run.py
+```
+
+> `venv/`, uploaded images, processed images, local experiments, and environment secrets are excluded from version control through `.gitignore`.
 
 ---
 
 # 🚀 Future Improvements
 
-- Barcode Scanner
-- QR Code Verification
-- Mobile Application
-- User Authentication
-- Cloud Database
-- Multi-language Support
-- Voice Assistant
-- Doctor Portal
-- Medicine Recommendation
-- Drug Interaction AI
-- Prescription Scanner
+* Barcode Scanner
+* QR Code Verification
+* Medicine Package QR Verification
+* Mobile Application
+* Cloud Database
+* Multi-language Support
+* Voice Assistant
+* Doctor Portal
+* Medicine Recommendation
+* Drug Interaction AI
+* Prescription Scanner
+* Advanced packaging verification
+* Pharmaceutical database integration
+* Cloud GPU OCR deployment
 
 ---
 
@@ -358,26 +518,28 @@ http://127.0.0.1:5000
 
 ## Sunny Verma
 
-- OCR Pipeline
-- OpenCV Processing
-- Gemini AI Integration
-- Backend Development
+* OCR Pipeline
+* PaddleOCR Integration
+* EasyOCR Fallback
+* OpenCV Image Processing
+* Gemini AI Integration
+* Backend Development
 
 ---
 
 ## Nikhil
 
-- Medicine Shelf
-- Medicine Database
-- History Module
+* Medicine Shelf
+* Medicine Database
+* History Module
 
 ---
 
 ## Ankush
 
-- Dashboard
-- Safety Features
-- UI Components
+* Dashboard
+* Safety Features
+* UI Components
 
 ---
 
@@ -385,23 +547,27 @@ http://127.0.0.1:5000
 
 This project is licensed under the MIT License.
 
-See the LICENSE file for details.
+See the `LICENSE` file for details.
 
 ---
 
 # ❤️ Acknowledgements
 
-- Google Gemini AI
-- EasyOCR
-- OpenCV
-- Flask
-- SQLAlchemy
-- Python Community
+* PaddleOCR
+* PaddlePaddle
+* EasyOCR
+* Google Gemini AI
+* OpenCV
+* Flask
+* SQLAlchemy
+* Python Community
 
 ---
 
 # ⭐ Support
 
-If you like this project, please consider giving it a ⭐ on GitHub.
+If you like MediLens, please consider giving the project a ⭐ on GitHub.
 
 It helps others discover the project and motivates us to keep improving MediLens.
+
+````
