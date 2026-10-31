@@ -9,7 +9,6 @@ def build_medicine_record(
 ):
     """
     Creates one standardized medicine record that can be used by:
-
     - Result page
     - Medicine history
     - Medicine shelf
@@ -20,7 +19,11 @@ def build_medicine_record(
     """
 
     return {
-        "medicine_name": medicine_info.get("medicine", ""),
+        "medicine_name": (
+            medicine_info.get("medicine_name")
+            or medicine_info.get("medicine")
+            or ""
+        ),
         "manufacturer": medicine_info.get("manufacturer", ""),
         "strength": medicine_info.get("strength", ""),
         "batch_number": medicine_info.get("batch_number", ""),

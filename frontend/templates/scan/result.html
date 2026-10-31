@@ -1,177 +1,422 @@
-{% extends "layouts/base.html" %} {% block title %} Medicine Analysis Result |
-MediLens {% endblock %} {% block content %}
+{% extends "layouts/base.html" %}
+
+{% block title %}Medicine Analysis | MediLens{% endblock %}
+
+{% block content %}
+
+{% macro detail_item(label, value) %}
+<div class="detail-tile">
+  <span>{{ label }}</span>
+  <strong>{{ value if value else "Not identified from image" }}</strong>
+</div>
+{% endmacro %}
 
 <section class="result-page">
-  <!-- ================= HEADER ================= -->
+
+  <!-- PAGE HEADER -->
 
   <div class="result-header">
-    <span class="section-badge"> Analysis Complete </span>
+    <span class="section-badge">ANALYSIS COMPLETE</span>
 
-    <h1>Medicine <span>Analysis</span></h1>
+    <h1>Your Medicine <span>Report</span></h1>
 
     <p>
-      Your medicine has been analyzed using EasyOCR, Gemini AI and MediLens
-      intelligent analysis.
+      Explore the important information extracted from your
+      medicine packaging and understand it with MediLens AI.
     </p>
   </div>
 
-  <!-- ================= RESULT GRID ================= -->
 
-  <div class="result-grid">
-    <!-- Uploaded Image -->
+  <!-- MEDICINE OVERVIEW -->
 
-    <div class="result-card">
-      <h2>Uploaded Image</h2>
+  <section class="result-overview">
 
-      <div class="uploaded-image">
-        <img
-          src="{{ url_for('scan.uploaded_file', filename=filename) }}"
-          alt="Medicine Image"
-        />
+    <!-- IMAGE CARD -->
+
+    <div class="result-card result-image-card">
+
+      <div class="result-section-heading">
+        <div>
+          <span class="result-eyebrow">ORIGINAL PACKAGING</span>
+          <h2>Scanned Medicine</h2>
+        </div>
+
+        <span class="image-tag">
+          <i class="fa-solid fa-image"></i>
+          Original Image
+        </span>
       </div>
+
+      <div class="result-image">
+
+        <img src="{{ url_for('scan.uploaded_file', filename=filename) }}"
+          alt="{{ medicine.medicine_name or 'Uploaded medicine packaging' }}">
+
+      </div>
+
+      <p class="image-caption">
+        Information extracted from the uploaded medicine image.
+      </p>
+
     </div>
 
-    <!-- Medicine Information -->
 
-    <div class="result-card">
-      <h2>Medicine Information</h2>
+    <!-- MEDICINE SUMMARY -->
 
-      <div class="info-table">
-        <div class="info-row">
-          <span>Medicine Name</span>
-          <strong>{{ medicine.medicine_name }}</strong>
+    <div class="result-card medicine-summary-card">
+
+      <span class="result-eyebrow">IDENTIFIED MEDICINE</span>
+
+      <h2 class="medicine-title">
+        {{ medicine.medicine_name or "Medicine not confidently identified" }}
+      </h2>
+
+      <p class="medicine-generic">
+        {{ medicine.generic_name or "Active ingredients could not be identified." }}
+      </p>
+
+
+      <!-- QUICK FACTS -->
+
+      <div class="quick-facts">
+
+        <div class="quick-fact">
+          <span>
+            <i class="fa-solid fa-flask"></i>
+            Strength
+          </span>
+
+          <strong>
+            {{ medicine.strength or "Not identified" }}
+          </strong>
         </div>
 
-        <div class="info-row">
-          <span>Generic Name</span>
-          <strong>{{ medicine.generic_name }}</strong>
+        <div class="quick-fact">
+          <span>
+            <i class="fa-solid fa-building"></i>
+            Manufacturer
+          </span>
+
+          <strong>
+            {{ medicine.manufacturer or "Not identified" }}
+          </strong>
         </div>
 
-        <div class="info-row">
-          <span>Strength</span>
-          <strong>{{ medicine.strength }}</strong>
+        <div class="quick-fact">
+          <span>
+            <i class="fa-solid fa-box"></i>
+            Pack Size
+          </span>
+
+          <strong>
+            {{ medicine.pack_size or "Not identified" }}
+          </strong>
         </div>
 
-        <div class="info-row">
-          <span>Composition</span>
-          <strong>{{ medicine.composition }}</strong>
+        <div class="quick-fact expiry-fact">
+          <span>
+            <i class="fa-solid fa-calendar-check"></i>
+            Expiry Date
+          </span>
+
+          <strong>
+            {{ medicine.expiry_date or "Not identified" }}
+          </strong>
         </div>
 
-        <div class="info-row">
-          <span>Manufacturer</span>
-          <strong>{{ medicine.manufacturer }}</strong>
-        </div>
-
-        <div class="info-row">
-          <span>Batch Number</span>
-          <strong>{{ medicine.batch_number }}</strong>
-        </div>
-
-        <div class="info-row">
-          <span>Manufacturing Date</span>
-          <strong>{{ medicine.manufacturing_date }}</strong>
-        </div>
-
-        <div class="info-row">
-          <span>Expiry Date</span>
-          <strong>{{ medicine.expiry_date }}</strong>
-        </div>
-
-        <div class="info-row">
-          <span>Dosage</span>
-          <strong>{{ medicine.dosage }}</strong>
-        </div>
-
-        <div class="info-row">
-          <span>Storage</span>
-          <strong>{{ medicine.storage }}</strong>
-        </div>
-
-        <div class="info-row">
-          <span>Warnings</span>
-          <strong>{{ medicine.warnings }}</strong>
-        </div>
-
-        <div class="info-row">
-          <span>Pack Size</span>
-          <strong>{{ medicine.pack_size }}</strong>
-        </div>
       </div>
+
+
+      <!-- EXPANDABLE DETAILS -->
+
+      <details class="medicine-details">
+
+        <summary>
+          <span>
+            <i class="fa-solid fa-list-check"></i>
+            View all extracted details
+          </span>
+
+          <i class="fa-solid fa-chevron-down details-arrow"></i>
+        </summary>
+
+        <div class="details-grid">
+
+          {{ detail_item("Composition", medicine.composition) }}
+
+          {{ detail_item("Batch Number", medicine.batch_number) }}
+
+          {{ detail_item("Manufacturing Date", medicine.manufacturing_date) }}
+
+          {{ detail_item("Expiry Date", medicine.expiry_date) }}
+
+          {{ detail_item("Dosage Instructions", medicine.dosage) }}
+
+          {{ detail_item("Storage Instructions", medicine.storage) }}
+
+          {{ detail_item("Packaging Warnings", medicine.warnings) }}
+
+        </div>
+
+        <p class="details-disclaimer">
+          These details are extracted from medicine packaging.
+          Please verify important information against the original pack.
+        </p>
+
+      </details>
+
     </div>
-  </div>
 
-  <!-- ================= AI EXPLANATION ================= -->
+  </section>
 
-  <div class="result-card full-width">
-    <h2>Gemini AI Explanation</h2>
 
-    <div class="ai-box">
-      <pre>{{ explanation }}</pre>
+  <!-- AI MEDICINE EXPLANATION -->
+
+  <section class="result-card explanation-card">
+
+    <div class="explanation-heading">
+
+      <div class="explanation-title">
+
+        <span class="result-eyebrow">UNDERSTAND YOUR MEDICINE</span>
+
+        <h2>
+          <i class="fa-solid fa-sparkles"></i>
+          AI Medicine Explanation
+        </h2>
+
+        <p>
+          Detailed medicine information explained in simple language.
+        </p>
+
+      </div>
+
+
+      <!-- LANGUAGE AND AUDIO CONTROLS -->
+
+      <div class="explanation-controls">
+
+        <select id="translateLangSelect" aria-label="Select explanation language">
+          <option value="en">🌐 English (Original)</option>
+          <option value="hi">🇮🇳 Hindi (हिन्दी)</option>
+          <option value="mr">🇮🇳 Marathi (मराठी)</option>
+          <option value="ta">🇮🇳 Tamil (தமிழ்)</option>
+          <option value="te">🇮🇳 Telugu (తెలుగు)</option>
+          <option value="bn">🇮🇳 Bengali (বাংলা)</option>
+          <option value="gu">🇮🇳 Gujarati (ગુજરાતી)</option>
+          <option value="kn">🇮🇳 Kannada (ಕನ್ನಡ)</option>
+          <option value="ml">🇮🇳 Malayalam (മലയാളം)</option>
+          <option value="pa">🇮🇳 Punjabi (ਪੰਜਾਬੀ)</option>
+        </select>
+
+
+        <div class="audio-controls">
+
+          <button type="button" class="btn btn-primary" id="speakBtn">
+            <i class="fa-solid fa-volume-high"></i>
+            <span id="speakBtnLabel">Listen</span>
+          </button>
+
+          <button type="button" class="btn btn-secondary" id="pauseBtn" hidden>
+            <i class="fa-solid fa-pause"></i>
+            <span id="pauseBtnLabel">Pause</span>
+          </button>
+
+          <button type="button" class="btn btn-secondary" id="stopBtn" hidden>
+            <i class="fa-solid fa-stop"></i>
+            Stop
+          </button>
+
+        </div>
+
+      </div>
+
     </div>
-  </div>
 
-  <!-- ================= COUNTERFEIT ================= -->
 
-  <div class="result-card full-width">
-    <h2>Counterfeit Risk Analysis</h2>
+    <!-- TRANSLATION STATUS -->
 
-    <div class="counterfeit-grid">
-      <div class="counterfeit-item">
-        <span>Risk Score</span>
+    <p id="translationStatus" class="translation-status" role="status" aria-live="polite" hidden></p>
 
-        <strong> {{ counterfeit_result.risk_score }}% </strong>
-      </div>
 
-      <div class="counterfeit-item">
-        <span>Risk Level</span>
+    <!-- EXPLANATION TEXT -->
 
-        <strong> {{ counterfeit_result.risk_level }} </strong>
-      </div>
+    <div class="ai-explanation-box">
 
-      <div class="counterfeit-item">
-        <span>Confidence</span>
+      <div id="aiExplanationText" class="explanation-text">{{ explanation }}</div>
 
-        <strong> {{ counterfeit_result.assessment_confidence }} </strong>
-      </div>
     </div>
 
-    <div class="checks">
-      <h3>Packaging Validation</h3>
 
-      <ul>
+    <div class="explanation-footer">
+      <i class="fa-solid fa-circle-info"></i>
+
+      AI-generated information should be verified.
+      Always follow your prescription and consult a healthcare professional.
+    </div>
+
+  </section>
+
+
+
+  <!-- PACKAGING ASSESSMENT -->
+
+  <section class="result-card assessment-card">
+
+    <div class="assessment-heading">
+
+      <div class="assessment-title">
+
+        <span class="result-eyebrow">
+          PACKAGING REVIEW
+        </span>
+
+        <h2>
+          <i class="fa-solid fa-shield-halved"></i>
+          Packaging Assessment
+        </h2>
+
+        <p>
+          Preliminary checks based on the available
+          medicine packaging information.
+        </p>
+
+      </div>
+
+      <span class="assessment-tag">
+        <i class="fa-solid fa-circle-info"></i>
+        Preliminary
+      </span>
+
+    </div>
+
+
+    <!-- ASSESSMENT SUMMARY -->
+
+    <div class="assessment-summary">
+
+      <div class="assessment-value">
+
+        <span>Packaging Risk Indicator</span>
+
+        <strong>
+          {{ counterfeit_result.risk_level or "Not available" }}
+        </strong>
+
+      </div>
+
+      <div class="assessment-divider"></div>
+
+      <div class="assessment-value">
+
+        <span>Analysis Confidence</span>
+
+        <strong>
+          {{ counterfeit_result.assessment_confidence or "Not available" }}
+        </strong>
+
+      </div>
+
+    </div>
+
+
+    <!-- VALIDATION CHECKS -->
+
+    <details class="assessment-details">
+
+      <summary>
+
+        <span>
+          <i class="fa-solid fa-list-check"></i>
+          View packaging validation results
+        </span>
+
+        <i class="fa-solid fa-chevron-down details-arrow"></i>
+
+      </summary>
+
+
+      <div class="assessment-checks">
+
         {% for check in counterfeit_result.checks %}
 
-        <li>{{ check }}</li>
+        <div class="assessment-check">
+
+          <i class="fa-solid fa-check"></i>
+
+          <span>{{ check }}</span>
+
+        </div>
+
+        {% else %}
+
+        <p>No packaging validation results are available.</p>
 
         {% endfor %}
-      </ul>
+
+      </div>
+
+    </details>
+
+
+    <!-- DISCLAIMER -->
+
+    <div class="assessment-note">
+
+      <i class="fa-solid fa-circle-info"></i>
+
+      <div>
+
+        <strong>Important to know</strong>
+
+        <p>
+          This assessment cannot confirm whether a medicine is
+          genuine or counterfeit. It checks visible packaging
+          details, OCR quality and logical consistency.
+          Contact a pharmacist or authorized source if
+          authenticity is uncertain.
+        </p>
+
+      </div>
+
     </div>
 
-    <div class="analysis-note">
-      <strong>Important Note</strong>
+  </section>
 
-      <p>{{ counterfeit_result.note }}</p>
-    </div>
-  </div>
 
-  <!-- ================= ACTIONS ================= -->
+  <!-- PAGE ACTIONS -->
 
   <div class="result-actions">
+
     <a href="{{ url_for('scan.scan') }}" class="btn btn-secondary">
       <i class="fa-solid fa-camera"></i>
-
-      Scan Another
+      Scan Another Medicine
     </a>
 
-    <a
-      href="{{ url_for('medicine_shelf.medicine_shelf') }}"
-      class="btn btn-primary"
-    >
+    <a href="{{ url_for('medicine_shelf.medicine_shelf') }}" class="btn btn-primary">
       <i class="fa-solid fa-pills"></i>
-
       Medicine Shelf
     </a>
+
   </div>
+
 </section>
+
+
+<!-- JINJA CONFIGURATION FOR result.js -->
+
+<script id="resultConfig" type="application/json">
+{{ {
+    "originalExplanation": explanation,
+    "translationUrl": url_for("scan.translate_explanation")
+} | tojson }}
+</script>
+
+{% endblock %}
+
+
+{% block js %}
+
+<script src="{{ url_for('static', filename='js/result.js') }}"></script>
 
 {% endblock %}
