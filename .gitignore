@@ -10,6 +10,7 @@ venv/
 
 # Environment variables
 .env
+<<<<<<< HEAD
 .env.*
 
 # Database
@@ -37,3 +38,11 @@ Thumbs.db
 # Local experiments and benchmarks
 experiments/
 test_*.py
+=======
+*.db
+
+
+backend/uploads/
+
+backend/processed/
+>>>>>>> ef971a8 (Update gitignore)
