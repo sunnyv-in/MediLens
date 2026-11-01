@@ -1,8 +1,5 @@
 import os
 import time
-<<<<<<< HEAD
-=======
-import json
 import textwrap
 import requests
 from uuid import uuid4
@@ -14,51 +11,21 @@ from flask import (
     send_from_directory,
     current_app,
     jsonify,
-    Response
+    Response,
 )
->>>>>>> 399b4b78ccc3c0596f1832845b4cb811ad8209c0
-
-from flask import Blueprint, render_template, request, send_from_directory, current_app
 from werkzeug.utils import secure_filename
 
-<<<<<<< HEAD
-from backend.services.image_processor import process_image
-=======
-from backend.services.image_processor import (
-    process_image,
-    assess_image_quality
-)
-
->>>>>>> 399b4b78ccc3c0596f1832845b4cb811ad8209c0
+from backend.services.image_processor import process_image, assess_image_quality
 from backend.services.ocr_service import (
     extract_text_fast,
     clean_ocr_text,
     rank_ocr_lines,
-<<<<<<< HEAD
+    is_ocr_unreadable,
 )
 from backend.services.gemini_service import extract_medicine_info_and_explanation
 from backend.services.counterfeit_service import analyze_counterfeit_risk
 from backend.services.medicine_record_service import build_medicine_record
-from backend.services.medicine_service import save_scanned_medicine
-=======
-    is_ocr_unreadable
-)
-
-from backend.services.gemini_service import (
-    extract_medicine_info_and_explanation
-)
-
-from backend.services.counterfeit_service import (
-    analyze_counterfeit_risk
-)
-
-from backend.services.medicine_record_service import (
-    build_medicine_record
-)
-
 from backend.services.history_service import save_history
-
->>>>>>> 399b4b78ccc3c0596f1832845b4cb811ad8209c0
 
 scan_bp = Blueprint("scan", __name__)
 
@@ -78,56 +45,25 @@ SUPPORTED_LANGUAGES = {
 
 @scan_bp.route("/scan", methods=["GET", "POST"])
 def scan():
-<<<<<<< HEAD
-
     if request.method == "POST":
-
         image = request.files.get("medicine_image")
 
         if not image or image.filename == "":
             return render_template("scan/scan.html", error="Please select an image.")
-=======
-    if request.method == "POST":
-        image = request.files.get("medicine_image")
-
-        if not image or image.filename == "":
-            return render_template(
-                "scan/scan.html",
-                error="Please select an image."
-            )
 
         orig_name = secure_filename(image.filename) or "scan.jpg"
         ext = os.path.splitext(orig_name)[1].lower() or ".jpg"
->>>>>>> 399b4b78ccc3c0596f1832845b4cb811ad8209c0
 
         if ext not in {".jpg", ".jpeg", ".png", ".webp", ".bmp"}:
             return render_template(
                 "scan/scan.html",
-                error="Unsupported file type. Please upload a JPG, PNG, or WEBP image."
+                error="Unsupported file type. Please upload a JPG, PNG, or WEBP image.",
             )
 
-<<<<<<< HEAD
-        image_path = os.path.join(current_app.config["UPLOAD_FOLDER"], filename)
-
-        image.save(image_path)
-
-        # -----------------------------------------
-        # PERFORMANCE BENCHMARKING
-        # -----------------------------------------
-
-        t0 = time.perf_counter()
-
-        # -----------------------------------------
-        # IMAGE PROCESSING
-        # -----------------------------------------
-=======
         filename = f"{uuid4().hex[:8]}_{orig_name}"
         os.makedirs(current_app.config["UPLOAD_FOLDER"], exist_ok=True)
 
-        image_path = os.path.join(
-            current_app.config["UPLOAD_FOLDER"],
-            filename
-        )
+        image_path = os.path.join(current_app.config["UPLOAD_FOLDER"], filename)
 
         image.save(image_path)
 
@@ -135,47 +71,11 @@ def scan():
 
         is_usable, quality_error = assess_image_quality(image_path)
         if not is_usable:
-            return render_template(
-                "scan/scan.html",
-                error=quality_error
-            )
->>>>>>> 399b4b78ccc3c0596f1832845b4cb811ad8209c0
+            return render_template("scan/scan.html", error=quality_error)
 
         processed_images = process_image(image_path)
         t1 = time.perf_counter()
 
-<<<<<<< HEAD
-        print(f"TIME - Image Processing: {t1 - t0:.2f}s")
-
-        # -----------------------------------------
-        # FAST OCR
-        # -----------------------------------------
-
-        detections = extract_text_fast(list(processed_images.values()))
-
-        t2 = time.perf_counter()
-
-        print(
-            f"TIME - Fast OCR (PaddleOCR primary / EasyOCR fallback): "
-            f"{t2 - t1:.2f}s"
-        )
-
-        # -----------------------------------------
-        # OCR CLEANING
-        # -----------------------------------------
-
-        cleaned_data = clean_ocr_text(detections)
-
-        t3 = time.perf_counter()
-
-        print(f"TIME - OCR Cleaning: {t3 - t2:.2f}s")
-
-        # -----------------------------------------
-        # OCR RANKING
-        # -----------------------------------------
-
-        ranked_data = rank_ocr_lines(cleaned_data)
-=======
         detections = extract_text_fast(list(processed_images.values()))
         t2 = time.perf_counter()
 
@@ -188,68 +88,33 @@ def scan():
                 error=(
                     "This image is not clear enough to read medicine details. "
                     "Please upload a clearer, well-lit image of the medicine package."
-                )
+                ),
             )
->>>>>>> 399b4b78ccc3c0596f1832845b4cb811ad8209c0
 
         ranked_data = rank_ocr_lines(cleaned_data)
         t4 = time.perf_counter()
 
-<<<<<<< HEAD
-        print(f"TIME - OCR Ranking: {t4 - t3:.2f}s")
-
-        # -----------------------------------------
-        # GEMINI EXTRACTION + EXPLANATION
-        # -----------------------------------------
-
-        t5 = time.perf_counter()
-
         medicine_info, explanation = extract_medicine_info_and_explanation(
             cleaned_data, ranked_data
         )
-
         t6 = time.perf_counter()
 
-        print(f"TIME - Gemini Extraction + Explanation: " f"{t6 - t5:.2f}s")
-
-        print("\nMEDICINE INFO")
-        print(medicine_info)
-
-        # -----------------------------------------
-        # COUNTERFEIT / PACKAGING RISK ANALYSIS
-        # -----------------------------------------
-
-        counterfeit_result = analyze_counterfeit_risk(medicine_info)
-
-        t7 = time.perf_counter()
-
-        print(f"TIME - Counterfeit Analysis: " f"{t7 - t6:.2f}s")
-
-        # -----------------------------------------
-        # MEDICINE RECORD
-        # -----------------------------------------
-=======
-        medicine_info, explanation = extract_medicine_info_and_explanation(
-            cleaned_data,
-            ranked_data
-        )
-        t6 = time.perf_counter()
-
-        if not any([
-            (medicine_info.get("medicine_name") or "").strip(),
-            (medicine_info.get("generic_name") or "").strip(),
-            (medicine_info.get("composition") or "").strip()
-        ]):
+        if not any(
+            [
+                (medicine_info.get("medicine_name") or "").strip(),
+                (medicine_info.get("generic_name") or "").strip(),
+                (medicine_info.get("composition") or "").strip(),
+            ]
+        ):
             return render_template(
                 "scan/scan.html",
                 error=(
                     "Could not identify a medicine from this image. "
                     "Please upload a clearer photo showing the medicine name."
-                )
+                ),
             )
 
         counterfeit_result = analyze_counterfeit_risk(medicine_info)
->>>>>>> 399b4b78ccc3c0596f1832845b4cb811ad8209c0
 
         medicine_record = build_medicine_record(
             medicine_info=medicine_info,
@@ -289,34 +154,25 @@ def scan():
             }
         )
 
-<<<<<<< HEAD
-        t8 = time.perf_counter()
-
-        print(f"TIME - Medicine Record: {t8 - t7:.2f}s")
-
-        print(f"TIME - TOTAL: {t8 - t0:.2f}s")
-
-        # -----------------------------------------
-        # RESULT PAGE
-        # -----------------------------------------
-=======
         try:
-            save_history({
-                "medicine_name": medicine_info.get("medicine_name") or medicine_info.get("generic_name", ""),
-                "generic_name": medicine_info.get("generic_name", ""),
-                "manufacturer": medicine_info.get("manufacturer", ""),
-                "strength": medicine_info.get("strength", ""),
-                "batch_number": medicine_info.get("batch_number", ""),
-                "manufacturing_date": medicine_info.get("manufacturing_date", ""),
-                "expiry_date": medicine_info.get("expiry_date", ""),
-                "dosage": medicine_info.get("dosage", ""),
-                "usage": explanation,
-                "image_filename": filename,
-                "counterfeit_score": counterfeit_result.get("risk_score", 0),
-            })
+            save_history(
+                {
+                    "medicine_name": medicine_info.get("medicine_name")
+                    or medicine_info.get("generic_name", ""),
+                    "generic_name": medicine_info.get("generic_name", ""),
+                    "manufacturer": medicine_info.get("manufacturer", ""),
+                    "strength": medicine_info.get("strength", ""),
+                    "batch_number": medicine_info.get("batch_number", ""),
+                    "manufacturing_date": medicine_info.get("manufacturing_date", ""),
+                    "expiry_date": medicine_info.get("expiry_date", ""),
+                    "dosage": medicine_info.get("dosage", ""),
+                    "usage": explanation,
+                    "image_filename": filename,
+                    "counterfeit_score": counterfeit_result.get("risk_score", 0),
+                }
+            )
         except Exception as hist_err:
             print("History save skipped:", hist_err)
->>>>>>> 399b4b78ccc3c0596f1832845b4cb811ad8209c0
 
         return render_template(
             "scan/result.html",
@@ -328,8 +184,6 @@ def scan():
         )
 
     return render_template("scan/scan.html")
-<<<<<<< HEAD
-=======
 
 
 @scan_bp.route("/scan/translate", methods=["POST"])
@@ -352,11 +206,19 @@ def translate_explanation():
     try:
         gtx_url = "https://translate.googleapis.com/translate_a/single"
         params = {"client": "gtx", "sl": "auto", "tl": target_lang, "dt": "t"}
-        response = requests.post(gtx_url, params=params, data={"q": text}, headers=headers, timeout=6)
+        response = requests.post(
+            gtx_url, params=params, data={"q": text}, headers=headers, timeout=6
+        )
         if response.status_code == 200:
             res_data = response.json()
             translated_text = "".join([chunk[0] for chunk in res_data[0] if chunk[0]])
-            return jsonify({"success": True, "translated_text": translated_text, "lang": target_lang})
+            return jsonify(
+                {
+                    "success": True,
+                    "translated_text": translated_text,
+                    "lang": target_lang,
+                }
+            )
     except Exception as e:
         print("Google Translate fallback triggered:", e)
 
@@ -365,17 +227,31 @@ def translate_explanation():
         translated_chunks = []
         for chunk in chunks:
             my_url = "https://api.mymemory.translated.net/get"
-            my_res = requests.get(my_url, params={"q": chunk, "langpair": f"en|{target_lang}"}, headers=headers, timeout=6)
+            my_res = requests.get(
+                my_url,
+                params={"q": chunk, "langpair": f"en|{target_lang}"},
+                headers=headers,
+                timeout=6,
+            )
             if my_res.status_code == 200:
                 my_data = my_res.json()
-                translated_chunks.append(my_data.get("responseData", {}).get("translatedText", chunk))
+                translated_chunks.append(
+                    my_data.get("responseData", {}).get("translatedText", chunk)
+                )
         final_text = " ".join(translated_chunks)
         if final_text.strip():
-            return jsonify({"success": True, "translated_text": final_text, "lang": target_lang})
+            return jsonify(
+                {"success": True, "translated_text": final_text, "lang": target_lang}
+            )
     except Exception as my_err:
         print("MyMemory error:", my_err)
 
-    return jsonify({"success": False, "error": "Translation service temporarily unavailable."}), 500
+    return (
+        jsonify(
+            {"success": False, "error": "Translation service temporarily unavailable."}
+        ),
+        500,
+    )
 
 
 @scan_bp.route("/scan/tts", methods=["POST"])
@@ -388,7 +264,9 @@ def text_to_speech():
         return jsonify({"error": "No text"}), 400
 
     clean_text = text.replace("+", " and ").replace("*", " ").replace("#", " ")
-    raw_sentences = [s.strip() for s in clean_text.replace("\n", ". ").split(".") if s.strip()]
+    raw_sentences = [
+        s.strip() for s in clean_text.replace("\n", ". ").split(".") if s.strip()
+    ]
     chunks = []
     for s in raw_sentences:
         if len(s) <= 180:
@@ -414,17 +292,8 @@ def text_to_speech():
     except Exception as e:
         print("TTS stream error:", e)
         return jsonify({"error": "TTS failed"}), 500
->>>>>>> 399b4b78ccc3c0596f1832845b4cb811ad8209c0
 
 
 @scan_bp.route("/uploads/<filename>")
 def uploaded_file(filename):
-<<<<<<< HEAD
-
     return send_from_directory(current_app.config["UPLOAD_FOLDER"], filename)
-=======
-    return send_from_directory(
-        current_app.config["UPLOAD_FOLDER"],
-        filename
-    )
->>>>>>> 399b4b78ccc3c0596f1832845b4cb811ad8209c0
