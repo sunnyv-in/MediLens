@@ -86,6 +86,7 @@ Create Account | Patient & Caregiver Setup | MediLens
     .role-selector-grid {
       grid-template-columns: 1fr;
     }
+
     .contact-repeater-row {
       grid-template-columns: 1fr 1fr;
     }
@@ -112,7 +113,9 @@ Create Account | Patient & Caregiver Setup | MediLens
         </h2>
 
         <p class="auth-hero-desc">
-          Designed for independent patients and caring families. Connect multiple phone numbers so everyone receives timely dose alerts—and when one caregiver administers the medicine, the reminder clears for everyone to prevent dangerous double-dosing.
+          Designed for independent patients and caring families. Connect multiple phone numbers so everyone receives
+          timely dose alerts—and when one caregiver administers the medicine, the reminder clears for everyone to
+          prevent dangerous double-dosing.
         </p>
 
         <div class="auth-perks-list">
@@ -172,11 +175,12 @@ Create Account | Patient & Caregiver Setup | MediLens
         <!-- 1. ROLE / PERSONA SELECTION -->
         <label class="form-label">How will you be using MediLens?</label>
         <div class="role-selector-grid" role="radiogroup" aria-label="User Persona">
-          
+
           <label class="role-option-card selected" id="rolePatientCard">
             <input type="radio" name="role" value="patient" checked id="rolePatient">
             <div>
-              <span class="role-title"><i class="fa-solid fa-person" style="color: var(--primary);"></i> For Myself</span>
+              <span class="role-title"><i class="fa-solid fa-person" style="color: var(--primary);"></i> For
+                Myself</span>
               <p class="role-desc">I am taking and tracking my own prescriptions.</p>
             </div>
           </label>
@@ -184,7 +188,8 @@ Create Account | Patient & Caregiver Setup | MediLens
           <label class="role-option-card" id="roleCaregiverCard">
             <input type="radio" name="role" value="caregiver" id="roleCaregiver">
             <div>
-              <span class="role-title"><i class="fa-solid fa-hand-holding-heart" style="color: var(--accent-ai-light);"></i> For a Loved One</span>
+              <span class="role-title"><i class="fa-solid fa-hand-holding-heart"
+                  style="color: var(--accent-ai-light);"></i> For a Loved One</span>
               <p class="role-desc">I am a caregiver/family member assisting someone.</p>
             </div>
           </label>
@@ -196,13 +201,8 @@ Create Account | Patient & Caregiver Setup | MediLens
           <label for="regPatientName" class="form-label">Patient's Full Name / Relation</label>
           <div class="form-control-wrapper">
             <i class="fa-solid fa-heart form-control-icon" style="color: #f43f5e;" aria-hidden="true"></i>
-            <input
-              type="text"
-              id="regPatientName"
-              name="patient_name"
-              class="form-control"
-              placeholder="e.g. Robert Smith (Father)"
-            />
+            <input type="text" id="regPatientName" name="patient_name" class="form-control"
+              placeholder="e.g. Nikhil (Son)" />
           </div>
           <div class="form-feedback helper">The name of the patient receiving daily medication.</div>
         </div>
@@ -213,15 +213,8 @@ Create Account | Patient & Caregiver Setup | MediLens
             <label for="regFirstName" class="form-label">First Name</label>
             <div class="form-control-wrapper">
               <i class="fa-regular fa-user form-control-icon" aria-hidden="true"></i>
-              <input
-                type="text"
-                id="regFirstName"
-                name="first_name"
-                class="form-control"
-                placeholder="First name"
-                required
-                autocomplete="given-name"
-              />
+              <input type="text" id="regFirstName" name="first_name" class="form-control" placeholder="First name"
+                required autocomplete="given-name" />
             </div>
           </div>
 
@@ -229,15 +222,8 @@ Create Account | Patient & Caregiver Setup | MediLens
             <label for="regLastName" class="form-label">Last Name</label>
             <div class="form-control-wrapper">
               <i class="fa-regular fa-user form-control-icon" aria-hidden="true"></i>
-              <input
-                type="text"
-                id="regLastName"
-                name="last_name"
-                class="form-control"
-                placeholder="Last name"
-                required
-                autocomplete="family-name"
-              />
+              <input type="text" id="regLastName" name="last_name" class="form-control" placeholder="Last name" required
+                autocomplete="family-name" />
             </div>
           </div>
         </div>
@@ -248,15 +234,8 @@ Create Account | Patient & Caregiver Setup | MediLens
             <label for="regEmail" class="form-label">Email Address</label>
             <div class="form-control-wrapper">
               <i class="fa-regular fa-envelope form-control-icon" aria-hidden="true"></i>
-              <input
-                type="email"
-                id="regEmail"
-                name="email"
-                class="form-control"
-                placeholder="name@example.com"
-                required
-                autocomplete="email"
-              />
+              <input type="email" id="regEmail" name="email" class="form-control" placeholder="name@example.com"
+                required autocomplete="email" />
             </div>
           </div>
 
@@ -264,14 +243,8 @@ Create Account | Patient & Caregiver Setup | MediLens
             <label for="regPhone" class="form-label">Mobile Number</label>
             <div class="form-control-wrapper">
               <i class="fa-solid fa-phone form-control-icon" aria-hidden="true"></i>
-              <input
-                type="tel"
-                id="regPhone"
-                name="phone_number"
-                class="form-control"
-                placeholder="+91 / +1 Mobile"
-                autocomplete="tel"
-              />
+              <input type="tel" id="regPhone" name="phone_number" class="form-control" placeholder="+91 / +1 Mobile"
+                autocomplete="tel" />
             </div>
           </div>
         </div>
@@ -281,22 +254,10 @@ Create Account | Patient & Caregiver Setup | MediLens
           <label for="regPassword" class="form-label">Password</label>
           <div class="form-control-wrapper">
             <i class="fa-solid fa-lock form-control-icon" aria-hidden="true"></i>
-            <input
-              type="password"
-              id="regPassword"
-              name="password"
-              class="form-control"
-              placeholder="Minimum 8 characters"
-              required
-              minlength="8"
-              autocomplete="new-password"
-            />
-            <button
-              type="button"
-              class="password-toggle-btn"
-              id="regPasswordToggle"
-              aria-label="Toggle password visibility"
-            >
+            <input type="password" id="regPassword" name="password" class="form-control"
+              placeholder="Minimum 8 characters" required minlength="8" autocomplete="new-password" />
+            <button type="button" class="password-toggle-btn" id="regPasswordToggle"
+              aria-label="Toggle password visibility">
               <i class="fa-regular fa-eye" id="regPasswordIcon"></i>
             </button>
           </div>
@@ -347,14 +308,14 @@ Create Account | Patient & Caregiver Setup | MediLens
 
 {% block js %}
 <script>
-  (function() {
+  (function () {
     // 1. Password Visibility Toggle
     const passwordInput = document.getElementById("regPassword");
     const toggleBtn = document.getElementById("regPasswordToggle");
     const toggleIcon = document.getElementById("regPasswordIcon");
 
     if (toggleBtn && passwordInput) {
-      toggleBtn.addEventListener("click", function() {
+      toggleBtn.addEventListener("click", function () {
         const isPassword = passwordInput.getAttribute("type") === "password";
         passwordInput.setAttribute("type", isPassword ? "text" : "password");
         toggleIcon.className = isPassword ? "fa-regular fa-eye-slash" : "fa-regular fa-eye";
@@ -390,7 +351,7 @@ Create Account | Patient & Caregiver Setup | MediLens
     const repeaterList = document.getElementById("contactRepeaterList");
 
     if (addBtn && repeaterList) {
-      addBtn.addEventListener("click", function() {
+      addBtn.addEventListener("click", function () {
         const row = document.createElement("div");
         row.className = "contact-repeater-row";
         row.innerHTML = `
