@@ -96,3 +96,26 @@ def update_medicine(medicine_id, data):
     db.session.commit()
 
     return medicine
+
+
+def save_scanned_medicine(data):
+    owner = get_owner_values()
+
+    medicine = Medicine(
+        user_id=owner["user_id"],
+        guest_id=owner["guest_id"],
+        history_id=data.get("history_id"),
+        medicine_name=data.get("medicine_name") or "Unknown medicine",
+        generic_name=data.get("generic_name"),
+        strength=data.get("strength"),
+        manufacturer=data.get("manufacturer"),
+        batch_number=data.get("batch_number"),
+        expiry_date=data.get("expiry_date"),
+        counterfeit_score=data.get("counterfeit_score"),
+        image_filename=data.get("image_filename"),
+        quantity=1,
+    )
+
+    db.session.add(medicine)
+    db.session.commit()
+    return medicine

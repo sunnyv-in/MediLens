@@ -275,6 +275,13 @@ My Account | MediLens
 
     </div>
 
+    <form method="POST" action="{{ url_for('auth.update_phone') }}">
+        <label for="phone_number">Emergency contact number</label>
+        <input id="phone_number" name="phone_number" type="tel" value="{{ current_user.phone_number or '' }}"
+            placeholder="+91 9876543210" autocomplete="tel">
+        <button type="submit">Save phone number</button>
+    </form>
+
 
     <!-- SECURITY -->
 

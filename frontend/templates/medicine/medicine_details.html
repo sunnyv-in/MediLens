@@ -8,24 +8,116 @@
 {% block title %}{{ medicine.medicine_name }} | MediLens{% endblock %}
 
 {% block content %}
+<section class="med-page">
+    <header class="med-page-header">
+        <div>
+            <p class="med-eyebrow">MEDICINE DETAILS</p>
+            <h1>{{ medicine.medicine_name }}</h1>
+            <p class="med-muted">{{ medicine.generic_name or "Generic name not added" }}</p>
+        </div>
 
-<div class="page-header">
+        <div class="med-header-actions">
+            {% if medicine.history_id %}
+            <a class="med-btn med-btn-secondary"
+                href="{{ url_for('medicine_history.edit_history', history_id=medicine.history_id) }}">
+                Edit scan details
+            </a>
+            {% else %}
+            <a class="med-btn med-btn-secondary"
+                href="{{ url_for('medicine_shelf.edit_medicine_page', medicine_id=medicine.id) }}">
+                Edit
+            </a>
+            {% endif %}
 
-    <div>
+            <a class="med-btn med-btn-secondary" href="{{ url_for('medicine_shelf.medicine_shelf') }}">
+                Back to shelf
+            </a>
+        </div>
+    </header>
 
-        <h1>
+    <div class="med-detail-card">
+        <h2>Medicine information</h2>
 
-            {{ medicine.medicine_name }}
+        <dl class="med-info-grid med-info-grid-detail">
+            <div>
+                <dt>Medicine name</dt>
+                <dd>{{ medicine.medicine_name or "Not added" }}</dd>
+            </div>
+            <div>
+                <dt>Generic name</dt>
+                <dd>{{ medicine.generic_name or "Not added" }}</dd>
+            </div>
+            <div>
+                <dt>Strength</dt>
+                <dd>{{ medicine.strength or "Not added" }}</dd>
+            </div>
+            <div>
+                <dt>Manufacturer</dt>
+                <dd>{{ medicine.manufacturer or "Not added" }}</dd>
+            </div>
+            <div>
+                <dt>Batch number</dt>
+                <dd>{{ medicine.batch_number or "Not added" }}</dd>
+            </div>
+            <div>
+                <dt>Expiry date</dt>
+                <dd>{{ medicine.expiry_date or "Not added" }}</dd>
+            </div>
+            <div>
+                <dt>Quantity</dt>
+                <dd>{{ medicine.quantity if medicine.quantity is not none else 0 }}</dd>
+            </div>
+            <div>
+                <dt>Dosage</dt>
+                <dd>{{ medicine.dosage or "Not added" }}</dd>
+            </div>
+            <div>
+                <dt>Counterfeit score</dt>
+                <dd>{{ medicine.counterfeit_score if medicine.counterfeit_score is not none else "Not available" }}</dd>
+            </div>
+            <div>
+                <dt>Added on</dt>
+                <dd>
+                    {{ medicine.created_at.strftime("%d %b %Y, %I:%M %p") if medicine.created_at else "Not available" }}
+                </dd>
+            </div>
+        </dl>
 
-        </h1>
+        <div class="med-detail-text">
+            <h3>Uses</h3>
+            <p>{{ medicine.usage or "No information has been added." }}</p>
+        </div>
 
-        <p>
+        <div class="med-detail-text">
+            <h3>Side effects</h3>
+            <p>{{ medicine.side_effects or "No information has been added." }}</p>
+        </div>
 
-            Complete medicine information.
+        {% if medicine.history_id %}
+        <section class="med-detail-text">
+            <h2>Email scan details</h2>
+            <form method="POST"
+                action="{{ url_for('medicine_history.email_history', history_id=medicine.history_id) }}">
+                <label for="medicine-details-recipient">Recipient email</label>
+                <input id="medicine-details-recipient" name="recipient_email" type="email"
+                    value="{{ current_user.email if current_user.is_authenticated else '' }}"
+                    placeholder="Enter recipient email" required>
+                <button class="med-btn med-btn-secondary" type="submit">
+                    Email scan details and image
+                </button>
+            </form>
+        </section>
+        {% endif %}
 
-        </p>
-
+        <form class="med-delete-form" method="POST"
+            action="{{ url_for('medicine_shelf.remove_medicine', medicine_id=medicine.id) }}"
+            onsubmit="return confirm('Delete this medicine from your shelf? This cannot be undone.');">
+            <button class="med-btn med-btn-danger" type="submit">
+                Delete medicine
+            </button>
+        </form>
     </div>
+<<<<<<< HEAD
 
     <div>
 
@@ -175,4 +267,7 @@
 
 </div>
 
+=======
+</section>
+>>>>>>> origin/Whatsapp_integration
 {% endblock %}

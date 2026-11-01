@@ -1,6 +1,5 @@
 import os
 import time
-import json
 import textwrap
 import requests
 from uuid import uuid4
@@ -14,7 +13,6 @@ from flask import (
     jsonify,
     Response,
 )
-
 from werkzeug.utils import secure_filename
 
 from backend.services.image_processor import process_image, assess_image_quality
@@ -32,6 +30,9 @@ from backend.services.counterfeit_service import analyze_counterfeit_risk
 
 from backend.services.medicine_record_service import build_medicine_record
 
+from backend.services.gemini_service import extract_medicine_info_and_explanation
+from backend.services.counterfeit_service import analyze_counterfeit_risk
+from backend.services.medicine_record_service import build_medicine_record
 from backend.services.history_service import save_history
 
 scan_bp = Blueprint("scan", __name__)
@@ -128,6 +129,37 @@ def scan():
             explanation=explanation,
             counterfeit_result=counterfeit_result,
             image_filename=filename,
+            ocr_text=cleaned_data,
+            ranked_ocr=ranked_data,
+        )
+
+        # -----------------------------------------
+        # SAVE SCANNED MEDICINE
+        # -----------------------------------------
+
+        score = None
+
+        if isinstance(counterfeit_result, dict):
+            score = counterfeit_result.get("risk_score") or counterfeit_result.get(
+                "score"
+            )
+
+        save_scanned_medicine(
+            {
+                "medicine_name": (
+                    medicine_info.get("medicine_name")
+                    or medicine_info.get("medicine")
+                    or medicine_info.get("name")
+                ),
+                "generic_name": medicine_info.get("generic_name"),
+                "strength": medicine_info.get("strength"),
+                "manufacturer": medicine_info.get("manufacturer"),
+                "batch_number": medicine_info.get("batch_number"),
+                "expiry_date": medicine_info.get("expiry_date"),
+                "counterfeit_score": score,
+                "image_filename": filename,
+                "history_id": medicine_record.get("history_id"),
+            }
         )
 
         try:

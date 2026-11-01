@@ -24,3 +24,8 @@ class MedicationReminder(db.Model):
     is_active = db.Column(db.Boolean, default=True)
 
     medicine = db.relationship("Medicine", backref="reminders")
+
+    lead_minutes = db.Column(db.Integer, nullable=False, default=30)
+    repeat_minutes = db.Column(db.Integer, nullable=False, default=5)
+    last_sent_at = db.Column(db.DateTime, nullable=True)
+    last_sent_date = db.Column(db.Date, nullable=True)

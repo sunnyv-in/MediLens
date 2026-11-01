@@ -23,6 +23,10 @@ from backend.routes.emergency_routes import emergency_bp
 from backend.routes.home_routes import home_bp
 from backend.routes.about_routes import about_bp
 from backend.routes.scan_routes import scan_bp
+from backend.extensions import db, login_manager, mail
+
+from apscheduler.schedulers.background import BackgroundScheduler
+from backend.services.reminder_scheduler import send_due_reminders
 
 
 def create_app():
@@ -53,7 +57,7 @@ def create_app():
     # Initialize extensions
     db.init_app(app)
     login_manager.init_app(app)
-
+    mail.init_app(app)
     # Register Blueprints
     app.register_blueprint(auth_bp)
     app.register_blueprint(medicine_shelf_bp)
@@ -80,3 +84,25 @@ def load_user(user_id):
 
 
 app = create_app()
+
+
+def start_reminder_scheduler(app):
+    # Avoid starting a second scheduler in Flask's development reloader.
+    if app.debug and os.environ.get("WERKZEUG_RUN_MAIN") != "true":
+        return
+
+    if app.extensions.get("reminder_scheduler"):
+        return
+
+    scheduler = BackgroundScheduler(daemon=True)
+    scheduler.add_job(
+        func=lambda: send_due_reminders(app),
+        trigger="interval",
+        minutes=1,
+        id="medicine_whatsapp_reminders",
+        replace_existing=True,
+        max_instances=1,
+        coalesce=True,
+    )
+    scheduler.start()
+    app.extensions["reminder_scheduler"] = scheduler

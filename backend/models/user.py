@@ -20,6 +20,8 @@ class User(UserMixin, db.Model):
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    phone_number = db.Column(db.String(20), nullable=True)
+
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 

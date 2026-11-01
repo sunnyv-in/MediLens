@@ -41,3 +41,10 @@ class Medicine(db.Model):
     quantity = db.Column(db.Integer, default=1)
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    history_id = db.Column(
+        db.Integer,
+        db.ForeignKey("medicine_history.id"),
+        nullable=True,
+        index=True,
+    )

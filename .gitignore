@@ -11,17 +11,17 @@ venv/
 # Environment variables
 .env
 <<<<<<< HEAD
+<<<<<<< HEAD
 .env.*
+=======
+*.db
+>>>>>>> origin/Whatsapp_integration
 
-# Database
-database/*.db
-database/*.sqlite
-database/*.sqlite3
-instance/
 
-# Uploaded files
 backend/uploads/
+
 backend/processed/
+<<<<<<< HEAD
 backend/processed/*
 
 # IDE
@@ -46,3 +46,5 @@ backend/uploads/
 
 backend/processed/
 >>>>>>> ef971a8 (Update gitignore)
+=======
+>>>>>>> origin/Whatsapp_integration

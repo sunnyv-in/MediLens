@@ -11,6 +11,7 @@
 
 <section class="med-page">
 
+<<<<<<< HEAD
     <div class="page-header">
 
         <div>
@@ -236,6 +237,205 @@
                     <br>
 
                     {{ medicine.expiry_date or "-" }}
+=======
+    <header class="med-page-header">
+        <div>
+            <p class="med-eyebrow">YOUR MEDICINE RECORDS</p>
+            <h1>Medicine Shelf</h1>
+            <p class="med-muted">
+                View and manage medicines saved to your shelf.
+            </p>
+        </div>
+
+        <a class="med-btn med-btn-primary" href="{{ url_for('medicine_shelf.add_medicine_page') }}">
+            + Add medicine
+        </a>
+    </header>
+
+    <label class="med-search-label" for="medicineSearch">
+        Search your shelf
+    </label>
+
+    <input class="med-search" id="medicineSearch" type="search" placeholder="Search name, manufacturer, or batch number"
+        oninput="filterMedicineShelf()">
+
+    {% if medicines %}
+
+    <div class="med-shelf-grid" id="medicineGrid">
+
+        <form class="med-email-shelf" method="POST" action="{{ url_for('medicine_shelf.email_medicine_shelf') }}">
+            <div>
+                <h2>Email your saved medicines</h2>
+                <p>Send all medicines currently on your shelf to your email.</p>
+            </div>
+
+            <div class="med-email-controls">
+                <input type="email" name="recipient_email"
+                    value="{{ current_user.email if current_user.is_authenticated else '' }}"
+                    placeholder="Email address" aria-label="Email address" required>
+
+                <button class="med-btn med-btn-primary" type="submit">
+                    Email entire shelf
+                </button>
+            </div>
+        </form>
+
+        {% for medicine in medicines %}
+
+        <article class="med-card"
+            data-search="{{ (medicine.medicine_name or '') ~ ' ' ~ (medicine.generic_name or '') ~ ' ' ~ (medicine.manufacturer or '') ~ ' ' ~ (medicine.batch_number or '') }}">
+
+            <div class="med-card-heading">
+                <div>
+                    <h2>{{ medicine.medicine_name or "Unnamed medicine" }}</h2>
+
+                    <p class="med-muted">
+                        {{ medicine.generic_name or "Generic name not added" }}
+                    </p>
+                </div>
+
+                <span class="med-quantity">
+                    Qty: {{ medicine.quantity or 0 }}
+                </span>
+            </div>
+
+            <dl class="med-info-grid">
+
+                <div>
+                    <dt>Strength</dt>
+                    <dd>{{ medicine.strength or "Not added" }}</dd>
+                </div>
+
+                <div>
+                    <dt>Manufacturer</dt>
+                    <dd>{{ medicine.manufacturer or "Not added" }}</dd>
+                </div>
+
+                <div>
+                    <dt>Batch number</dt>
+                    <dd>{{ medicine.batch_number or "Not added" }}</dd>
+                </div>
+
+                <div>
+                    <dt>Expiry date</dt>
+                    <dd>{{ medicine.expiry_date or "Not added" }}</dd>
+                </div>
+
+                <div>
+                    <dt>Dosage</dt>
+                    <dd>{{ medicine.dosage or "Not added" }}</dd>
+                </div>
+
+                <div>
+                    <dt>Counterfeit score</dt>
+                    <dd>
+                        {{ medicine.counterfeit_score if medicine.counterfeit_score is not none else "Not available" }}
+                    </dd>
+                </div>
+
+            </dl>
+
+            <div class="med-card-actions">
+
+                <a class="med-btn med-btn-secondary"
+                    href="{{ url_for('medicine_shelf.medicine_details', medicine_id=medicine.id) }}">
+                    View details
+                </a>
+
+                {% if medicine.history_id %}
+
+                <a class="med-btn med-btn-secondary"
+                    href="{{ url_for('medicine_history.edit_history', history_id=medicine.history_id) }}">
+                    Edit scan details
+                </a>
+
+                <form method="POST"
+                    action="{{ url_for('medicine_history.email_history', history_id=medicine.history_id) }}">
+                    <input type="email" name="recipient_email"
+                        value="{{ current_user.email if current_user.is_authenticated else '' }}"
+                        placeholder="Recipient email" aria-label="Recipient email" required>
+
+                    <button class="med-btn med-btn-secondary" type="submit">
+                        Email scan
+                    </button>
+                </form>
+
+                {% else %}
+
+                <a class="med-btn med-btn-secondary"
+                    href="{{ url_for('medicine_shelf.edit_medicine_page', medicine_id=medicine.id) }}">
+                    Edit
+                </a>
+
+                {% endif %}
+
+            </div>
+
+            <form method="POST" action="{{ url_for('medicine_shelf.remove_medicine', medicine_id=medicine.id) }}"
+                onsubmit="return confirm('Delete this medicine from your shelf?');">
+                <button class="med-btn med-btn-danger" type="submit">
+                    Delete
+                </button>
+            </form>
+
+        </article>
+
+        {% endfor %}
+
+    </div>
+
+    <p class="med-empty med-hidden" id="noMedicineMatch">
+        No medicines match your search.
+    </p>
+
+    {% else %}
+
+    <div class="med-empty">
+        <h2>Your shelf is empty</h2>
+
+        <p>
+            Add a medicine to keep its details in one place.
+        </p>
+
+        <a class="med-btn med-btn-primary" href="{{ url_for('medicine_shelf.add_medicine_page') }}">
+            Add your first medicine
+        </a>
+    </div>
+
+    {% endif %}
+
+</section>
+
+<script>
+    function filterMedicineShelf() {
+        const query = document
+            .getElementById("medicineSearch")
+            .value
+            .trim()
+            .toLowerCase();
+
+        const cards = document.querySelectorAll(".med-card");
+        let visible = 0;
+
+        cards.forEach(card => {
+            const searchText = (card.dataset.search || "").toLowerCase();
+            const match = searchText.includes(query);
+
+            card.classList.toggle("med-hidden", !match);
+
+            if (match) {
+                visible++;
+            }
+        });
+
+        const noMatch = document.getElementById("noMedicineMatch");
+
+        if (noMatch) {
+            noMatch.classList.toggle("med-hidden", visible !== 0);
+        }
+    }
+</script>
+>>>>>>> origin/Whatsapp_integration
 
                 </p>
 
