@@ -73,15 +73,29 @@ def create_app():
         try:
             from sqlalchemy import text
             with db.engine.connect() as conn:
-                cols = [row[1] for row in conn.execute(text("PRAGMA table_info(users)")).fetchall()]
-                if "first_name" not in cols:
+                # Users table migrations
+                u_cols = [row[1] for row in conn.execute(text("PRAGMA table_info(users)")).fetchall()]
+                if "first_name" not in u_cols:
                     conn.execute(text("ALTER TABLE users ADD COLUMN first_name VARCHAR(60)"))
-                if "last_name" not in cols:
+                if "last_name" not in u_cols:
                     conn.execute(text("ALTER TABLE users ADD COLUMN last_name VARCHAR(60)"))
-                if "role" not in cols:
+                if "role" not in u_cols:
                     conn.execute(text("ALTER TABLE users ADD COLUMN role VARCHAR(30) DEFAULT 'patient'"))
-                if "patient_name" not in cols:
+                if "patient_name" not in u_cols:
                     conn.execute(text("ALTER TABLE users ADD COLUMN patient_name VARCHAR(100)"))
+
+                # CareCircleContacts migrations
+                c_cols = [row[1] for row in conn.execute(text("PRAGMA table_info(care_circle_contacts)")).fetchall()]
+                if "notify_on_reminder" not in c_cols:
+                    conn.execute(text("ALTER TABLE care_circle_contacts ADD COLUMN notify_on_reminder BOOLEAN DEFAULT 1"))
+                if "notify_on_taken" not in c_cols:
+                    conn.execute(text("ALTER TABLE care_circle_contacts ADD COLUMN notify_on_taken BOOLEAN DEFAULT 1"))
+
+                # DoseLogs migrations
+                d_cols = [row[1] for row in conn.execute(text("PRAGMA table_info(dose_logs)")).fetchall()]
+                if "taken_by_name" not in d_cols:
+                    conn.execute(text("ALTER TABLE dose_logs ADD COLUMN taken_by_name VARCHAR(100) DEFAULT 'Self'"))
+
                 conn.commit()
         except Exception:
             pass

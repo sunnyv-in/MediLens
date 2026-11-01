@@ -47,6 +47,10 @@ class CareCircleContact(db.Model):
     name = db.Column(db.String(100), nullable=False)
     relationship = db.Column(db.String(50), default="Caregiver")  # 'Daughter', 'Son', 'Nurse', 'Spouse', 'Doctor'
     phone_number = db.Column(db.String(30), nullable=False)
+
+    notify_on_reminder = db.Column(db.Boolean, default=True)
+    notify_on_taken = db.Column(db.Boolean, default=True)
+
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     user = db.relationship("User", backref=db.backref("care_circle_contacts", cascade="all, delete-orphan", lazy=True))
@@ -63,10 +67,12 @@ class DoseLog(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     guest_id = db.Column(db.String(36), nullable=True, index=True)
 
-    medicine_id = db.Column(db.Integer, db.ForeignKey("medicines.id"), nullable=True)
     reminder_id = db.Column(db.Integer, db.ForeignKey("medication_reminders.id"), nullable=True)
+    medicine_id = db.Column(db.Integer, db.ForeignKey("medicines.id"), nullable=True)
 
     medicine_name = db.Column(db.String(120), nullable=False)
+    taken_by_name = db.Column(db.String(100), default="Self")
     administered_by = db.Column(db.String(100), default="Self")
+
     taken_at = db.Column(db.DateTime, default=datetime.utcnow)
-    status = db.Column(db.String(30), default="taken")  # 'taken', 'skipped'
+    status = db.Column(db.String(30), default="taken")  # 'taken', 'missed', 'skipped'
