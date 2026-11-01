@@ -1,4 +1,8 @@
 {% extends "layouts/base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/medicine.css') }}">
+{% endblock %}
 {% block title %}Edit Medicine | MediLens{% endblock %}
 
 {% block content %}
@@ -45,7 +49,7 @@
                 </div>
                 <div class="med-field">
                     <label for="expiry_date">Expiry date</label>
-                    <input id="expiry_date" name="expiry_date" type="text" value="{{ medicine.expiry_date or '' }}">
+                    <input id="expiry_date" name="expiry_date" type="date" value="{{ medicine.expiry_date or '' }}">
                 </div>
                 <div class="med-field">
                     <label for="quantity">Quantity</label>

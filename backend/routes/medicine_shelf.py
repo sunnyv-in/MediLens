@@ -8,6 +8,9 @@ from backend.services.medicine_service import (
     delete_medicine,
 )
 
+from flask import flash
+from backend.services.email_service import send_medicine_shelf_email
+
 medicine_shelf_bp = Blueprint("medicine_shelf", __name__)
 
 
@@ -126,5 +129,19 @@ def edit_medicine(medicine_id):
 def remove_medicine(medicine_id):
 
     delete_medicine(medicine_id)
+
+    return redirect(url_for("medicine_shelf.medicine_shelf"))
+
+
+@medicine_shelf_bp.route("/medicine-shelf/email", methods=["POST"])
+def email_medicine_shelf():
+    recipient = request.form.get("recipient_email", "").strip()
+
+    try:
+        medicines = get_all_medicines()
+        send_medicine_shelf_email(medicines, recipient)
+        flash("Your medicine shelf was emailed successfully.", "success")
+    except Exception as error:
+        flash(f"Could not send the medicine shelf email: {error}", "error")
 
     return redirect(url_for("medicine_shelf.medicine_shelf"))

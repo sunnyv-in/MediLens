@@ -1,8 +1,14 @@
 {% extends "layouts/base.html" %}
 
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/medicine.css') }}">
+{% endblock %}
+
 {% block title %}Medicine Shelf | MediLens{% endblock %}
 
 {% block content %}
+
 <section class="med-page">
 
     <header class="med-page-header">
@@ -30,6 +36,23 @@
 
     <div class="med-shelf-grid" id="medicineGrid">
 
+        <form class="med-email-shelf" method="POST" action="{{ url_for('medicine_shelf.email_medicine_shelf') }}">
+            <div>
+                <h2>Email your saved medicines</h2>
+                <p>Send all medicines currently on your shelf to your email.</p>
+            </div>
+
+            <div class="med-email-controls">
+                <input type="email" name="recipient_email"
+                    value="{{ current_user.email if current_user.is_authenticated else '' }}"
+                    placeholder="Email address" aria-label="Email address" required>
+
+                <button class="med-btn med-btn-primary" type="submit">
+                    Email entire shelf
+                </button>
+            </div>
+        </form>
+
         {% for medicine in medicines %}
 
         <article class="med-card"
@@ -38,6 +61,7 @@
             <div class="med-card-heading">
                 <div>
                     <h2>{{ medicine.medicine_name or "Unnamed medicine" }}</h2>
+
                     <p class="med-muted">
                         {{ medicine.generic_name or "Generic name not added" }}
                     </p>
@@ -49,6 +73,7 @@
             </div>
 
             <dl class="med-info-grid">
+
                 <div>
                     <dt>Strength</dt>
                     <dd>{{ medicine.strength or "Not added" }}</dd>
@@ -80,15 +105,18 @@
                         {{ medicine.counterfeit_score if medicine.counterfeit_score is not none else "Not available" }}
                     </dd>
                 </div>
+
             </dl>
 
             <div class="med-card-actions">
+
                 <a class="med-btn med-btn-secondary"
                     href="{{ url_for('medicine_shelf.medicine_details', medicine_id=medicine.id) }}">
                     View details
                 </a>
 
                 {% if medicine.history_id %}
+
                 <a class="med-btn med-btn-secondary"
                     href="{{ url_for('medicine_history.edit_history', history_id=medicine.history_id) }}">
                     Edit scan details
@@ -99,16 +127,21 @@
                     <input type="email" name="recipient_email"
                         value="{{ current_user.email if current_user.is_authenticated else '' }}"
                         placeholder="Recipient email" aria-label="Recipient email" required>
+
                     <button class="med-btn med-btn-secondary" type="submit">
                         Email scan
                     </button>
                 </form>
+
                 {% else %}
+
                 <a class="med-btn med-btn-secondary"
                     href="{{ url_for('medicine_shelf.edit_medicine_page', medicine_id=medicine.id) }}">
                     Edit
                 </a>
+
                 {% endif %}
+
             </div>
 
             <form method="POST" action="{{ url_for('medicine_shelf.remove_medicine', medicine_id=medicine.id) }}"
@@ -132,6 +165,7 @@
 
     <div class="med-empty">
         <h2>Your shelf is empty</h2>
+
         <p>
             Add a medicine to keep its details in one place.
         </p>

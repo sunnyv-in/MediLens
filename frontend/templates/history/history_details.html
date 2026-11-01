@@ -1,5 +1,7 @@
 {% extends "layouts/base.html" %}
-
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/history.css') }}">
+{% endblock %}
 {% block title %}Medicine Scan Details | MediLens{% endblock %}
 
 {% block content %}

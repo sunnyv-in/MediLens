@@ -4,6 +4,10 @@ import os
 from flask import current_app
 from flask_mail import Message
 
+from flask_mail import Message
+from flask import current_app
+from backend.extensions import mail
+
 from backend.extensions import mail
 
 
@@ -65,5 +69,52 @@ Counterfeit analysis:
                     content_type=content_type,
                     data=image_file.read(),
                 )
+
+    mail.send(message)
+
+
+def send_medicine_shelf_email(medicines, recipient):
+    recipient = (recipient or "").strip()
+
+    if not recipient:
+        raise ValueError("Enter a recipient email address.")
+
+    if not current_app.config.get("MAIL_USERNAME") or not current_app.config.get(
+        "MAIL_PASSWORD"
+    ):
+        raise RuntimeError(
+            "Email is not configured. Check MAIL_USERNAME and MAIL_PASSWORD."
+        )
+
+    if not medicines:
+        raise ValueError("Your medicine shelf is empty.")
+
+    lines = [
+        "Your saved MediLens medicine shelf",
+        "",
+        f"Total medicines: {len(medicines)}",
+        "",
+    ]
+
+    for index, medicine in enumerate(medicines, start=1):
+        lines.extend(
+            [
+                f"{index}. {medicine.medicine_name or 'Unnamed medicine'}",
+                f"   Generic name: {medicine.generic_name or 'Not recorded'}",
+                f"   Strength: {medicine.strength or 'Not recorded'}",
+                f"   Manufacturer: {medicine.manufacturer or 'Not recorded'}",
+                f"   Batch number: {medicine.batch_number or 'Not recorded'}",
+                f"   Expiry date: {medicine.expiry_date or 'Not recorded'}",
+                f"   Quantity: {medicine.quantity if medicine.quantity is not None else 'Not recorded'}",
+                f"   Dosage: {medicine.dosage or 'Not recorded'}",
+                "",
+            ]
+        )
+
+    message = Message(
+        subject="Your MediLens medicine shelf",
+        recipients=[recipient],
+        body="\n".join(lines),
+    )
 
     mail.send(message)
