@@ -10,9 +10,41 @@ venv/
 
 # Environment variables
 .env
+<<<<<<< HEAD
+<<<<<<< HEAD
+.env.*
+=======
+*.db
+>>>>>>> origin/Whatsapp_integration
+
+
+backend/uploads/
+
+backend/processed/
+<<<<<<< HEAD
+backend/processed/*
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Local experiments and benchmarks
+experiments/
+test_*.py
+=======
 *.db
 
 
 backend/uploads/
 
 backend/processed/
+>>>>>>> ef971a8 (Update gitignore)
+=======
+>>>>>>> origin/Whatsapp_integration

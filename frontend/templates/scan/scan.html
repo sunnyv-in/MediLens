@@ -162,35 +162,11 @@
 
 <!-- ==========================================================
      AI SCANNING / OCR LOADING OVERLAY
-========================================================== -->
-<div
-  id="loadingOverlay"
-  class="loading-overlay"
-  aria-live="polite"
-  aria-hidden="true"
-  role="dialog"
-  aria-label="Analyzing medicine image"
->
-  <div class="loading-card">
-    <div class="scanner-orbit">
-      <i class="fa-solid fa-dna"></i>
-    </div>
-
-    <span class="scan-badge" style="margin-bottom: 12px;">MEDILENS AI IN PROGRESS</span>
-
-    <h2>Analyzing Your Medicine</h2>
-
-    <p id="loadingText">
-      Processing packaging imagery, running OCR text extraction, and consulting drug safety database...
-    </p>
-
-    <small>
-      <i class="fa-solid fa-circle-info"></i> This may take 5–10 seconds. Please do not refresh the page.
-    </small>
-  </div>
 </div>
+
 {% endblock %}
 
 {% block js %}
+
 <script src="{{ url_for('static', filename='js/scan.js') }}"></script>
 {% endblock %}

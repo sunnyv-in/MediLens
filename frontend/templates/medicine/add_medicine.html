@@ -1,4 +1,9 @@
 {% extends "layouts/base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/medicine.css') }}">
+{% endblock %}
+
 {% block title %}Add Medicine | MediLens{% endblock %}
 
 {% block css %}

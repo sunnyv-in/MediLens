@@ -228,6 +228,17 @@
       <div class="hd-no-image"><i class="fa-regular fa-image"></i> No image saved for this scan</div>
       {% endif %}
     </div>
+    <h1>
+
+        History Details
+
+    </h1>
+
+    <a href="{{ url_for('medicine_history.medicine_history') }}" class="btn">
+
+        Back
+
+    </a>
 
     <!-- Medicine Info -->
     <div class="hd-card">
@@ -248,11 +259,106 @@
         {% endfor %}
       </dl>
     </div>
-
     <!-- AI Explanation -->
     <div class="hd-card hd-full">
       <h2 class="hd-card-title"><i class="fa-solid fa-sparkles" style="color:var(--accent-ai)"></i> Gemini AI Explanation</h2>
       <div class="ai-box">{{ data.get("ai_explanation") or "No AI explanation was saved for this scan." }}</div>
+    </div>
+        <a class="history-secondary-btn" href="{{ url_for('medicine_history.medicine_history') }}">
+            Back to history
+        </a>
+    </header>
+
+    <div class="history-detail-grid">
+
+
+        <!-- Uploaded Medicine Image -->
+
+        <section class="history-detail-card">
+            <h2>Uploaded medicine image</h2>
+
+    <div class="details-grid">
+
+        <div class="detail-box">
+
+            <h3>
+
+                Medicine
+
+            </h3>
+
+            <p>
+
+                {{ history.medicine_name }}
+
+            </p>
+
+        </div>
+
+        <div class="detail-box">
+
+            <h3>
+
+                Manufacturer
+
+            </h3>
+
+            <p>
+
+                {{ history.manufacturer }}
+
+            </p>
+
+        </div>
+
+        <div class="detail-box">
+
+            <h3>
+
+                Expiry
+
+            </h3>
+
+            <p>
+
+                {{ history.expiry_date }}
+
+            </p>
+
+        </div>
+
+        <div class="detail-box">
+
+            <h3>
+
+                Counterfeit Score
+
+            </h3>
+
+            <p>
+
+                {{ history.counterfeit_score }}
+
+            </p>
+
+        </div>
+
+        <div class="detail-box">
+
+            <h3>
+
+                Scan Time
+
+            </h3>
+
+            <p>
+
+                {{ history.scan_time }}
+
+            </p>
+
+        </div>
+
     </div>
 
     <!-- Counterfeit Analysis -->
@@ -325,6 +431,157 @@
         {% endif %}
       </details>
       {% endif %}
+
+                    {{ ocr_items }}
+
+                    {% elif ocr_items is sequence and ocr_items is not mapping %}
+
+                    {% for item in ocr_items %}
+
+                    {% if item is mapping %}
+                    {{ item.get("text", "") }}
+                    {% else %}
+                    {{ item }}
+                    {% endif %}
+
+                    {% if not loop.last %} {% endif %}
+
+                    {% endfor %}
+
+                    {% elif ocr_items %}
+
+                    {{ ocr_items }}
+
+                    {% else %}
+
+                    No OCR text was saved for this scan.
+
+                    {% endif %}
+
+                </div>
+            </details>
+
+            <details class="history-collapsible">
+                <summary>Show ranked OCR results</summary>
+
+                {% if ranked_items is sequence
+                and ranked_items is not string
+                and ranked_items is not mapping %}
+
+                <ol class="ranked-ocr-list">
+
+                    {% for item in ranked_items %}
+
+                    <li>
+
+                        {% if item is mapping %}
+
+                        <strong>
+                            {{ item.get("text", "No text") }}
+                        </strong>
+
+                        {% if item.get("confidence") is not none %}
+
+                        <span>
+                            Confidence:
+                            {{ "%.1f"|format(item.get("confidence") * 100) }}%
+                        </span>
+
+                        {% endif %}
+
+                        {% if item.get("score") is not none %}
+
+                        <span>
+                            Score:
+                            {{ "%.2f"|format(item.get("score")) }}
+                        </span>
+
+                        {% endif %}
+
+                        {% else %}
+
+                        {{ item }}
+
+                        {% endif %}
+
+                    </li>
+
+                    {% endfor %}
+
+                </ol>
+
+                {% elif ranked_items %}
+
+                <div class="history-ocr-text">
+                    {{ ranked_items }}
+                </div>
+
+                {% else %}
+
+                <p>No ranked OCR data was saved for this scan.</p>
+
+                {% endif %}
+
+            </details>
+        </section>
+
+        <!-- Email Scan Details -->
+
+        <section class="history-detail-card history-full-width">
+
+            <h2>Email Scan Details</h2>
+
+            <p class="history-muted">
+                Send the medicine information, scan details, and uploaded
+                image to your email or another recipient.
+            </p>
+
+            <form method="POST" action="{{ url_for('medicine_history.email_history', history_id=history.id) }}">
+
+                <label for="recipient_email">
+                    Recipient email address
+                </label>
+
+                <input id="recipient_email" name="recipient_email" type="email"
+                    value="{{ current_user.email if current_user.is_authenticated else '' }}"
+                    placeholder="Enter recipient email" required>
+
+                <button type="submit" class="history-primary-btn">
+                    Email scan details and image
+                </button>
+
+            </form>
+
+        </section>
+
+        <!-- Scan Metadata -->
+
+        <section class="history-detail-card history-full-width">
+
+            <h2>Scan metadata</h2>
+
+            <dl class="history-detail-fields">
+
+                <div>
+                    <dt>Scanned at</dt>
+
+                    <dd>
+                        {{ history.scan_time.strftime("%d %b %Y, %I:%M %p")
+                        if history.scan_time else "Not available" }}
+                    </dd>
+                </div>
+
+                <div>
+                    <dt>Image filename</dt>
+
+                    <dd>
+                        {{ history.image_filename or "Not available" }}
+                    </dd>
+                </div>
+
+            </dl>
+
+        </section>
     </div>
 
     <!-- Email Scan -->
