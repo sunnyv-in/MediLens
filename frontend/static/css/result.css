@@ -1,345 +1,1674 @@
-/* ==========================================================
-                    RESULT PAGE
-========================================================== */
+
+/* =========================================================
+   MEDILENS — MEDICINE RESULT PAGE
+   Complete responsive stylesheet
+========================================================= */
+
+
+/* =========================================================
+   1. RESULT PAGE VARIABLES AND BASE
+========================================================= */
 
 .result-page {
-  width: min(1400px, 92%);
 
-  margin: auto;
+    --result-primary: #2563eb;
+    --result-primary-dark: #1d4ed8;
 
-  padding: 70px 0 100px;
+    --result-dark: #172554;
+    --result-text: #334155;
+    --result-muted: #64748b;
+
+    --result-border: #e5eaf2;
+    --result-soft: #f6f9ff;
+    --result-background: #ffffff;
+
+    width: min(1320px, calc(100% - 48px));
+
+    margin: 0 auto;
+
+    padding: 28px 0 55px;
+
+    color: var(--result-text);
+
+    font-family: "Poppins", sans-serif;
+
+    line-height: 1.6;
+
 }
 
-/* ==========================================================
-                    HEADER
-========================================================== */
+.result-page *,
+.result-page *::before,
+.result-page *::after {
+
+    box-sizing: border-box;
+
+}
+
+.result-page img {
+
+    max-width: 100%;
+
+}
+
+.result-page button,
+.result-page select {
+
+    font-family: inherit;
+
+}
+
+.result-page p {
+
+    overflow-wrap: anywhere;
+
+}
+
+
+/* =========================================================
+   2. PAGE HEADER
+========================================================= */
 
 .result-header {
-  text-align: center;
 
-  margin-bottom: 60px;
+    max-width: 800px;
+
+    margin-bottom: 24px;
+
+    text-align: left;
+
+}
+
+.result-header .section-badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    padding: 8px 15px;
+
+    color: var(--result-primary);
+
+    background: #eaf2ff;
+
+    border-radius: 30px;
+
+    font-size: 0.78rem;
+
+    font-weight: 700;
+
+    letter-spacing: 0.7px;
+
 }
 
 .result-header h1 {
-  font-size: clamp(2.7rem, 5vw, 4rem);
 
-  color: #1e293b;
+    margin: 12px 0 9px;
 
-  font-weight: 800;
+    color: var(--result-dark);
 
-  margin: 20px 0;
+    font-size: clamp(2rem, 4vw, 3rem);
+
+    font-weight: 800;
+
+    line-height: 1.2;
+
 }
 
 .result-header h1 span {
-  color: #2563eb;
+
+    color: var(--result-primary);
+
 }
 
 .result-header p {
-  max-width: 750px;
 
-  margin: auto;
+    max-width: 750px;
 
-  color: #64748b;
+    margin: 0;
 
-  line-height: 1.8;
+    color: var(--result-muted);
 
-  font-size: 1.1rem;
+    font-size: 1rem;
+
+    line-height: 1.7;
+
 }
 
-/* ==========================================================
-                    GRID
-========================================================== */
 
-.result-grid {
-  display: grid;
-
-  grid-template-columns: 420px 1fr;
-
-  gap: 35px;
-
-  margin-bottom: 40px;
-}
-
-/* ==========================================================
-                    CARD
-========================================================== */
+/* =========================================================
+   3. COMMON CARDS
+========================================================= */
 
 .result-card {
-  background: #ffffff;
 
-  border-radius: 24px;
+    min-width: 0;
 
-  padding: 35px;
+    margin-bottom: 20px;
 
-  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.06);
+    padding: clamp(20px, 3vw, 30px);
 
-  margin-bottom: 35px;
+    background: var(--result-background);
+
+    border: 1px solid var(--result-border);
+
+    border-radius: 20px;
+
+    box-shadow: 0 8px 30px rgba(15, 23, 42, 0.04);
+
 }
 
 .result-card h2 {
-  margin-bottom: 30px;
 
-  color: #1e293b;
+    color: var(--result-dark);
 
-  font-size: 1.6rem;
+    font-size: clamp(1.2rem, 2.5vw, 1.45rem);
+
+    line-height: 1.35;
+
+    margin: 0;
+
 }
 
-/* ==========================================================
-                    IMAGE
-========================================================== */
+.result-eyebrow {
 
-.uploaded-image {
-  width: 100%;
+    display: block;
 
-  min-height: 420px;
+    margin-bottom: 8px;
 
-  display: flex;
+    color: var(--result-primary);
 
-  justify-content: center;
+    font-size: 0.72rem;
 
-  align-items: center;
+    font-weight: 750;
 
-  border-radius: 20px;
+    letter-spacing: 1px;
 
-  background: #f8fbff;
-
-  border: 1px solid #e2e8f0;
-
-  overflow: hidden;
 }
 
-.uploaded-image img {
-  width: 100%;
 
-  height: 100%;
+/* =========================================================
+   4. MEDICINE OVERVIEW
+========================================================= */
 
-  object-fit: contain;
+.result-overview {
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 0.85fr)
+        minmax(0, 1.15fr);
+
+    align-items: start;
+
+    gap: 18px;
+
+    margin-bottom: 20px;
+
 }
 
-/* ==========================================================
-                    INFO TABLE
-========================================================== */
+.result-overview > .result-card {
 
-.info-table {
-  display: flex;
+    height: auto;
 
-  flex-direction: column;
+    min-height: 0;
 
-  gap: 15px;
+    margin-bottom: 0;
+
+    align-self: start;
+
 }
 
-.info-row {
-  display: flex;
+.result-image-card,
+.medicine-summary-card {
 
-  justify-content: space-between;
+    min-width: 0;
 
-  align-items: center;
-
-  padding: 16px 20px;
-
-  border-radius: 14px;
-
-  background: #f8fafc;
-
-  transition: 0.25s;
 }
 
-.info-row:hover {
-  background: #eef6ff;
+
+/* =========================================================
+   5. UPLOADED IMAGE CARD
+========================================================= */
+
+.result-section-heading {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    flex-wrap: wrap;
+
+    gap: 12px;
+
+    margin-bottom: 20px;
+
 }
 
-.info-row span {
-  color: #64748b;
+.result-section-heading h2 {
 
-  font-weight: 500;
+    color: var(--result-dark);
+
 }
 
-.info-row strong {
-  color: #1e293b;
+.image-tag {
 
-  text-align: right;
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 7px 11px;
+
+    color: #475569;
+
+    background: #f1f5f9;
+
+    border-radius: 30px;
+
+    font-size: 0.75rem;
+
+    white-space: nowrap;
+
 }
 
-/* ==========================================================
-                    AI BOX
-========================================================== */
+.result-image {
 
-.ai-box {
-  background: #f8fbff;
+    width: 100%;
 
-  border-radius: 18px;
+    aspect-ratio: 4 / 3;
 
-  padding: 30px;
+    max-height: 360px;
 
-  border-left: 6px solid #2563eb;
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    overflow: hidden;
+
+    padding: 8px;
+
+    background: #f8fafc;
+
+    border: 1px solid var(--result-border);
+
+    border-radius: 16px;
+
 }
 
-.ai-box pre {
-  white-space: pre-wrap;
+.result-image img {
 
-  font-family: "Poppins", sans-serif;
+    display: block;
 
-  line-height: 1.9;
+    width: 100%;
 
-  color: #334155;
+    height: 100%;
+
+    object-fit: contain;
+
 }
 
-/* ==========================================================
-                    COUNTERFEIT
-========================================================== */
+.image-caption {
 
-.counterfeit-grid {
-  display: grid;
+    margin: 13px 0 0;
 
-  grid-template-columns: repeat(3, 1fr);
+    color: var(--result-muted);
 
-  gap: 25px;
+    font-size: 0.8rem;
 
-  margin-bottom: 35px;
+    line-height: 1.6;
+
 }
 
-.counterfeit-item {
-  text-align: center;
 
-  padding: 28px;
+/* =========================================================
+   6. MEDICINE SUMMARY
+========================================================= */
 
-  border-radius: 20px;
+.medicine-summary-card {
 
-  background: #f8fbff;
-}
+    display: flex;
 
-.counterfeit-item span {
-  display: block;
-
-  margin-bottom: 10px;
-
-  color: #64748b;
-}
-
-.counterfeit-item strong {
-  font-size: 2rem;
-
-  color: #2563eb;
-}
-
-/* ==========================================================
-                    CHECKS
-========================================================== */
-
-.checks {
-  margin-top: 25px;
-}
-
-.checks h3 {
-  margin-bottom: 20px;
-
-  color: #1e293b;
-}
-
-.checks ul {
-  list-style: none;
-}
-
-.checks li {
-  background: #f8fafc;
-
-  margin-bottom: 12px;
-
-  padding: 15px 18px;
-
-  border-radius: 12px;
-
-  color: #334155;
-}
-
-/* ==========================================================
-                    NOTE
-========================================================== */
-
-.analysis-note {
-  margin-top: 35px;
-
-  padding: 25px;
-
-  border-radius: 18px;
-
-  background: #fff8e7;
-
-  border-left: 5px solid #f59e0b;
-}
-
-.analysis-note strong {
-  display: block;
-
-  margin-bottom: 12px;
-
-  color: #92400e;
-}
-
-.analysis-note p {
-  line-height: 1.8;
-
-  color: #7c5a13;
-}
-
-/* ==========================================================
-                    ACTIONS
-========================================================== */
-
-.result-actions {
-  display: flex;
-
-  justify-content: center;
-
-  gap: 25px;
-
-  margin-top: 60px;
-}
-
-.result-actions .btn {
-  min-width: 230px;
-
-  justify-content: center;
-}
-
-/* ==========================================================
-                    FULL WIDTH
-========================================================== */
-
-.full-width {
-  width: 100%;
-}
-
-/* ==========================================================
-                    RESPONSIVE
-========================================================== */
-
-@media (max-width: 1100px) {
-  .result-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 768px) {
-  .counterfeit-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .info-row {
     flex-direction: column;
+
+    align-items: stretch;
+
+    justify-content: flex-start;
+
+}
+
+.medicine-title {
+
+    margin: 4px 0 6px;
+
+    color: var(--result-dark);
+
+    font-size: clamp(1.5rem, 3vw, 2rem);
+
+    font-weight: 800;
+
+    line-height: 1.3;
+
+    overflow-wrap: anywhere;
+
+}
+
+.medicine-generic {
+
+    margin: 0 0 19px;
+
+    color: var(--result-muted);
+
+    font-size: 0.94rem;
+
+    line-height: 1.7;
+
+}
+
+
+/* =========================================================
+   7. QUICK FACT CARDS
+========================================================= */
+
+.quick-facts {
+
+    display: grid;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 10px;
+
+}
+
+.quick-fact {
+
+    min-width: 0;
+
+    padding: 14px 15px;
+
+    background: #f8faff;
+
+    border: 1px solid #edf1f8;
+
+    border-radius: 13px;
+
+}
+
+.quick-fact span {
+
+    display: flex;
+
+    align-items: center;
 
     gap: 8px;
 
-    align-items: flex-start;
-  }
+    margin-bottom: 7px;
 
-  .result-actions {
-    flex-direction: column;
+    color: var(--result-muted);
+
+    font-size: 0.76rem;
+
+    font-weight: 600;
+
+}
+
+.quick-fact span i {
+
+    color: var(--result-primary);
+
+}
+
+.quick-fact strong {
+
+    display: block;
+
+    color: var(--result-dark);
+
+    font-size: 0.88rem;
+
+    font-weight: 700;
+
+    line-height: 1.5;
+
+    overflow-wrap: anywhere;
+
+}
+
+.expiry-fact {
+
+    background: #fffaf0;
+
+    border-color: #fce9c5;
+
+}
+
+.expiry-fact span i {
+
+    color: #b7791f;
+
+}
+
+
+/* =========================================================
+   8. EXPANDABLE MEDICINE DETAILS
+========================================================= */
+
+.medicine-details {
+
+    margin-top: 16px;
+
+    border-top: 1px solid var(--result-border);
+
+}
+
+.medicine-details summary,
+.assessment-details summary {
+
+    display: flex;
 
     align-items: center;
-  }
 
-  .result-actions .btn {
-    width: 280px;
-  }
+    justify-content: space-between;
+
+    gap: 12px;
+
+    min-height: 46px;
+
+    padding: 12px 14px;
+
+    color: #315fc0;
+
+    background: #fafcff;
+
+    border: 1px solid #e5eaf2;
+
+    border-radius: 11px;
+
+    font-size: 0.9rem;
+
+    font-weight: 700;
+
+    list-style: none;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+
+}
+
+.medicine-details summary::-webkit-details-marker,
+.assessment-details summary::-webkit-details-marker {
+
+    display: none;
+
+}
+
+.medicine-details summary span,
+.assessment-details summary span {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+}
+
+.medicine-details summary:hover,
+.assessment-details summary:hover {
+
+    background: #f1f6ff;
+
+    border-color: #cbdcfb;
+
+}
+
+.medicine-details summary:focus-visible,
+.assessment-details summary:focus-visible {
+
+    outline: 3px solid rgba(37, 99, 235, 0.2);
+
+    outline-offset: 3px;
+
+}
+
+.details-arrow {
+
+    flex-shrink: 0;
+
+    transition: transform 0.25s ease;
+
+}
+
+details[open] > summary .details-arrow {
+
+    transform: rotate(180deg);
+
+}
+
+.details-grid {
+
+    display: grid;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 9px;
+
+    padding-top: 18px;
+
+}
+
+.detail-tile {
+
+    min-width: 0;
+
+    padding: 12px 14px;
+
+    background: #fafbfd;
+
+    border: 1px solid #edf1f6;
+
+    border-radius: 12px;
+
+}
+
+.detail-tile span {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: var(--result-muted);
+
+    font-size: 0.77rem;
+
+}
+
+.detail-tile strong {
+
+    display: block;
+
+    color: var(--result-dark);
+
+    font-size: 0.86rem;
+
+    line-height: 1.6;
+
+    overflow-wrap: anywhere;
+
+}
+
+.details-disclaimer {
+
+    margin-top: 15px;
+
+    color: var(--result-muted);
+
+    font-size: 0.77rem;
+
+    line-height: 1.6;
+
+}
+
+
+/* =========================================================
+   9. AI EXPLANATION CARD
+========================================================= */
+
+.explanation-card {
+
+    margin-top: 0;
+
+    margin-bottom: 20px;
+
+}
+
+.explanation-heading {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    flex-wrap: wrap;
+
+    gap: 16px;
+
+    margin-bottom: 18px;
+
+}
+
+.explanation-title {
+
+    flex: 1;
+
+    min-width: 220px;
+
+}
+
+.explanation-title h2 {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin: 0 0 5px;
+
+    color: var(--result-dark);
+
+}
+
+.explanation-title h2 i {
+
+    color: var(--result-primary);
+
+}
+
+.explanation-title p {
+
+    margin: 0;
+
+    color: var(--result-muted);
+
+    font-size: 0.9rem;
+
+    line-height: 1.6;
+
+}
+
+
+/* =========================================================
+   10. LANGUAGE AND AUDIO CONTROLS
+========================================================= */
+
+.explanation-controls {
+
+    width: min(420px, 100%);
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+}
+
+.explanation-controls select {
+
+    width: 100%;
+
+    min-width: 0;
+
+    min-height: 44px;
+
+    padding: 10px 13px;
+
+    color: #26364d;
+
+    background: #fff;
+
+    border: 1px solid #d7dfec;
+
+    border-radius: 11px;
+
+    font-family: inherit;
+
+    font-size: 0.87rem;
+
+}
+
+.explanation-controls select:focus-visible {
+
+    outline: 3px solid rgba(37, 99, 235, 0.15);
+
+    border-color: var(--result-primary);
+
+}
+
+.audio-controls {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    align-items: center;
+
+    gap: 9px;
+
+}
+
+.audio-controls button {
+
+    min-height: 42px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    white-space: nowrap;
+
+}
+
+.audio-controls button[hidden] {
+
+    display: none !important;
+
+}
+
+.audio-controls #stopBtn {
+
+    color: #fff;
+
+    background: #dc4444;
+
+    border-color: #dc4444;
+
+}
+
+.audio-controls #stopBtn:hover {
+
+    background: #c73535;
+
+}
+
+
+/* =========================================================
+   11. TRANSLATION STATUS
+========================================================= */
+
+.translation-status {
+
+    margin: 10px 0;
+
+    padding: 11px 14px;
+
+    color: #1d4ed8;
+
+    background: #eff6ff;
+
+    border: 1px solid #dbeafe;
+
+    border-radius: 9px;
+
+    font-size: 0.85rem;
+
+    line-height: 1.5;
+
+}
+
+.translation-status[hidden] {
+
+    display: none !important;
+
+}
+
+
+/* =========================================================
+   12. AI EXPLANATION TEXT BOX
+========================================================= */
+
+.ai-explanation-box {
+
+    padding: 25px 28px;
+
+    background: #f8faff;
+
+    border: 1px solid #edf1fa;
+
+    border-left: 4px solid #3974e8;
+
+    border-radius: 14px;
+
+}
+
+
+/* Main explanation container */
+
+.explanation-text {
+
+    display: block;
+
+    max-width: 100%;
+
+    color: #334155;
+
+    font-family: "Poppins", sans-serif;
+
+    font-size: clamp(0.94rem, 1.2vw, 1.02rem);
+
+    line-height: 1.9;
+
+    white-space: normal;
+
+    overflow-wrap: anywhere;
+
+}
+
+
+/* Natural paragraph spacing */
+
+.explanation-text p {
+
+    margin: 0 0 16px;
+
+    color: #334155;
+
+    font-size: inherit;
+
+    line-height: 1.9;
+
+    white-space: normal;
+
+    overflow-wrap: anywhere;
+
+}
+
+.explanation-text p:last-child {
+
+    margin-bottom: 0;
+
+}
+
+
+/* Bold emphasis */
+
+.explanation-text strong {
+
+    color: #1e3a6e;
+
+    font-weight: 750;
+
+}
+
+
+/* Italic emphasis */
+
+.explanation-text em {
+
+    color: #475569;
+
+    font-style: italic;
+
+}
+
+
+/* Inline code, should rarely occur in medical explanations */
+
+.explanation-text code {
+
+    padding: 2px 5px;
+
+    color: #334155;
+
+    background: #eaf0f8;
+
+    border-radius: 4px;
+
+    font-family: monospace;
+
+    font-size: 0.9em;
+
+}
+
+
+/* AI disclaimer */
+
+.explanation-footer {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 9px;
+
+    margin-top: 16px;
+
+    color: var(--result-muted);
+
+    font-size: 0.78rem;
+
+    line-height: 1.7;
+
+}
+
+.explanation-footer i {
+
+    flex-shrink: 0;
+
+    margin-top: 4px;
+
+    color: var(--result-primary);
+
+}
+
+
+/* =========================================================
+   13. PACKAGING ASSESSMENT
+========================================================= */
+
+.assessment-card {
+
+    margin-top: 0;
+
+    margin-bottom: 24px;
+
+    padding: clamp(20px, 3vw, 30px);
+
+    background: #ffffff;
+
+    border: 1px solid #e5eaf2;
+
+    border-radius: 19px;
+
+    box-shadow: 0 7px 25px rgba(15, 23, 42, 0.035);
+
+}
+
+
+/* Assessment heading */
+
+.assessment-heading {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    flex-wrap: wrap;
+
+    gap: 14px;
+
+    margin-bottom: 22px;
+
+}
+
+.assessment-title h2 {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin: 0;
+
+    color: #1e293b;
+
+    font-size: 1.3rem;
+
+}
+
+.assessment-title h2 i {
+
+    color: #3974d8;
+
+    font-size: 1.12rem;
+
+}
+
+.assessment-title p {
+
+    margin: 7px 0 0;
+
+    color: #64748b;
+
+    font-size: 0.86rem;
+
+    line-height: 1.6;
+
+}
+
+.assessment-tag {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 7px 11px;
+
+    color: #52647c;
+
+    background: #f3f6fa;
+
+    border-radius: 30px;
+
+    font-size: 0.76rem;
+
+    font-weight: 600;
+
+}
+
+
+/* =========================================================
+   14. ASSESSMENT SUMMARY
+========================================================= */
+
+.assessment-summary {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 25px;
+
+    padding: 17px 20px;
+
+    background: #f8fafc;
+
+    border: 1px solid #edf1f5;
+
+    border-radius: 13px;
+
+}
+
+.assessment-value {
+
+    flex: 1;
+
+    min-width: 0;
+
+}
+
+.assessment-value span {
+
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #64748b;
+
+    font-size: 0.79rem;
+
+}
+
+.assessment-value strong {
+
+    color: #263b5b;
+
+    font-size: 1.05rem;
+
+    font-weight: 700;
+
+    overflow-wrap: anywhere;
+
+}
+
+.assessment-divider {
+
+    width: 1px;
+
+    height: 38px;
+
+    flex-shrink: 0;
+
+    background: #dfe5ed;
+
+}
+
+
+/* =========================================================
+   15. VALIDATION CHECKS
+========================================================= */
+
+.assessment-details {
+
+    margin-top: 17px;
+
+    border-top: 1px solid #edf1f5;
+
+}
+
+.assessment-details summary {
+
+    border: none;
+
+    background: transparent;
+
+    padding: 16px 2px;
+
+    color: #435b81;
+
+}
+
+.assessment-details summary:hover {
+
+    border: none;
+
+    background: #f8fafc;
+
+}
+
+.assessment-checks {
+
+    display: grid;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 9px;
+
+    padding: 6px 0 15px;
+
+}
+
+.assessment-check {
+
+    min-width: 0;
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 10px;
+
+    padding: 12px 14px;
+
+    color: #475569;
+
+    background: #f8fafc;
+
+    border: 1px solid #edf1f5;
+
+    border-radius: 10px;
+
+    font-size: 0.83rem;
+
+    line-height: 1.6;
+
+}
+
+.assessment-check i {
+
+    flex-shrink: 0;
+
+    margin-top: 4px;
+
+    color: #6485b9;
+
+    font-size: 0.78rem;
+
+}
+
+
+/* =========================================================
+   16. ASSESSMENT DISCLAIMER
+========================================================= */
+
+.assessment-note {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 12px;
+
+    margin-top: 12px;
+
+    padding: 15px 17px;
+
+    background: #f5f8fc;
+
+    border: 1px solid #e8edf4;
+
+    border-radius: 11px;
+
+}
+
+.assessment-note > i {
+
+    flex-shrink: 0;
+
+    margin-top: 3px;
+
+    color: #6883aa;
+
+}
+
+.assessment-note strong {
+
+    color: #425673;
+
+    font-size: 0.85rem;
+
+}
+
+.assessment-note p {
+
+    margin: 5px 0 0;
+
+    color: #64748b;
+
+    font-size: 0.8rem;
+
+    line-height: 1.7;
+
+}
+
+
+/* =========================================================
+   17. RESULT PAGE ACTION BUTTONS
+========================================================= */
+
+.result-actions {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 14px;
+
+    margin-top: 34px;
+
+}
+
+.result-actions .btn {
+
+    min-width: 210px;
+
+    min-height: 49px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+/* =========================================================
+   18. TABLET RESPONSIVENESS
+========================================================= */
+
+@media (max-width: 1000px) {
+
+    .result-page {
+
+        width: min(900px, calc(100% - 36px));
+
+    }
+
+
+    .result-overview {
+
+        grid-template-columns: 1fr;
+
+        align-items: start;
+
+        gap: 15px;
+
+    }
+
+
+    .result-overview > .result-card {
+
+        width: 100%;
+
+    }
+
+
+    .result-image {
+
+        max-height: 380px;
+
+    }
+
+
+    .medicine-summary-card {
+
+        height: auto;
+
+    }
+
+}
+
+
+/* =========================================================
+   19. MOBILE RESPONSIVENESS
+========================================================= */
+
+@media (max-width: 650px) {
+
+    .result-page {
+
+        width: calc(100% - 24px);
+
+        padding: 24px 0 40px;
+
+    }
+
+
+    /* Header */
+
+    .result-header {
+
+        margin-bottom: 20px;
+
+    }
+
+    .result-header h1 {
+
+        font-size: 2rem;
+
+    }
+
+    .result-header p {
+
+        font-size: 0.9rem;
+
+    }
+
+
+    /* Cards */
+
+    .result-card {
+
+        padding: 17px;
+
+        border-radius: 17px;
+
+    }
+
+
+    .result-overview {
+
+        gap: 13px;
+
+    }
+
+
+    /* Image */
+
+    .result-section-heading {
+
+        flex-wrap: wrap;
+
+        align-items: flex-start;
+
+    }
+
+    .image-tag {
+
+        font-size: 0.7rem;
+
+    }
+
+    .result-image {
+
+        aspect-ratio: 4 / 3;
+
+        min-height: 190px;
+
+        height: auto;
+
+        max-height: 300px;
+
+    }
+
+
+    /* Medicine details */
+
+    .medicine-title {
+
+        font-size: 1.5rem;
+
+    }
+
+    .quick-facts {
+
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+
+        gap: 9px;
+
+    }
+
+    .quick-fact {
+
+        padding: 12px;
+
+    }
+
+    .quick-fact strong {
+
+        font-size: 0.85rem;
+
+    }
+
+    .details-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    /* Explanation heading */
+
+    .explanation-heading {
+
+        flex-direction: column;
+
+        gap: 17px;
+
+    }
+
+    .explanation-title {
+
+        min-width: 0;
+
+        width: 100%;
+
+    }
+
+    .explanation-controls {
+
+        width: 100%;
+
+    }
+
+
+    /* Audio controls */
+
+    .audio-controls {
+
+        display: grid;
+
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+
+        gap: 7px;
+
+    }
+
+    .audio-controls button {
+
+        width: 100%;
+
+        min-width: 0;
+
+        padding-left: 7px;
+
+        padding-right: 7px;
+
+        font-size: 0.8rem;
+
+    }
+
+
+    /* Explanation text */
+
+    .ai-explanation-box {
+
+        padding: 17px;
+
+    }
+
+    .explanation-text {
+
+        font-size: 0.91rem;
+
+        line-height: 1.8;
+
+    }
+
+    .explanation-text p {
+
+        margin-bottom: 13px;
+
+        line-height: 1.8;
+
+    }
+
+
+    /* Assessment */
+
+    .assessment-heading {
+
+        flex-direction: column;
+
+    }
+
+    .assessment-summary {
+
+        gap: 15px;
+
+        padding: 14px;
+
+    }
+
+    .assessment-value strong {
+
+        font-size: 0.95rem;
+
+    }
+
+    .assessment-checks {
+
+        grid-template-columns: 1fr;
+
+    }
+
+    .assessment-note {
+
+        padding: 13px;
+
+    }
+
+
+    /* Actions */
+
+    .result-actions {
+
+        display: grid;
+
+        grid-template-columns: 1fr;
+
+        gap: 10px;
+
+    }
+
+    .result-actions .btn {
+
+        width: 100%;
+
+        min-width: 0;
+
+    }
+
+}
+
+
+/* =========================================================
+   20. EXTRA SMALL PHONES
+========================================================= */
+
+@media (max-width: 380px) {
+
+    .result-page {
+
+        width: calc(100% - 18px);
+
+    }
+
+
+    .quick-facts {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .audio-controls {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .audio-controls button {
+
+        width: 100%;
+
+    }
+
+
+    .assessment-summary {
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+        gap: 12px;
+
+    }
+
+
+    .assessment-divider {
+
+        width: 100%;
+
+        height: 1px;
+
+    }
+
+}
+
+
+/* =========================================================
+   21. ACCESSIBILITY
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .result-page *,
+    .result-page *::before,
+    .result-page *::after {
+
+        scroll-behavior: auto !important;
+
+        transition-duration: 0.01ms !important;
+
+        animation-duration: 0.01ms !important;
+
+        animation-iteration-count: 1 !important;
+
+    }
+
 }

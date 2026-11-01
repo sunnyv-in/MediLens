@@ -11,6 +11,7 @@ def build_medicine_record(
     ocr_text=None,
     ranked_ocr=None,
 ):
+<<<<<<< HEAD
     medicine_info = medicine_info if isinstance(medicine_info, dict) else {}
     counterfeit_result = (
         counterfeit_result if isinstance(counterfeit_result, dict) else {}
@@ -54,6 +55,25 @@ def build_medicine_record(
 
     return {
         "medicine_name": medicine_name,
+=======
+    """
+    Creates one standardized medicine record that can be used by:
+    - Result page
+    - Medicine history
+    - Medicine shelf
+    - Expiry alerts
+    - Reminder system
+    - Database
+    - API endpoints
+    """
+
+    return {
+        "medicine_name": (
+            medicine_info.get("medicine_name")
+            or medicine_info.get("medicine")
+            or ""
+        ),
+>>>>>>> 399b4b78ccc3c0596f1832845b4cb811ad8209c0
         "manufacturer": medicine_info.get("manufacturer", ""),
         "strength": medicine_info.get("strength", ""),
         "batch_number": medicine_info.get("batch_number", ""),
