@@ -32,7 +32,7 @@
   <!-- =====================================================
        NAVBAR
   ====================================================== -->
-  <header>
+  <header class="app-header" id="appHeader">
     <nav class="navbar" aria-label="Main Navigation">
 
       <!-- BRAND LOGO -->
@@ -43,12 +43,7 @@
         <span>Medi<em>Lens</em></span>
       </a>
 
-      <!-- MOBILE HAMBURGER BUTTON -->
-      <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Toggle Navigation Menu" aria-expanded="false">
-        <i class="fa-solid fa-bars"></i>
-      </button>
-
-      <!-- NAVIGATION LINKS -->
+      <!-- NAVIGATION LINKS (DESKTOP CENTER / MOBILE DRAWER) -->
       <ul class="nav-links" id="navLinks">
 
         <!-- HOME -->
@@ -78,28 +73,28 @@
 
         <!-- MEDICINES DROPDOWN -->
         <li class="dropdown">
-          <a href="javascript:void(0)" aria-haspopup="true">
+          <a href="javascript:void(0)" class="dropdown-toggle" aria-haspopup="true">
             <i class="fa-solid fa-pills nav-icon" aria-hidden="true"></i>
             <span>Medicines</span>
-            <i class="fa-solid fa-chevron-down" style="font-size: 0.75rem;" aria-hidden="true"></i>
+            <i class="fa-solid fa-chevron-down" style="font-size: 0.72rem;" aria-hidden="true"></i>
           </a>
           <ul class="dropdown-menu">
             <li>
               <a href="{{ url_for('medicine_shelf.medicine_shelf') }}">
                 <i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i>
-                Medicine Shelf
+                <span>Medicine Shelf</span>
               </a>
             </li>
             <li>
               <a href="{{ url_for('medicine_history.medicine_history') }}">
                 <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>
-                Scan History
+                <span>Scan History</span>
               </a>
             </li>
             <li>
               <a href="{{ url_for('reminder.reminders') }}">
                 <i class="fa-solid fa-bell" aria-hidden="true"></i>
-                Dose Reminders
+                <span>Dose Reminders</span>
               </a>
             </li>
           </ul>
@@ -107,28 +102,28 @@
 
         <!-- SAFETY DROPDOWN -->
         <li class="dropdown">
-          <a href="javascript:void(0)" aria-haspopup="true">
+          <a href="javascript:void(0)" class="dropdown-toggle" aria-haspopup="true">
             <i class="fa-solid fa-shield-heart nav-icon" aria-hidden="true"></i>
             <span>Safety</span>
-            <i class="fa-solid fa-chevron-down" style="font-size: 0.75rem;" aria-hidden="true"></i>
+            <i class="fa-solid fa-chevron-down" style="font-size: 0.72rem;" aria-hidden="true"></i>
           </a>
           <ul class="dropdown-menu">
             <li>
               <a href="{{ url_for('drug_interaction.interaction_list') }}">
                 <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
-                Drug Interactions
+                <span>Drug Interactions</span>
               </a>
             </li>
             <li>
               <a href="{{ url_for('expiry.expiry_alerts') }}">
                 <i class="fa-solid fa-calendar-xmark" aria-hidden="true"></i>
-                Expiry Alerts
+                <span>Expiry Alerts</span>
               </a>
             </li>
             <li>
               <a href="{{ url_for('emergency.emergency_mode') }}">
                 <i class="fa-solid fa-truck-medical" aria-hidden="true"></i>
-                Emergency Mode
+                <span>Emergency Mode</span>
               </a>
             </li>
           </ul>
@@ -142,11 +137,16 @@
           </a>
         </li>
 
+      </ul>
+
+      <!-- RIGHT ACTIONS (ACCESSIBILITY + USER PROFILE + MOBILE HAMBURGER) -->
+      <div class="nav-actions">
+
         <!-- ACCESSIBILITY TOOLBAR (PATIENT-CENTRIC CONTROLS) -->
-        <li class="nav-access-bar" role="group" aria-label="Patient Accessibility Tools">
+        <div class="nav-access-bar" role="group" aria-label="Patient Accessibility Tools">
           <!-- Text Scaling Button: A- / A+ -->
           <button type="button" class="access-btn" id="fontScaleToggle" title="Scale Text Size (Elderly / Accessibility)" aria-label="Scale Text Size">
-            <strong style="font-size: 0.85rem;">A<span style="font-size: 0.65rem;">+</span></strong>
+            <strong style="font-size: 0.82rem;">A<span style="font-size: 0.65rem;">+</span></strong>
           </button>
 
           <!-- Privacy Mask Toggle: Hide/Blur sensitive prescription names -->
@@ -158,41 +158,44 @@
           <button type="button" class="access-btn" id="themeModeToggle" title="Switch Theme (Dark / Light)" aria-label="Switch Theme">
             <i class="fa-solid fa-moon" id="themeModeIcon"></i>
           </button>
-        </li>
+        </div>
 
-        <!-- USER / AUTH -->
+        <!-- USER / AUTH (ALWAYS VISIBLE & RIGHT ALIGNED) -->
         {% if current_user.is_authenticated %}
-        <li class="dropdown user-dropdown">
-          <a href="javascript:void(0)" aria-haspopup="true">
+        <div class="dropdown user-dropdown">
+          <a href="javascript:void(0)" class="user-profile-btn dropdown-toggle" aria-haspopup="true" aria-label="User Menu">
             <span class="user-avatar-badge">{{ current_user.name[:1]|upper }}</span>
-            <span>{{ current_user.name.split()[0] }}</span>
-            <i class="fa-solid fa-chevron-down" style="font-size: 0.75rem;" aria-hidden="true"></i>
+            <span class="user-profile-name">{{ current_user.name.split()[0] }}</span>
+            <i class="fa-solid fa-chevron-down" style="font-size: 0.7rem;" aria-hidden="true"></i>
           </a>
-          <ul class="dropdown-menu">
+          <ul class="dropdown-menu dropdown-menu-right">
             <li>
               <a href="{{ url_for('auth.account') }}">
                 <i class="fa-solid fa-user" aria-hidden="true"></i>
-                My Profile
+                <span>My Profile</span>
               </a>
             </li>
             <li>
               <a href="{{ url_for('auth.logout') }}">
                 <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
-                Logout
+                <span>Logout</span>
               </a>
             </li>
           </ul>
-        </li>
+        </div>
         {% else %}
-        <li>
-          <a href="{{ url_for('auth.login') }}" class="login-nav-btn">
-            <i class="fa-solid fa-right-to-bracket" aria-hidden="true"></i>
-            <span>Login</span>
-          </a>
-        </li>
+        <a href="{{ url_for('auth.login') }}" class="login-nav-btn">
+          <i class="fa-solid fa-right-to-bracket" aria-hidden="true"></i>
+          <span>Login</span>
+        </a>
         {% endif %}
 
-      </ul>
+        <!-- MOBILE HAMBURGER BUTTON -->
+        <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Toggle Navigation Menu" aria-expanded="false">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+
+      </div>
 
     </nav>
   </header>
@@ -395,7 +398,39 @@
         });
       }
 
-      // 5. Auto dismiss flash alerts after 6 seconds
+      // 5. Accessible Dropdown Click Toggles & Outside Click Handler
+      const dropdownToggles = document.querySelectorAll(".dropdown-toggle");
+      dropdownToggles.forEach(toggle => {
+        toggle.addEventListener("click", function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          const parent = this.closest(".dropdown");
+          const wasOpen = parent.classList.contains("is-open");
+          // Close other open dropdowns
+          document.querySelectorAll(".dropdown.is-open").forEach(d => {
+            if (d !== parent) d.classList.remove("is-open");
+          });
+          parent.classList.toggle("is-open", !wasOpen);
+        });
+      });
+
+      // Close dropdowns on click outside or Escape
+      document.addEventListener("click", function(e) {
+        if (!e.target.closest(".dropdown")) {
+          document.querySelectorAll(".dropdown.is-open").forEach(d => d.classList.remove("is-open"));
+        }
+      });
+      document.addEventListener("keydown", function(e) {
+        if (e.key === "Escape") {
+          document.querySelectorAll(".dropdown.is-open").forEach(d => d.classList.remove("is-open"));
+          if (navLinks && navLinks.classList.contains("is-open")) {
+            navLinks.classList.remove("is-open");
+            if (mobileToggle) mobileToggle.setAttribute("aria-expanded", "false");
+          }
+        }
+      });
+
+      // 6. Auto dismiss flash alerts after 6 seconds
       setTimeout(function() {
         const flashes = document.querySelectorAll(".flash");
         flashes.forEach(f => {
