@@ -10,12 +10,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap");
 
 .home-background {
-  --ink: #0a0e1a;
-  --paper: #f6f8fb;
+  --ink: var(--text-primary);
+  --paper: var(--bg-base);
   --scan: #14b8a6;
   --ai: #6c5ce7;
-  --mist: #e7ecf3;
-  --slate: #56637a;
+  --mist: var(--border-subtle);
+  --slate: var(--text-muted);
 
   --font-display: "Space Grotesk", sans-serif;
   --font-body: "Inter", sans-serif;
@@ -25,7 +25,7 @@
   overflow: hidden;
   background: var(--paper);
   font-family: var(--font-body);
-  color: var(--ink);
+  color: var(--text-primary);
 }
 
 .animated-bg {
@@ -120,7 +120,7 @@
   line-height: 1.15;
   font-weight: 700;
   letter-spacing: -0.02em;
-  color: var(--ink);
+  color: var(--text-primary);
   margin-bottom: 25px;
 }
 
@@ -377,7 +377,7 @@
   gap: 8px;
   padding: 9px 16px;
   border-radius: 999px;
-  background: #fff;
+  background: var(--bg-card);
   border: 1px solid var(--mist);
   font-family: var(--font-mono);
   font-size: 0.8rem;
@@ -420,7 +420,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #fff;
+  background: var(--bg-card);
   border: 1px solid var(--mist);
   box-shadow: 0 12px 30px rgba(10, 14, 26, 0.12);
   font-size: 1.15rem;
@@ -491,7 +491,7 @@
 .home-background .features {
   width: 100%;
   padding: 100px 5% 100px; /* was 140px 5% */
-  background: #ffffff;
+  background: var(--bg-surface);
   position: relative;
 }
 
@@ -520,7 +520,7 @@
   font-size: 2.8rem;
   font-weight: 700;
   letter-spacing: -0.02em;
-  color: var(--ink);
+  color: var(--text-primary);
   margin-bottom: 20px;
   line-height: 1.2;
 }
@@ -598,7 +598,7 @@
   font-family: var(--font-display);
   font-size: 1.5rem;
   font-weight: 600;
-  color: var(--ink);
+  color: var(--text-primary);
   margin-bottom: 15px;
 }
 
@@ -695,7 +695,7 @@
   margin-top: 25px;
   margin-bottom: 12px;
   font-size: 1.3rem;
-  color: var(--ink);
+  color: var(--text-primary);
 }
 
 .home-background .timeline-item p {
@@ -911,7 +911,7 @@
 .home-background .dashboard h2 {
   font-family: var(--font-display);
   font-size: 2.6rem;
-  color: var(--ink);
+  color: var(--text-primary);
   margin-bottom: 15px;
 }
 
@@ -930,7 +930,7 @@
 }
 
 .home-background .dashboard-card {
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 20px;
   padding: 40px 20px;
   border: 1px solid var(--mist);
@@ -951,7 +951,7 @@
 .home-background .dashboard-card h3 {
   font-family: var(--font-display);
   font-size: 2.6rem;
-  color: var(--ink);
+  color: var(--text-primary);
   margin-bottom: 10px;
 }
 
@@ -1020,7 +1020,7 @@
   position: relative;
   z-index: 1;
   background: var(--scan);
-  color: var(--ink);
+  color: var(--text-primary);
   font-weight: 700;
   padding: 16px 42px;
   border-radius: 12px;

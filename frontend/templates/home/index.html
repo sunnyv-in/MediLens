@@ -18,14 +18,18 @@
         and never miss a dose with smart reminders.
       </p>
 
-      <div class="hero-buttons">
+      <div class="hero-buttons" style="display: flex; gap: 14px; flex-wrap: wrap;">
         <a href="{{ url_for('scan.scan') }}" class="btn btn-primary">
           <i class="fa-solid fa-camera"></i>
-
           Scan Medicine
         </a>
 
-        <a href="{{ url_for('about.about') }}" class="btn btn-secondary">
+        <a href="{{ url_for('home.dashboard') }}" class="btn btn-secondary">
+          <i class="fa-solid fa-chart-line"></i>
+          Command Center
+        </a>
+
+        <a href="{{ url_for('about.about') }}" class="btn btn-secondary" style="background: transparent;">
           <i class="fa-solid fa-circle-info"></i>
           Learn More
         </a>
@@ -341,50 +345,50 @@
     <!-- ================= DASHBOARD ================= -->
 
     <section class="dashboard">
-      <h2>Dashboard Overview</h2>
+      <div style="display: inline-flex; align-items: center; gap: 8px; margin-bottom: 14px;" class="badge badge-primary">
+        <i class="fa-solid fa-gauge-high"></i> High-Utility Patient Hub
+      </div>
+      <h2>Patient Cabinet &amp; Safety Overview</h2>
 
-      <p class="section-subtitle">Your medicine statistics at a glance.</p>
+      <p class="section-subtitle">Your medicine statistics, expiration tracking, and dosage alerts at a glance.</p>
 
       <div class="dashboard-grid">
-        <div class="dashboard-card">
-          <i class="fa-solid fa-capsules"></i>
-
+        <a href="{{ url_for('medicine_shelf.medicine_shelf') }}" class="dashboard-card" style="text-decoration: none; cursor: pointer;">
+          <i class="fa-solid fa-capsules" style="color: var(--primary);"></i>
           <h3>{{ dashboard.total_medicines }}</h3>
-
           <p>Medicines</p>
-        </div>
+        </a>
 
-        <div class="dashboard-card">
-          <i class="fa-solid fa-hourglass-half"></i>
-
+        <a href="{{ url_for('expiry.expiry_alerts') }}" class="dashboard-card" style="text-decoration: none; cursor: pointer;">
+          <i class="fa-solid fa-hourglass-half" style="color: var(--warning);"></i>
           <h3>{{ dashboard.expiring_soon }}</h3>
-
           <p>Expiring Soon</p>
-        </div>
+        </a>
 
-        <div class="dashboard-card">
-          <i class="fa-solid fa-circle-xmark"></i>
-
+        <a href="{{ url_for('expiry.expiry_alerts') }}" class="dashboard-card" style="text-decoration: none; cursor: pointer;">
+          <i class="fa-solid fa-circle-xmark" style="color: var(--danger);"></i>
           <h3>{{ dashboard.expired }}</h3>
-
           <p>Expired</p>
-        </div>
+        </a>
 
-        <div class="dashboard-card">
-          <i class="fa-solid fa-bell"></i>
-
+        <a href="{{ url_for('reminder.reminders') }}" class="dashboard-card" style="text-decoration: none; cursor: pointer;">
+          <i class="fa-solid fa-bell" style="color: var(--accent-ai-light);"></i>
           <h3>{{ dashboard.active_reminders }}</h3>
-
           <p>Active Reminders</p>
-        </div>
+        </a>
 
-        <div class="dashboard-card">
-          <i class="fa-solid fa-triangle-exclamation"></i>
-
+        <a href="{{ url_for('drug_interaction.interaction_list') }}" class="dashboard-card" style="text-decoration: none; cursor: pointer;">
+          <i class="fa-solid fa-triangle-exclamation" style="color: {% if dashboard.interaction_warnings > 0 %}var(--danger){% else %}var(--success){% endif %};"></i>
           <h3>{{ dashboard.interaction_warnings }}</h3>
+          <p>Safety Warnings</p>
+        </a>
+      </div>
 
-          <p>Interaction Warnings</p>
-        </div>
+      <div style="margin-top: 40px; text-align: center;">
+        <a href="{{ url_for('home.dashboard') }}" class="btn btn-primary btn-lg">
+          <i class="fa-solid fa-arrow-right-to-bracket"></i>
+          <span>Open Full Patient Command Center</span>
+        </a>
       </div>
     </section>
 

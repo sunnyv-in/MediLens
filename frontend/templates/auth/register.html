@@ -1,64 +1,222 @@
 {% extends "layouts/base.html" %}
 
 {% block title %}
-Create Account | MediLens
+Create Patient Account | MediLens
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
 {% endblock %}
 
 {% block content %}
+<div class="auth-viewport">
 
-<div class="auth-page">
+  <div class="auth-split-container">
 
-    <div class="auth-card">
-
-        <h1>Create Account</h1>
-
-        <p>
-            Save your medicines, history and reminders.
-        </p>
-
-        <form method="POST">
-
-            <div class="auth-group">
-                <label>Name</label>
-
-                <input type="text" name="name" required>
-            </div>
-
-            <div class="auth-group">
-                <label>Email</label>
-
-                <input type="email" name="email" required>
-            </div>
-
-            <div class="auth-group">
-                <label>Password</label>
-
-                <input type="password" name="password" minlength="6" required>
-            </div>
-
-            <button class="auth-btn">
-                Create Account
-            </button>
-
-        </form>
-
-        <div class="auth-links">
-
-            <p>
-                Already have an account?
-                <a href="{{ url_for('auth.login') }}">
-                    Login
-                </a>
-            </p>
-
-            <a class="guest-btn" href="{{ url_for('auth.guest') }}">
-                Continue as Guest
-            </a>
-
+    <!-- =====================================================
+         LEFT HERO SPLIT: REGISTRATION BENEFITS
+    ====================================================== -->
+    <section class="auth-hero-pane" aria-label="Why Register With MediLens">
+      <div>
+        <div class="auth-hero-badge">
+          <i class="fa-solid fa-hospital-user"></i> Free Patient Portal
         </div>
 
-    </div>
+        <h2 class="auth-hero-title">
+          Empowering your <span>daily healthcare journey.</span>
+        </h2>
+
+        <p class="auth-hero-desc">
+          Create an account to keep your prescription shelf synced across devices, set up automated WhatsApp reminders, and protect your loved ones from harmful drug interactions.
+        </p>
+
+        <div class="auth-perks-list">
+          <div class="auth-perk-item">
+            <div class="auth-perk-icon" aria-hidden="true">
+              <i class="fa-solid fa-boxes-stacked"></i>
+            </div>
+            <div class="auth-perk-text">
+              <strong>Unlimited Digital Medicine Shelf</strong>
+              <p>Store your prescriptions, dosage instructions, and refill dates in one secure place.</p>
+            </div>
+          </div>
+
+          <div class="auth-perk-item">
+            <div class="auth-perk-icon" aria-hidden="true">
+              <i class="fa-solid fa-bell"></i>
+            </div>
+            <div class="auth-perk-text">
+              <strong>WhatsApp & Desktop Alerts</strong>
+              <p>Timely dose notifications so you or elderly family members never miss a medication.</p>
+            </div>
+          </div>
+
+          <div class="auth-perk-item">
+            <div class="auth-perk-icon" aria-hidden="true">
+              <i class="fa-solid fa-shield-heart"></i>
+            </div>
+            <div class="auth-perk-text">
+              <strong>Automatic Safety Screening</strong>
+              <p>Cross-references your active medications for negative drug-drug interactions automatically.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="auth-hero-footer">
+        <i class="fa-solid fa-lock" style="color: var(--primary);" aria-hidden="true"></i>
+        <span>Encrypted storage • No spam guarantee</span>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         RIGHT SIDE: REGISTRATION FORM
+    ====================================================== -->
+    <section class="auth-form-pane" aria-labelledby="registerHeading">
+
+      <div class="auth-form-header">
+        <h1 id="registerHeading">Create Account</h1>
+        <p>Start managing your medication safely today.</p>
+      </div>
+
+      <!-- Feedback container -->
+      <div id="authFeedback" style="display: none; margin-bottom: 16px;"></div>
+
+      <!-- GOOGLE ONE-CLICK REGISTER -->
+      <button
+        type="button"
+        id="googleSignInBtn"
+        class="btn-google"
+        onclick="window.handleFirebaseGoogleSignIn()"
+        aria-label="Sign up with Google"
+      >
+        <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+        </svg>
+        <span>Sign up with Google</span>
+      </button>
+
+      <!-- DIVIDER -->
+      <div class="auth-divider" role="separator">
+        <span>or register with email</span>
+      </div>
+
+      <!-- FORM -->
+      <form method="POST" id="registerForm" novalidate>
+
+        <!-- FULL NAME -->
+        <div class="form-group">
+          <label for="regName" class="form-label">Full Name</label>
+          <div class="form-control-wrapper">
+            <i class="fa-regular fa-user form-control-icon" aria-hidden="true"></i>
+            <input
+              type="text"
+              id="regName"
+              name="name"
+              class="form-control"
+              placeholder="e.g. Sarah Jenkins"
+              required
+              autocomplete="name"
+            />
+          </div>
+        </div>
+
+        <!-- EMAIL -->
+        <div class="form-group">
+          <label for="regEmail" class="form-label">Email Address</label>
+          <div class="form-control-wrapper">
+            <i class="fa-regular fa-envelope form-control-icon" aria-hidden="true"></i>
+            <input
+              type="email"
+              id="regEmail"
+              name="email"
+              class="form-control"
+              placeholder="e.g. sarah@example.com"
+              required
+              autocomplete="email"
+            />
+          </div>
+        </div>
+
+        <!-- PASSWORD -->
+        <div class="form-group">
+          <label for="regPassword" class="form-label">Password</label>
+          <div class="form-control-wrapper">
+            <i class="fa-solid fa-lock form-control-icon" aria-hidden="true"></i>
+            <input
+              type="password"
+              id="regPassword"
+              name="password"
+              class="form-control"
+              placeholder="Minimum 8 characters"
+              required
+              minlength="8"
+              autocomplete="new-password"
+            />
+            <button
+              type="button"
+              class="password-toggle-btn"
+              id="regPasswordToggle"
+              aria-label="Toggle password visibility"
+            >
+              <i class="fa-regular fa-eye" id="regPasswordIcon"></i>
+            </button>
+          </div>
+          <div class="form-feedback helper">
+            Use at least 8 characters with a mix of letters and numbers.
+          </div>
+        </div>
+
+        <!-- SUBMIT -->
+        <button type="submit" class="btn btn-primary" id="regSubmitBtn" style="width: 100%; min-height: 52px; margin-top: 8px;">
+          <i class="fa-solid fa-user-plus" aria-hidden="true"></i>
+          <span>Create Account</span>
+        </button>
+
+      </form>
+
+      <!-- GUEST BUTTON -->
+      <a class="btn-guest" href="{{ url_for('auth.guest') }}">
+        <i class="fa-regular fa-compass" aria-hidden="true"></i>
+        <span>Explore as Guest</span>
+      </a>
+
+      <!-- SWITCH TO LOGIN -->
+      <div class="auth-switch-text">
+        <span>Already have an account?</span>
+        <a href="{{ url_for('auth.login') }}" class="auth-link" style="margin-left: 6px;">
+          Sign In
+        </a>
+      </div>
+
+    </section>
+
+  </div>
 
 </div>
+{% endblock %}
 
+{% block js %}
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="{{ url_for('static', filename='js/firebase-auth.js') }}"></script>
+
+<script>
+  (function() {
+    const passwordInput = document.getElementById("regPassword");
+    const toggleBtn = document.getElementById("regPasswordToggle");
+    const toggleIcon = document.getElementById("regPasswordIcon");
+
+    if (toggleBtn && passwordInput) {
+      toggleBtn.addEventListener("click", function() {
+        const isPassword = passwordInput.getAttribute("type") === "password";
+        passwordInput.setAttribute("type", isPassword ? "text" : "password");
+        toggleIcon.className = isPassword ? "fa-regular fa-eye-slash" : "fa-regular fa-eye";
+      });
+    }
+  })();
+</script>
 {% endblock %}

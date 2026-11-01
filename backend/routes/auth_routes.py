@@ -8,6 +8,7 @@ from flask import (
     url_for,
     flash,
     session,
+    jsonify,
 )
 
 from flask_login import (
@@ -39,7 +40,7 @@ def migrate_guest():
     guest_id = session.get("guest_id")
 
     if not guest_id:
-        return redirect(url_for("home.home"))
+        return redirect(url_for("home.dashboard"))
 
     try:
         # Migrate medicines
@@ -68,7 +69,7 @@ def migrate_guest():
         session.pop("guest_id", None)
 
         flash(
-            "Your guest data has been added to your account.",
+            "Your guest data has been safely linked to your account.",
             "success",
         )
 
@@ -80,7 +81,7 @@ def migrate_guest():
             "error",
         )
 
-    return redirect(url_for("home.home"))
+    return redirect(url_for("home.dashboard"))
 
 
 # ============================================================
@@ -92,7 +93,7 @@ def migrate_guest():
 def register():
 
     if current_user.is_authenticated:
-        return redirect(url_for("home.home"))
+        return redirect(url_for("home.dashboard"))
 
     if request.method == "POST":
 
@@ -102,7 +103,7 @@ def register():
 
         # Validate fields
         if not name or not email or not password:
-            flash("Please fill all fields.", "error")
+            flash("Please fill all required fields.", "error")
             return render_template("auth/register.html")
 
         # Validate password
@@ -117,7 +118,7 @@ def register():
         existing_user = User.query.filter_by(email=email).first()
 
         if existing_user:
-            flash("Email already registered.", "error")
+            flash("An account with this email already exists.", "error")
             return render_template("auth/register.html")
 
         # Create user
@@ -132,7 +133,7 @@ def register():
             login_user(user)
 
             flash(
-                "Account created successfully.",
+                "Account created successfully. Welcome to MediLens!",
                 "success",
             )
 
@@ -200,7 +201,7 @@ def update_phone():
 def login():
 
     if current_user.is_authenticated:
-        return redirect(url_for("home.home"))
+        return redirect(url_for("home.dashboard"))
 
     if request.method == "POST":
 
@@ -221,7 +222,7 @@ def login():
         # Check password
         if user is None or not user.check_password(password):
             flash(
-                "Invalid email or password.",
+                "Invalid email or password. Please verify your credentials.",
                 "error",
             )
             return render_template("auth/login.html")
@@ -237,6 +238,66 @@ def login():
 
 
 # ============================================================
+# GOOGLE / FIREBASE AUTHENTICATION
+# ============================================================
+
+
+@auth_bp.route("/google-login", methods=["POST"])
+def google_login():
+    data = request.get_json(silent=True) or {}
+    email = (data.get("email") or "").strip().lower()
+    name = (data.get("name") or "").strip() or "Google User"
+
+    if not email or "@" not in email:
+        return jsonify({"success": False, "error": "A valid Google account email is required."}), 400
+
+    user = User.query.filter_by(email=email).first()
+
+    if not user:
+        try:
+            user = User(name=name, email=email)
+            user.set_password(uuid4().hex + uuid4().hex)
+            db.session.add(user)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"success": False, "error": "Failed to create user account with Google credentials."}), 500
+
+    login_user(user)
+
+    # Migrate guest data if present
+    guest_id = session.get("guest_id")
+    if guest_id:
+        try:
+            for medicine in Medicine.query.filter_by(guest_id=guest_id).all():
+                medicine.user_id = user.id
+                medicine.guest_id = None
+
+            for history_item in MedicineHistory.query.filter_by(guest_id=guest_id).all():
+                history_item.user_id = user.id
+                history_item.guest_id = None
+
+            for reminder in MedicationReminder.query.filter_by(guest_id=guest_id).all():
+                reminder.user_id = user.id
+                reminder.guest_id = None
+
+            db.session.commit()
+            session.pop("guest_id", None)
+        except Exception:
+            db.session.rollback()
+
+    flash(f"Welcome, {user.name}! Signed in via Google.", "success")
+    return jsonify({
+        "success": True,
+        "redirect": url_for("home.dashboard"),
+        "user": {
+            "name": user.name,
+            "email": user.email,
+        }
+    })
+
+
+# ============================================================
 # CONTINUE AS GUEST
 # ============================================================
 
@@ -249,7 +310,7 @@ def guest():
 
     session.permanent = True
 
-    return redirect(url_for("scan.scan"))
+    return redirect(url_for("home.dashboard"))
 
 
 # ============================================================
@@ -289,12 +350,8 @@ def forgot_password():
         # Check account
         user = User.query.filter_by(email=email).first()
 
-        # Email reset functionality can be added later.
-        # Use the same message whether the account exists or not.
-
         flash(
-            "If an account exists with this email, "
-            "password recovery instructions will be provided.",
+            "If an account exists with this email, password recovery instructions will be provided.",
             "success",
         )
 
@@ -388,7 +445,7 @@ def logout():
     logout_user()
 
     flash(
-        "You have been logged out.",
+        "You have been logged out safely.",
         "success",
     )
 
