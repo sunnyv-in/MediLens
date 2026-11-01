@@ -1,149 +1,214 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}
-Edit Reminder
+{% block title %}Edit Reminder | MediLens{% endblock %}
+
+{% block css %}
+<style>
+  /* ── Page wrapper ── */
+  .edit-reminder-page {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 32px 24px;
+  }
+
+  /* ── Back link ── */
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 28px;
+    transition: color var(--transition-fast);
+  }
+  .back-link:hover { color: var(--primary-light); }
+
+  /* ── Hero ── */
+  .edit-hero {
+    margin-bottom: 28px;
+  }
+  .edit-hero h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+  }
+  .edit-hero p {
+    color: var(--text-muted);
+    font-size: 1rem;
+  }
+
+  /* ── Card ── */
+  .edit-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    box-shadow: var(--shadow-md);
+  }
+
+  /* ── Form fields ── */
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+  .form-field label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+  .form-field input,
+  .form-field select,
+  .form-field textarea {
+    min-height: 50px;
+    background: var(--bg-surface);
+    border: 1.5px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 12px 16px;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--text-primary);
+    width: 100%;
+    transition: all var(--transition-fast);
+  }
+  .form-field textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
+  .form-field input:focus,
+  .form-field select:focus,
+  .form-field textarea:focus {
+    border-color: var(--primary);
+    background: var(--bg-card);
+    box-shadow: 0 0 0 3px var(--primary-glow);
+    outline: none;
+  }
+  .form-field select option {
+    background: var(--bg-card);
+    color: var(--text-primary);
+  }
+
+  /* ── Actions ── */
+  .edit-form-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+  }
+  .btn-save {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 50px;
+    padding: 12px 32px;
+    background: var(--primary);
+    color: #020617;
+    font-weight: 700;
+    font-size: 1rem;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    box-shadow: 0 4px 14px var(--primary-glow);
+    flex: 1;
+  }
+  .btn-save:hover {
+    background: var(--primary-light);
+    transform: translateY(-2px);
+  }
+  .btn-cancel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 50px;
+    padding: 12px 24px;
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 1rem;
+    border: 1px solid var(--border-highlight);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+  }
+  .btn-cancel:hover {
+    border-color: var(--primary);
+    color: var(--primary-light);
+  }
+
+  @media (max-width: 768px) {
+    .edit-form-actions { flex-direction: column; }
+    .btn-save, .btn-cancel { width: 100%; }
+  }
+</style>
 {% endblock %}
 
 {% block content %}
+<div class="edit-reminder-page">
 
-<div class="page-header">
+  <!-- Back -->
+  <a class="back-link" href="{{ url_for('reminder.reminders') }}">← Back to Reminders</a>
 
-    <div>
+  <!-- Hero -->
+  <div class="edit-hero">
+    <h1>Edit Reminder</h1>
+    <p>Update your dose schedule below.</p>
+  </div>
 
-        <h1>Edit Reminder</h1>
+  <!-- Form Card -->
+  <div class="edit-card">
+    <form action="{{ url_for('reminder.edit_reminder', reminder_id=reminder.id) }}" method="POST" novalidate>
 
-        <p>
+      <!-- Medicine -->
+      <div class="form-field">
+        <label for="medicine_id">Medicine</label>
+        <select id="medicine_id" name="medicine_id" required>
+          {% for medicine in medicines %}
+          <option value="{{ medicine.id }}" {% if medicine.id == reminder.medicine_id %}selected{% endif %}>
+            {{ medicine.medicine_name }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
 
-            Update your medicine reminder.
+      <!-- Time -->
+      <div class="form-field">
+        <label for="reminder_time">Reminder Time</label>
+        <input id="reminder_time" type="time" name="reminder_time"
+               value="{{ reminder.reminder_time.strftime('%H:%M') }}" required>
+      </div>
 
-        </p>
+      <!-- Frequency -->
+      <div class="form-field">
+        <label for="frequency">Frequency</label>
+        <select id="frequency" name="frequency">
+          <option value="Daily" {% if reminder.frequency == "Daily" %}selected{% endif %}>Daily</option>
+          <option value="Twice Daily" {% if reminder.frequency == "Twice Daily" %}selected{% endif %}>Twice Daily</option>
+          <option value="Weekly" {% if reminder.frequency == "Weekly" %}selected{% endif %}>Weekly</option>
+          <option value="Monthly" {% if reminder.frequency == "Monthly" %}selected{% endif %}>Monthly</option>
+        </select>
+      </div>
 
-    </div>
+      <!-- Instructions -->
+      <div class="form-field">
+        <label for="instructions">Instructions</label>
+        <textarea id="instructions" name="instructions"
+                  placeholder="e.g. Take after food…">{{ reminder.instructions }}</textarea>
+      </div>
 
-    <a
-        href="{{ url_for('reminder.reminders') }}"
-        class="btn">
+      <!-- Actions -->
+      <div class="edit-form-actions">
+        <a class="btn-cancel" href="{{ url_for('reminder.reminders') }}">Cancel</a>
+        <button class="btn-save" type="submit">Save Changes →</button>
+      </div>
 
-        ← Back
-
-    </a>
-
-</div>
-
-<div class="form-card">
-
-<form
-    action="{{ url_for('reminder.edit_reminder', reminder_id=reminder.id) }}"
-    method="POST">
-
-<label>
-
-Medicine
-
-</label>
-
-<select
-    name="medicine_id"
-    required>
-
-{% for medicine in medicines %}
-
-<option
-value="{{ medicine.id }}"
-{% if medicine.id == reminder.medicine_id %}
-selected
-{% endif %}>
-
-{{ medicine.medicine_name }}
-
-</option>
-
-{% endfor %}
-
-</select>
-
-<label>
-
-Reminder Time
-
-</label>
-
-<input
-type="time"
-name="reminder_time"
-value="{{ reminder.reminder_time.strftime('%H:%M') }}"
-required>
-
-<label>
-
-Frequency
-
-</label>
-
-<select
-name="frequency">
-
-<option
-{% if reminder.frequency=="Daily" %}
-selected
-{% endif %}>
-
-Daily
-
-</option>
-
-<option
-{% if reminder.frequency=="Twice Daily" %}
-selected
-{% endif %}>
-
-Twice Daily
-
-</option>
-
-<option
-{% if reminder.frequency=="Weekly" %}
-selected
-{% endif %}>
-
-Weekly
-
-</option>
-
-<option
-{% if reminder.frequency=="Monthly" %}
-selected
-{% endif %}>
-
-Monthly
-
-</option>
-
-</select>
-
-<label>
-
-Instructions
-
-</label>
-
-<textarea
-name="instructions">
-
-{{ reminder.instructions }}
-
-</textarea>
-
-<button
-class="btn"
-type="submit">
-
-Update Reminder
-
-</button>
-
-</form>
+    </form>
+  </div>
 
 </div>
-
 {% endblock %}

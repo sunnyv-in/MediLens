@@ -1,496 +1,427 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}
-My Account | MediLens
-{% endblock %}
-
+{% block title %}My Account | MediLens{% endblock %}
 
 {% block css %}
-
 <style>
-    .account-page {
-        max-width: 1000px;
-        margin: 50px auto;
-        padding: 20px;
-    }
-
-    .account-header {
-        margin-bottom: 30px;
-    }
-
-    .account-header h1 {
-        font-size: 36px;
-        margin-bottom: 8px;
-    }
-
-    .account-header p {
-        opacity: 0.7;
-    }
-
-
-    /* PROFILE */
-
-    .profile-card {
-
-        display: flex;
-        align-items: center;
-        gap: 25px;
-
-        padding: 30px;
-
-        margin-bottom: 25px;
-
-        border-radius: 20px;
-
-        background: rgba(255, 255, 255, 0.05);
-
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-
-    .account-avatar {
-
-        width: 85px;
-        height: 85px;
-
-        border-radius: 50%;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        font-size: 34px;
-        font-weight: 700;
-
-        color: white;
-
-        background: linear-gradient(135deg,
-                #2563eb,
-                #6366f1);
-    }
-
-
-    .profile-info h2 {
-        margin: 0 0 8px;
-    }
-
-    .profile-info p {
-        margin: 5px 0;
-        opacity: 0.7;
-    }
-
-
-    /* SECTIONS */
-
-    .account-section {
-
-        margin-top: 25px;
-
-        padding: 25px;
-
-        border-radius: 20px;
-
-        background: rgba(255, 255, 255, 0.04);
-
-        border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-
-
-    .account-section h2 {
-
-        margin-top: 0;
-        margin-bottom: 20px;
-
-    }
-
-
-    /* OPTIONS */
-
-    .account-options {
-
-        display: grid;
-
-        grid-template-columns:
-            repeat(auto-fit, minmax(220px, 1fr));
-
-        gap: 15px;
-    }
-
-
-    .account-option {
-
-        display: flex;
-
-        align-items: center;
-
-        gap: 15px;
-
-        padding: 18px;
-
-        border-radius: 14px;
-
-        text-decoration: none;
-
-        color: inherit;
-
-        background: rgba(255, 255, 255, 0.04);
-
-        border: 1px solid rgba(255, 255, 255, 0.08);
-
-        transition: 0.2s ease;
-    }
-
-
-    .account-option:hover {
-
-        transform: translateY(-2px);
-
-        border-color: #2563eb;
-
-    }
-
-
-    .option-icon {
-
-        width: 42px;
-        height: 42px;
-
-        border-radius: 10px;
-
-        display: flex;
-
-        align-items: center;
-        justify-content: center;
-
-        background: rgba(37, 99, 235, 0.15);
-
-        color: #4f8cff;
-
-    }
-
-
-    .option-content strong {
-
-        display: block;
-
-        margin-bottom: 4px;
-
-    }
-
-
-    .option-content span {
-
-        font-size: 13px;
-
-        opacity: 0.6;
-
-    }
-
-
-    /* LOGOUT */
-
-    .logout-option {
-
-        color: #ef4444;
-    }
-
-
-    .logout-option .option-icon {
-
-        background: rgba(239, 68, 68, 0.12);
-
-        color: #ef4444;
-    }
-
-
-    /* MOBILE */
-
-    @media (max-width: 600px) {
-
-        .profile-card {
-
-            flex-direction: column;
-
-            text-align: center;
-        }
-
-        .account-options {
-
-            grid-template-columns: 1fr;
-        }
-
-    }
+  /* ── ACCOUNT PAGE ── */
+  .acc-page {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px 80px;
+  }
+
+  /* PAGE HERO */
+  .acc-page-hero {
+    margin-bottom: 32px;
+  }
+  .acc-page-hero h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0 0 6px;
+  }
+  .acc-page-hero p {
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  /* CARD */
+  .acc-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 20px;
+  }
+  .acc-card-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 22px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ── PROFILE HERO CARD ── */
+  .acc-profile {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .acc-avatar {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #14b8a6 0%, #6366f1 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #fff;
+    flex-shrink: 0;
+    box-shadow: 0 4px 16px rgba(20,184,166,0.3);
+  }
+  .acc-profile-info { flex: 1; min-width: 200px; }
+  .acc-profile-info h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0 0 4px;
+  }
+  .acc-profile-info .acc-email {
+    color: var(--text-muted);
+    font-size: 0.93rem;
+    margin: 0 0 10px;
+  }
+  .acc-badges { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .acc-role-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 4px 12px;
+    border-radius: 999px;
+  }
+  .acc-role-patient   { background: rgba(20,184,166,0.15); color: var(--primary); }
+  .acc-role-caregiver { background: rgba(99,102,241,0.15); color: #818cf8; }
+  .acc-verified {
+    font-size: 0.8rem;
+    color: var(--success);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .acc-managing {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 6px;
+  }
+  .acc-managing span { color: var(--text-secondary); font-weight: 600; }
+
+  /* ── PHONE FORM ── */
+  .acc-phone-form { display: flex; flex-direction: column; gap: 12px; }
+  .acc-phone-form label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+  }
+  .acc-phone-input {
+    min-height: 50px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-family: var(--font-body), sans-serif;
+    padding: 0 16px;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.18s;
+  }
+  .acc-phone-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(20,184,166,0.12);
+  }
+  .acc-save-btn {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--primary);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.93rem;
+    padding: 0 24px;
+    min-height: 48px;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-family: var(--font-body), sans-serif;
+    transition: background 0.18s, transform 0.15s;
+  }
+  .acc-save-btn:hover { background: var(--primary-hover); transform: translateY(-1px); }
+
+  /* ── CARE CIRCLE ── */
+  .acc-contacts-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 18px; }
+  .acc-contact-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 14px 18px;
+    flex-wrap: wrap;
+  }
+  .acc-contact-name { font-weight: 700; color: var(--text-primary); font-size: 0.97rem; }
+  .acc-contact-phone { color: var(--text-muted); font-size: 0.88rem; margin-top: 2px; }
+  .acc-rel-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: rgba(99,102,241,0.15);
+    color: #818cf8;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  .acc-add-contact {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: color 0.15s;
+  }
+  .acc-add-contact:hover { color: var(--primary-hover); }
+
+  /* ── OPTION TILES ── */
+  .acc-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+  }
+  .acc-option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    border-radius: var(--radius-md);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: border-color 0.18s, transform 0.15s, box-shadow 0.15s;
+  }
+  .acc-option:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(20,184,166,0.1);
+  }
+  .acc-option-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(20,184,166,0.12);
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .acc-option-text strong {
+    display: block;
+    font-size: 0.93rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 3px;
+  }
+  .acc-option-text span {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+
+  /* DANGER / LOGOUT TILE */
+  .acc-option-danger {
+    border-color: rgba(239,68,68,0.2);
+  }
+  .acc-option-danger .acc-option-icon {
+    background: rgba(239,68,68,0.12);
+    color: var(--danger);
+  }
+  .acc-option-danger:hover {
+    border-color: var(--danger);
+    box-shadow: 0 4px 16px rgba(239,68,68,0.1);
+  }
+  .acc-option-danger strong,
+  .acc-option-danger span { color: var(--danger) !important; }
+
+  /* MOBILE */
+  @media (max-width: 600px) {
+    .acc-profile { flex-direction: column; text-align: center; }
+    .acc-badges { justify-content: center; }
+    .acc-options { grid-template-columns: 1fr; }
+    .acc-save-btn { width: 100%; justify-content: center; }
+  }
 </style>
-
 {% endblock %}
 
-
 {% block content %}
+<div class="acc-page">
 
-<div class="account-page">
+  <!-- PAGE HERO -->
+  <div class="acc-page-hero">
+    <h1>My Account</h1>
+    <p>Manage your MediLens profile, security and medicine data.</p>
+  </div>
 
-
-    <!-- HEADER -->
-
-    <div class="account-header">
-
-        <h1>
-            My Account
-        </h1>
-
-        <p>
-            Manage your MediLens profile, security and medicine data.
-        </p>
-
-    </div>
-
-
-    <!-- PROFILE -->
-
-    <div class="profile-card">
-
-        <div class="account-avatar">
-
-            {{ user.name[0]|upper }}
-
+  <!-- PROFILE CARD -->
+  <div class="acc-card">
+    <div class="acc-profile">
+      <div class="acc-avatar">{{ user.name[0]|upper }}</div>
+      <div class="acc-profile-info">
+        <h2>{{ user.name }}</h2>
+        <p class="acc-email">{{ user.email }}</p>
+        <div class="acc-badges">
+          {% if current_user.role %}
+            {% if current_user.role|lower == 'caregiver' %}
+              <span class="acc-role-badge acc-role-caregiver">Caregiver</span>
+            {% else %}
+              <span class="acc-role-badge acc-role-patient">Patient</span>
+            {% endif %}
+          {% endif %}
+          <span class="acc-verified">✓ Registered MediLens Account</span>
         </div>
-
-
-        <div class="profile-info">
-
-            <h2>
-                {{ user.name }}
-            </h2>
-
-            <p>
-                {{ user.email }}
-            </p>
-
-            <p>
-                <i class="fa-solid fa-circle-check"></i>
-                Registered MediLens Account
-            </p>
-
-        </div>
-
+        {% if current_user.role|lower == 'caregiver' and current_user.patient_name %}
+          <p class="acc-managing">Managing: <span>{{ current_user.patient_name }}</span></p>
+        {% endif %}
+      </div>
     </div>
+  </div>
 
-    <form method="POST" action="{{ url_for('auth.update_phone') }}">
-        <label for="phone_number">Emergency contact number</label>
-        <input id="phone_number" name="phone_number" type="tel" value="{{ current_user.phone_number or '' }}"
-            placeholder="+91 9876543210" autocomplete="tel">
-        <button type="submit">Save phone number</button>
+  <!-- EMERGENCY CONTACT CARD -->
+  <div class="acc-card">
+    <h2 class="acc-card-title">📞 Emergency Contact</h2>
+    <form method="POST" action="{{ url_for('auth.update_phone') }}" class="acc-phone-form">
+      <label for="phone_number">Emergency contact number</label>
+      <input
+        id="phone_number"
+        name="phone_number"
+        type="tel"
+        class="acc-phone-input"
+        value="{{ current_user.phone_number or '' }}"
+        placeholder="+91 9876543210"
+        autocomplete="tel">
+      <button type="submit" class="acc-save-btn">Save Number</button>
     </form>
+  </div>
 
-
-    <!-- SECURITY -->
-
-    <div class="account-section">
-
-        <h2>
-            <i class="fa-solid fa-shield-halved"></i>
-            Security
-        </h2>
-
-
-        <div class="account-options">
-
-            <a href="{{ url_for('auth.change_password') }}" class="account-option">
-
-                <div class="option-icon">
-
-                    <i class="fa-solid fa-key"></i>
-
-                </div>
-
-                <div class="option-content">
-
-                    <strong>
-                        Change Password
-                    </strong>
-
-                    <span>
-                        Update your account password
-                    </span>
-
-                </div>
-
-            </a>
-
-
-            <a href="{{ url_for('auth.forgot_password') }}" class="account-option">
-
-                <div class="option-icon">
-
-                    <i class="fa-solid fa-envelope"></i>
-
-                </div>
-
-                <div class="option-content">
-
-                    <strong>
-                        Reset Password
-                    </strong>
-
-                    <span>
-                        Recover access to your account
-                    </span>
-
-                </div>
-
-            </a>
-
+  <!-- CARE CIRCLE CARD -->
+  {% if current_user.care_circle_contacts %}
+    <div class="acc-card">
+      <h2 class="acc-card-title">👥 Care Circle</h2>
+      <div class="acc-contacts-list">
+        {% for contact in current_user.care_circle_contacts %}
+        <div class="acc-contact-item">
+          <div>
+            <div class="acc-contact-name">{{ contact.name }}</div>
+            <div class="acc-contact-phone">{{ contact.phone }}</div>
+          </div>
+          <span class="acc-rel-badge">{{ contact.relationship }}</span>
         </div>
+        {% endfor %}
+      </div>
+      <a href="/auth/care-circle/add" class="acc-add-contact">+ Add Contact</a>
+    </div>
+  {% endif %}
+
+  <!-- SECURITY CARD -->
+  <div class="acc-card">
+    <h2 class="acc-card-title">🔒 Security</h2>
+    <div class="acc-options">
+
+      <a href="{{ url_for('auth.change_password') }}" class="acc-option">
+        <div class="acc-option-icon">
+          <i class="fa-solid fa-key"></i>
+        </div>
+        <div class="acc-option-text">
+          <strong>Change Password</strong>
+          <span>Update your account password</span>
+        </div>
+      </a>
+
+      <a href="{{ url_for('auth.forgot_password') }}" class="acc-option">
+        <div class="acc-option-icon">
+          <i class="fa-solid fa-envelope"></i>
+        </div>
+        <div class="acc-option-text">
+          <strong>Reset Password</strong>
+          <span>Recover access to your account</span>
+        </div>
+      </a>
 
     </div>
+  </div>
 
+  <!-- MEDICINE DATA CARD -->
+  <div class="acc-card">
+    <h2 class="acc-card-title">💊 My Medicine Data</h2>
+    <div class="acc-options">
 
-    <!-- MEDICINE DATA -->
-
-    <div class="account-section">
-
-        <h2>
-            <i class="fa-solid fa-pills"></i>
-            My Medicine Data
-        </h2>
-
-
-        <div class="account-options">
-
-            <a href="{{ url_for('medicine_shelf.medicine_shelf') }}" class="account-option">
-
-                <div class="option-icon">
-
-                    <i class="fa-solid fa-capsules"></i>
-
-                </div>
-
-                <div class="option-content">
-
-                    <strong>
-                        Medicine Shelf
-                    </strong>
-
-                    <span>
-                        View your saved medicines
-                    </span>
-
-                </div>
-
-            </a>
-
-
-            <a href="{{ url_for('medicine_history.medicine_history') }}" class="account-option">
-
-                <div class="option-icon">
-
-                    <i class="fa-solid fa-clock-rotate-left"></i>
-
-                </div>
-
-                <div class="option-content">
-
-                    <strong>
-                        Scan History
-                    </strong>
-
-                    <span>
-                        View previous medicine scans
-                    </span>
-
-                </div>
-
-            </a>
-
-
-            <a href="{{ url_for('reminder.reminders') }}" class="account-option">
-
-                <div class="option-icon">
-
-                    <i class="fa-solid fa-bell"></i>
-
-                </div>
-
-                <div class="option-content">
-
-                    <strong>
-                        Reminders
-                    </strong>
-
-                    <span>
-                        Manage medication reminders
-                    </span>
-
-                </div>
-
-            </a>
-
+      <a href="{{ url_for('medicine_shelf.medicine_shelf') }}" class="acc-option">
+        <div class="acc-option-icon">
+          <i class="fa-solid fa-capsules"></i>
         </div>
+        <div class="acc-option-text">
+          <strong>Medicine Shelf</strong>
+          <span>View your saved medicines</span>
+        </div>
+      </a>
+
+      <a href="{{ url_for('medicine_history.medicine_history') }}" class="acc-option">
+        <div class="acc-option-icon">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+        </div>
+        <div class="acc-option-text">
+          <strong>Scan History</strong>
+          <span>View previous medicine scans</span>
+        </div>
+      </a>
+
+      <a href="{{ url_for('reminder.reminders') }}" class="acc-option">
+        <div class="acc-option-icon">
+          <i class="fa-solid fa-bell"></i>
+        </div>
+        <div class="acc-option-text">
+          <strong>Reminders</strong>
+          <span>Manage medication reminders</span>
+        </div>
+      </a>
 
     </div>
+  </div>
 
+  <!-- ACCOUNT CARD -->
+  <div class="acc-card">
+    <h2 class="acc-card-title"><i class="fa-solid fa-user-gear"></i> Account</h2>
+    <div class="acc-options">
 
-    <!-- ACCOUNT -->
-
-    <div class="account-section">
-
-        <h2>
-            <i class="fa-solid fa-user-gear"></i>
-            Account
-        </h2>
-
-
-        <div class="account-options">
-
-            <a href="{{ url_for('home.home') }}" class="account-option">
-
-                <div class="option-icon">
-
-                    <i class="fa-solid fa-house"></i>
-
-                </div>
-
-                <div class="option-content">
-
-                    <strong>
-                        Back to Home
-                    </strong>
-
-                    <span>
-                        Return to MediLens home
-                    </span>
-
-                </div>
-
-            </a>
-
-
-            <a href="{{ url_for('auth.logout') }}" class="account-option logout-option">
-
-                <div class="option-icon">
-
-                    <i class="fa-solid fa-right-from-bracket"></i>
-
-                </div>
-
-                <div class="option-content">
-
-                    <strong>
-                        Logout
-                    </strong>
-
-                    <span>
-                        Sign out of your account
-                    </span>
-
-                </div>
-
-            </a>
-
+      <a href="{{ url_for('home.home') }}" class="acc-option">
+        <div class="acc-option-icon">
+          <i class="fa-solid fa-house"></i>
         </div>
+        <div class="acc-option-text">
+          <strong>Back to Home</strong>
+          <span>Return to MediLens home</span>
+        </div>
+      </a>
+
+      <a href="{{ url_for('auth.logout') }}" class="acc-option acc-option-danger">
+        <div class="acc-option-icon">
+          <i class="fa-solid fa-right-from-bracket"></i>
+        </div>
+        <div class="acc-option-text">
+          <strong>Logout</strong>
+          <span>Sign out of your account</span>
+        </div>
+      </a>
 
     </div>
+  </div>
 
 </div>
-
 {% endblock %}
