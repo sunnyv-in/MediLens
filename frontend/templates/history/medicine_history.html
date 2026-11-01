@@ -1,8 +1,10 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}
-Medicine History
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/history.css') }}">
 {% endblock %}
+
+{% block title %}Medicine History | MediLens{% endblock %}
 
 {% block content %}
 
@@ -26,90 +28,86 @@ Medicine History
 
 <div class="medicine-grid">
 
-{% for item in history %}
+    {% for item in history %}
 
-<div class="medicine-card">
+    <div class="medicine-card">
 
-<h2>
+        <h2>
 
-{{ item.medicine_name }}
+            {{ item.medicine_name }}
 
-</h2>
+        </h2>
 
-<p>
+        <p>
 
-<strong>Manufacturer</strong>
+            <strong>Manufacturer</strong>
 
-<br>
+            <br>
 
-{{ item.manufacturer or "-" }}
+            {{ item.manufacturer or "-" }}
 
-</p>
+        </p>
 
-<p>
+        <p>
 
-<strong>Expiry</strong>
+            <strong>Expiry</strong>
 
-<br>
+            <br>
 
-{{ item.expiry_date or "-" }}
+            {{ item.expiry_date or "-" }}
 
-</p>
+        </p>
 
-<p>
+        <p>
 
-<strong>Counterfeit Score</strong>
+            <strong>Counterfeit Score</strong>
 
-<br>
+            <br>
 
-{{ item.counterfeit_score }}
+            {{ item.counterfeit_score }}
 
-</p>
+        </p>
 
-<p>
+        <p>
 
-<strong>Scan Time</strong>
+            <strong>Scan Time</strong>
 
-<br>
+            <br>
 
-{{ item.scan_time }}
+            {{ item.scan_time }}
 
-</p>
+        </p>
 
-<div class="card-actions">
+        <div class="card-actions">
 
-<a
-href="{{ url_for('medicine_history.history_details', history_id=item.id) }}">
+            <a href="{{ url_for('medicine_history.history_details', history_id=item.id) }}">
 
-View
+                View
 
-</a>
+            </a>
 
-<a
-href="{{ url_for('medicine_history.edit_history', history_id=item.id) }}">
+            <a href="{{ url_for('medicine_history.edit_history', history_id=item.id) }}">
 
-Edit
+                Edit
 
-</a>
+            </a>
 
-<form
-action="{{ url_for('medicine_history.remove_history', history_id=item.id) }}"
-method="POST"
-onsubmit="return confirmDelete()">
+            <form action="{{ url_for('medicine_history.remove_history', history_id=item.id) }}" method="POST"
+                onsubmit="return confirmDelete()">
 
-<button type="submit">
+                <button type="submit">
 
-Delete
+                    Delete
 
-</button>
+                </button>
 
-</form>
+            </form>
 
-</div>
+        </div>
 
-</div>
+    </div>
 
-{% endfor %}
+    {% endfor %}
 
 </div>
 
@@ -117,17 +115,17 @@ Delete
 
 <div class="medicine-card">
 
-<h2>
+    <h2>
 
-No History Available
+        No History Available
 
-</h2>
+    </h2>
 
-<p>
+    <p>
 
-No medicine scans have been saved yet.
+        No medicine scans have been saved yet.
 
-</p>
+    </p>
 
 </div>
 

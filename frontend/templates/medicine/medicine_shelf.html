@@ -1,180 +1,315 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}
-Medicine Shelf
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/medicine.css') }}">
 {% endblock %}
+
+{% block title %}Medicine Shelf | MediLens{% endblock %}
 
 {% block content %}
 
-<div class="page-header">
+<section class="med-page">
 
-    <div>
+    <div class="page-header">
 
-        <h1>Medicine Shelf</h1>
+        <div>
 
-        <p>
-            Manage all scanned medicines.
-        </p>
+            <h1>Medicine Shelf</h1>
 
-    </div>
+            <input class="med-search" id="medicineSearch" type="search"
+                placeholder="Search name, manufacturer, or batch number" oninput="filterMedicineShelf()">
 
-    <a
-        href="{{ url_for('medicine_shelf.add_medicine_page') }}"
-        class="btn">
+            {% if medicines %}
 
-        + Add Medicine
+            <div class="med-shelf-grid" id="medicineGrid">
 
-    </a>
+                <form class="med-email-shelf" method="POST"
+                    action="{{ url_for('medicine_shelf.email_medicine_shelf') }}">
+                    <div>
+                        <h2>Email your saved medicines</h2>
+                        <p>Send all medicines currently on your shelf to your email.</p>
+                    </div>
 
-</div>
+                    <div class="med-email-controls">
+                        <input type="email" name="recipient_email"
+                            value="{{ current_user.email if current_user.is_authenticated else '' }}"
+                            placeholder="Email address" aria-label="Email address" required>
 
-<input
-    type="text"
-    id="medicineSearch"
-    placeholder="Search medicine..."
-    onkeyup="searchMedicine()">
+                        <button class="med-btn med-btn-primary" type="submit">
+                            Email entire shelf
+                        </button>
+                    </div>
+                </form>
 
-<br><br>
+                {% for medicine in medicines %}
 
-{% if medicines %}
+                <article class="med-card"
+                    data-search="{{ (medicine.medicine_name or '') ~ ' ' ~ (medicine.generic_name or '') ~ ' ' ~ (medicine.manufacturer or '') ~ ' ' ~ (medicine.batch_number or '') }}">
 
-<div class="medicine-grid">
+                    <div class="med-card-heading">
+                        <div>
+                            <h2>{{ medicine.medicine_name or "Unnamed medicine" }}</h2>
 
-{% for medicine in medicines %}
+                            <p class="med-muted">
+                                {{ medicine.generic_name or "Generic name not added" }}
+                            </p>
+                        </div>
 
-<div class="medicine-card">
+                        <span class="med-quantity">
+                            Qty: {{ medicine.quantity or 0 }}
+                        </span>
+                    </div>
 
-    <h2>
+                    <dl class="med-info-grid">
 
-        {{ medicine.medicine_name }}
+                        <div>
+                            <dt>Strength</dt>
+                            <dd>{{ medicine.strength or "Not added" }}</dd>
+                        </div>
 
-    </h2>
+                        <div>
+                            <dt>Manufacturer</dt>
+                            <dd>{{ medicine.manufacturer or "Not added" }}</dd>
+                        </div>
 
-    <p>
+                        <div>
+                            <dt>Batch number</dt>
+                            <dd>{{ medicine.batch_number or "Not added" }}</dd>
+                        </div>
 
-        <strong>Generic</strong>
+                        <div>
+                            <dt>Expiry date</dt>
+                            <dd>{{ medicine.expiry_date or "Not added" }}</dd>
+                        </div>
 
-        <br>
+                        <div>
+                            <dt>Dosage</dt>
+                            <dd>{{ medicine.dosage or "Not added" }}</dd>
+                        </div>
 
-        {{ medicine.generic_name or "-" }}
+                        <div>
+                            <dt>Counterfeit score</dt>
+                            <dd>
+                                {{ medicine.counterfeit_score if medicine.counterfeit_score is not none else "Not
+                                available" }}
+                            </dd>
+                        </div>
 
-    </p>
+                    </dl>
 
-    <p>
+                    <div class="med-card-actions">
 
-        <strong>Strength</strong>
+                        <a class="med-btn med-btn-secondary"
+                            href="{{ url_for('medicine_shelf.medicine_details', medicine_id=medicine.id) }}">
+                            View details
+                        </a>
 
-        <br>
+                        {% if medicine.history_id %}
 
-        {{ medicine.strength or "-" }}
+                        <a class="med-btn med-btn-secondary"
+                            href="{{ url_for('medicine_history.edit_history', history_id=medicine.history_id) }}">
+                            Edit scan details
+                        </a>
 
-    </p>
+                        <form method="POST"
+                            action="{{ url_for('medicine_history.email_history', history_id=medicine.history_id) }}">
+                            <input type="email" name="recipient_email"
+                                value="{{ current_user.email if current_user.is_authenticated else '' }}"
+                                placeholder="Recipient email" aria-label="Recipient email" required>
 
-    <p>
+                            <button class="med-btn med-btn-secondary" type="submit">
+                                Email scan
+                            </button>
+                        </form>
 
-        <strong>Manufacturer</strong>
+                        {% else %}
 
-        <br>
+                        <a class="med-btn med-btn-secondary"
+                            href="{{ url_for('medicine_shelf.edit_medicine_page', medicine_id=medicine.id) }}">
+                            Edit
+                        </a>
 
-        {{ medicine.manufacturer or "-" }}
+                        {% endif %}
 
-    </p>
+                    </div>
 
-    <p>
+                    <form method="POST"
+                        action="{{ url_for('medicine_shelf.remove_medicine', medicine_id=medicine.id) }}"
+                        onsubmit="return confirm('Delete this medicine from your shelf?');">
+                        <button class="med-btn med-btn-danger" type="submit">
+                            Delete
+                        </button>
+                    </form>
 
-        <strong>Batch</strong>
+                </article>
 
-        <br>
+                {% endfor %}
 
-        {{ medicine.batch_number or "-" }}
+            </div>
 
-    </p>
+            <p class="med-empty med-hidden" id="noMedicineMatch">
+                No medicines match your search.
+            </p>
 
-    <p>
+            {% else %}
 
-        <strong>Expiry</strong>
+            <div class="med-empty">
+                <h2>Your shelf is empty</h2>
 
-        <br>
+                <p>
+                    Manage all scanned medicines.
+                </p>
 
-        {{ medicine.expiry_date or "-" }}
+            </div>
 
-    </p>
+            <a href="{{ url_for('medicine_shelf.add_medicine_page') }}" class="btn">
 
-    <p>
+                + Add Medicine
 
-        <strong>Quantity</strong>
+            </a>
 
-        <br>
+        </div>
 
-        {{ medicine.quantity }}
+        <input type="text" id="medicineSearch" placeholder="Search medicine..." onkeyup="searchMedicine()">
 
-    </p>
+        <br><br>
 
-    <p>
+        {% if medicines %}
 
-        <strong>Counterfeit Score</strong>
+        <div class="medicine-grid">
 
-        <br>
+            {% for medicine in medicines %}
 
-        {{ medicine.counterfeit_score }}
+            <div class="medicine-card">
 
-    </p>
+                <h2>
 
-    <div class="card-actions">
+                    {{ medicine.medicine_name }}
 
-        <a
-            href="{{ url_for('medicine_shelf.medicine_details', medicine_id=medicine.id) }}">
+                </h2>
 
-            View
+                <p>
 
-        </a>
+                    <strong>Generic</strong>
 
-        <a
-            href="{{ url_for('medicine_shelf.edit_medicine_page', medicine_id=medicine.id) }}">
+                    <br>
 
-            Edit
+                    {{ medicine.generic_name or "-" }}
 
-        </a>
+                </p>
 
-        <form
-            action="{{ url_for('medicine_shelf.remove_medicine', medicine_id=medicine.id) }}"
-            method="POST"
-            onsubmit="return confirmDelete()">
+                <p>
 
-            <button type="submit">
+                    <strong>Strength</strong>
 
-                Delete
+                    <br>
 
-            </button>
+                    {{ medicine.strength or "-" }}
 
-        </form>
+                </p>
 
-    </div>
+                <p>
 
-</div>
+                    <strong>Manufacturer</strong>
 
-{% endfor %}
+                    <br>
 
-</div>
+                    {{ medicine.manufacturer or "-" }}
 
-{% else %}
+                </p>
 
-<div class="medicine-card">
+                <p>
 
-    <h2>
+                    <strong>Batch</strong>
 
-        No Medicines Found
+                    <br>
 
-    </h2>
+                    {{ medicine.batch_number or "-" }}
 
-    <p>
+                </p>
 
-        Start by adding your first medicine.
+                <p>
 
-    </p>
+                    <strong>Expiry</strong>
 
-</div>
+                    <br>
 
-{% endif %}
+                    {{ medicine.expiry_date or "-" }}
 
-{% endblock %}
+                </p>
+
+                <p>
+
+                    <strong>Quantity</strong>
+
+                    <br>
+
+                    {{ medicine.quantity }}
+
+                </p>
+
+                <p>
+
+                    <strong>Counterfeit Score</strong>
+
+                    <br>
+
+                    {{ medicine.counterfeit_score }}
+
+                </p>
+
+                <div class="card-actions">
+
+                    <a href="{{ url_for('medicine_shelf.medicine_details', medicine_id=medicine.id) }}">
+
+                        View
+
+                    </a>
+
+                    <a href="{{ url_for('medicine_shelf.edit_medicine_page', medicine_id=medicine.id) }}">
+
+                        Edit
+
+                    </a>
+
+                    <form action="{{ url_for('medicine_shelf.remove_medicine', medicine_id=medicine.id) }}"
+                        method="POST" onsubmit="return confirmDelete()">
+
+                        <button type="submit">
+
+                            Delete
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        {% else %}
+
+        <div class="medicine-card">
+
+            <h2>
+
+                No Medicines Found
+
+            </h2>
+
+            <p>
+
+                Start by adding your first medicine.
+
+            </p>
+
+        </div>
+
+        {% endif %}
+
+        {% endblock %}

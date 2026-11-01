@@ -1,8 +1,10 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}
-Add Medicine
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/medicine.css') }}">
 {% endblock %}
+{% block title %}Add Medicine | MediLens{% endblock %}
 
 {% block content %}
 
@@ -20,9 +22,7 @@ Add Medicine
 
     </div>
 
-    <a
-        href="{{ url_for('medicine_shelf.medicine_shelf') }}"
-        class="btn">
+    <a href="{{ url_for('medicine_shelf.medicine_shelf') }}" class="btn">
 
         ← Back
 
@@ -30,157 +30,131 @@ Add Medicine
 
 </div>
 
-<form
-    action="{{ url_for('medicine_shelf.add_medicine') }}"
-    method="POST">
+<form action="{{ url_for('medicine_shelf.add_medicine') }}" method="POST">
 
-<div class="form-grid">
+    <div class="form-grid">
 
-<div>
+        <div>
 
-<label>
+            <label>
 
-Medicine Name
+                Medicine Name
 
-</label>
+            </label>
 
-<input
-type="text"
-name="medicine_name"
-required>
+            <input type="text" name="medicine_name" required>
 
-</div>
+        </div>
 
-<div>
+        <div>
 
-<label>
+            <label>
 
-Generic Name
+                Generic Name
 
-</label>
+            </label>
 
-<input
-type="text"
-name="generic_name">
+            <input type="text" name="generic_name">
 
-</div>
+        </div>
 
-<div>
+        <div>
 
-<label>
+            <label>
 
-Strength
+                Strength
 
-</label>
+            </label>
 
-<input
-type="text"
-name="strength">
+            <input type="text" name="strength">
 
-</div>
+        </div>
 
-<div>
+        <div>
 
-<label>
+            <label>
 
-Manufacturer
+                Manufacturer
 
-</label>
+            </label>
 
-<input
-type="text"
-name="manufacturer">
+            <input type="text" name="manufacturer">
 
-</div>
+        </div>
 
-<div>
+        <div>
 
-<label>
+            <label>
 
-Batch Number
+                Batch Number
 
-</label>
+            </label>
 
-<input
-type="text"
-name="batch_number">
+            <input type="text" name="batch_number">
 
-</div>
+        </div>
 
-<div>
+        <div>
 
-<label>
+            <label>
 
-Expiry Date
+                Expiry Date
 
-</label>
+            </label>
 
-<input
-type="text"
-name="expiry_date"
-placeholder="DD/MM/YYYY">
+            <input type="text" name="expiry_date" placeholder="DD/MM/YYYY">
 
-</div>
+        </div>
 
-<div>
+        <div>
 
-<label>
+            <label>
 
-Quantity
+                Quantity
 
-</label>
+            </label>
 
-<input
-type="number"
-name="quantity"
-value="1"
-min="1">
+            <input type="number" name="quantity" value="1" min="1">
 
-</div>
+        </div>
 
-<div>
+        <div>
 
-<label>
+            <label>
 
-Dosage
+                Dosage
 
-</label>
+            </label>
 
-<input
-type="text"
-name="dosage">
+            <input type="text" name="dosage">
 
-</div>
+        </div>
 
-</div>
+    </div>
 
-<label>
+    <label>
 
-Uses
+        Uses
 
-</label>
+    </label>
 
-<textarea
-name="usage"></textarea>
+    <textarea name="usage"></textarea>
 
-<label>
+    <label>
 
-Side Effects
+        Side Effects
 
-</label>
+    </label>
 
-<textarea
-name="side_effects"></textarea>
+    <textarea name="side_effects"></textarea>
 
-<br>
+    <br>
 
-<button
-type="submit"
-class="btn">
+    <button type="submit" class="btn">
 
-Save Medicine
+        Save Medicine
 
-</button>
+    </button>
 
 </form>
 

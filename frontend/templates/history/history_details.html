@@ -1,114 +1,112 @@
 {% extends "layouts/base.html" %}
-
-{% block title %}
-History Details
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/history.css') }}">
 {% endblock %}
+{% block title %}Medicine Scan Details | MediLens{% endblock %}
 
 {% block content %}
 
 <div class="page-header">
 
-<h1>
+    <h1>
 
-History Details
+        History Details
 
-</h1>
+    </h1>
 
-<a
-href="{{ url_for('medicine_history.medicine_history') }}"
-class="btn">
+    <a href="{{ url_for('medicine_history.medicine_history') }}" class="btn">
 
-Back
+        Back
 
-</a>
+    </a>
 
 </div>
 
 <div class="details-card">
 
-<div class="details-grid">
+    <div class="details-grid">
 
-<div class="detail-box">
+        <div class="detail-box">
 
-<h3>
+            <h3>
 
-Medicine
+                Medicine
 
-</h3>
+            </h3>
 
-<p>
+            <p>
 
-{{ history.medicine_name }}
+                {{ history.medicine_name }}
 
-</p>
+            </p>
 
-</div>
+        </div>
 
-<div class="detail-box">
+        <div class="detail-box">
 
-<h3>
+            <h3>
 
-Manufacturer
+                Manufacturer
 
-</h3>
+            </h3>
 
-<p>
+            <p>
 
-{{ history.manufacturer }}
+                {{ history.manufacturer }}
 
-</p>
+            </p>
 
-</div>
+        </div>
 
-<div class="detail-box">
+        <div class="detail-box">
 
-<h3>
+            <h3>
 
-Expiry
+                Expiry
 
-</h3>
+            </h3>
 
-<p>
+            <p>
 
-{{ history.expiry_date }}
+                {{ history.expiry_date }}
 
-</p>
+            </p>
 
-</div>
+        </div>
 
-<div class="detail-box">
+        <div class="detail-box">
 
-<h3>
+            <h3>
 
-Counterfeit Score
+                Counterfeit Score
 
-</h3>
+            </h3>
 
-<p>
+            <p>
 
-{{ history.counterfeit_score }}
+                {{ history.counterfeit_score }}
 
-</p>
+            </p>
 
-</div>
+        </div>
 
-<div class="detail-box">
+        <div class="detail-box">
 
-<h3>
+            <h3>
 
-Scan Time
+                Scan Time
 
-</h3>
+            </h3>
 
-<p>
+            <p>
 
-{{ history.scan_time }}
+                {{ history.scan_time }}
 
-</p>
+            </p>
 
-</div>
+        </div>
 
-</div>
+    </div>
 
 </div>
 

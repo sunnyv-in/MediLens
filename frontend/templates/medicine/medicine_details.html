@@ -1,8 +1,11 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}
-Medicine Details
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/medicine.css') }}">
 {% endblock %}
+
+{% block title %}{{ medicine.medicine_name }} | MediLens{% endblock %}
 
 {% block content %}
 
@@ -26,17 +29,13 @@ Medicine Details
 
     <div>
 
-        <a
-            href="{{ url_for('medicine_shelf.edit_medicine_page', medicine_id=medicine.id) }}"
-            class="btn">
+        <a href="{{ url_for('medicine_shelf.edit_medicine_page', medicine_id=medicine.id) }}" class="btn">
 
             Edit
 
         </a>
 
-        <a
-            href="{{ url_for('medicine_shelf.medicine_shelf') }}"
-            class="btn">
+        <a href="{{ url_for('medicine_shelf.medicine_shelf') }}" class="btn">
 
             Back
 
@@ -163,14 +162,10 @@ Medicine Details
 
     <br>
 
-    <form
-        action="{{ url_for('medicine_shelf.remove_medicine', medicine_id=medicine.id) }}"
-        method="POST"
+    <form action="{{ url_for('medicine_shelf.remove_medicine', medicine_id=medicine.id) }}" method="POST"
         onsubmit="return confirmDelete()">
 
-        <button
-            class="delete-btn"
-            type="submit">
+        <button class="delete-btn" type="submit">
 
             Delete Medicine
 
