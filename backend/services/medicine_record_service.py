@@ -4,7 +4,6 @@ from backend.services.history_service import save_history
 
 
 def build_medicine_record(
-    medicine_info, explanation, counterfeit_result, image_filename
     medicine_info,
     explanation,
     counterfeit_result,
@@ -54,9 +53,6 @@ def build_medicine_record(
     )
 
     return {
-        "medicine_name": (
-            medicine_info.get("medicine_name") or medicine_info.get("medicine") or ""
-        ),
         "medicine_name": medicine_name,
         "manufacturer": medicine_info.get("manufacturer", ""),
         "strength": medicine_info.get("strength", ""),
@@ -65,10 +61,6 @@ def build_medicine_record(
         "expiry_date": medicine_info.get("expiry_date", ""),
         "ai_explanation": explanation,
         "counterfeit_analysis": counterfeit_result,
-        "scan_metadata": {
-            "image_filename": image_filename,
-            "scanned_at": datetime.now().isoformat(),
-        },
         "scan_metadata": scan_data["scan_metadata"],
         "history_id": history.id,
     }

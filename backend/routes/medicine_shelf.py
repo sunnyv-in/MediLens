@@ -1,25 +1,20 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, flash, redirect, render_template, request, url_for
 
+from backend.services.email_service import send_medicine_shelf_email
 from backend.services.medicine_service import (
+    delete_medicine,
     get_all_medicines,
     get_medicine_by_id,
     save_medicine,
     update_medicine,
-    delete_medicine,
 )
-
-from flask import flash
-from backend.services.email_service import send_medicine_shelf_email
 
 medicine_shelf_bp = Blueprint("medicine_shelf", __name__)
 
 
 @medicine_shelf_bp.route("/medicine-shelf")
 def medicine_shelf():
-
     medicines = get_all_medicines()
-
-    return render_template("medicine/medicine_shelf.html", medicines=medicines)
 
     return render_template(
         "medicine/medicine_shelf.html",
@@ -29,13 +24,11 @@ def medicine_shelf():
 
 @medicine_shelf_bp.route("/medicine/add")
 def add_medicine_page():
-
     return render_template("medicine/add_medicine.html")
 
 
 @medicine_shelf_bp.route("/medicine/add", methods=["POST"])
 def add_medicine():
-
     medicine_data = {
         "medicine_name": request.form.get("medicine_name"),
         "generic_name": request.form.get("generic_name"),
@@ -52,17 +45,14 @@ def add_medicine():
     }
 
     save_medicine(medicine_data)
+    flash("Medicine added successfully.", "success")
 
     return redirect(url_for("medicine_shelf.medicine_shelf"))
 
 
 @medicine_shelf_bp.route("/medicine/<int:medicine_id>")
 def medicine_details(medicine_id):
-
     medicine = get_medicine_by_id(medicine_id)
-
-    return render_template("medicine/medicine_details.html", medicine=medicine)
-
 
     return render_template(
         "medicine/medicine_details.html",
@@ -70,28 +60,9 @@ def medicine_details(medicine_id):
     )
 
 
-# ============================================================
-# EDIT MEDICINE
-# ============================================================
-
-
 @medicine_shelf_bp.route("/medicine/edit/<int:medicine_id>")
 def edit_medicine_page(medicine_id):
-
     medicine = get_medicine_by_id(medicine_id)
-
-    return render_template("medicine/edit_medicine.html", medicine=medicine)
-
-
-@medicine_shelf_bp.route("/medicine/edit/<int:medicine_id>", methods=["POST"])
-def edit_medicine(medicine_id):
-
-    update_medicine(medicine_id, request.form)
-
-    return redirect(url_for("medicine_shelf.medicine_details", medicine_id=medicine_id))
-
-
-@medicine_shelf_bp.route("/medicine/delete/<int:medicine_id>", methods=["POST"])
 
     # Scanned medicines must be edited through their History record.
     if medicine.history_id:
@@ -113,7 +84,6 @@ def edit_medicine(medicine_id):
     methods=["POST"],
 )
 def edit_medicine(medicine_id):
-
     medicine = get_medicine_by_id(medicine_id)
 
     # Do not allow a scanned medicine to be updated only in the Shelf.
@@ -127,6 +97,8 @@ def edit_medicine(medicine_id):
 
     update_medicine(medicine_id, request.form)
 
+    flash("Medicine updated successfully.", "success")
+
     return redirect(
         url_for(
             "medicine_shelf.medicine_details",
@@ -135,23 +107,21 @@ def edit_medicine(medicine_id):
     )
 
 
-# ============================================================
-# DELETE MEDICINE
-# ============================================================
-
-
 @medicine_shelf_bp.route(
     "/medicine/delete/<int:medicine_id>",
     methods=["POST"],
 )
 def remove_medicine(medicine_id):
-
     delete_medicine(medicine_id)
+    flash("Medicine deleted successfully.", "success")
 
     return redirect(url_for("medicine_shelf.medicine_shelf"))
 
 
-@medicine_shelf_bp.route("/medicine-shelf/email", methods=["POST"])
+@medicine_shelf_bp.route(
+    "/medicine-shelf/email",
+    methods=["POST"],
+)
 def email_medicine_shelf():
     recipient = request.form.get("recipient_email", "").strip()
 
