@@ -369,3 +369,13 @@ def text_to_speech():
         current_app.logger.exception("TTS request failed")
         return jsonify({"error": "TTS failed"}), 500
 
+# ==========================================================
+# SERVE UPLOADED MEDICINE IMAGES
+# ==========================================================
+
+@scan_bp.route("/uploads/<filename>")
+def uploaded_file(filename):
+    return send_from_directory(
+        current_app.config["UPLOAD_FOLDER"],
+        filename,
+    )
