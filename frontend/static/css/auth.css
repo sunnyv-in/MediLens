@@ -92,9 +92,10 @@
 }
 
 .auth-hero-title span {
-  background: linear-gradient(135deg, var(--primary-light), var(--accent-ai-light));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--primary);
+  background: none;
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: initial;
 }
 
 .auth-hero-desc {

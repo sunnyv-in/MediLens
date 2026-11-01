@@ -68,7 +68,7 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, var(--primary), var(--accent-ai), transparent);
+  background: linear-gradient(90deg, var(--primary), transparent);
 }
 
 .patient-info-col h1 {
@@ -156,7 +156,7 @@
 }
 
 .quick-action-card.hero-action {
-  background: linear-gradient(135deg, rgba(20, 184, 166, 0.15), rgba(99, 102, 241, 0.12));
+  background: rgba(129, 252, 186, 0.08); border-color: rgba(129, 252, 186, 0.3);
   border: 1px solid rgba(20, 184, 166, 0.4);
 }
 
@@ -496,7 +496,7 @@
 
 .btn-dose-action:hover {
   background: var(--primary);
-  color: #020617;
+  color: #09090b;
   transform: translateY(-2px);
 }
 

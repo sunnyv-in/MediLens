@@ -12,46 +12,46 @@
 ========================================================== */
 
 :root {
-  /* Surface Layers (Slate-950 Foundation) */
-  --bg-base: #020617;        /* slate-950 deep canvas */
-  --bg-surface: #0b1120;     /* slate-900 surface elevation 1 */
-  --bg-card: #0f172a;        /* slate-900 card elevation 2 */
-  --bg-card-hover: #1e293b;  /* slate-800 interactive hover */
-  --bg-glass: rgba(15, 23, 42, 0.75);
+  /* Surface Layers (Modern Neutral Zinc Foundation) */
+  --bg-base: #09090b;        /* zinc-950 deep charcoal canvas */
+  --bg-surface: #121215;     /* zinc-925 surface elevation 1 */
+  --bg-card: #18181b;        /* zinc-900 card elevation 2 */
+  --bg-card-hover: #222226;  /* zinc-800 interactive hover */
+  --bg-glass: rgba(18, 18, 21, 0.85);
 
-  /* Border System */
-  --border-subtle: #1e293b;  /* slate-800 */
-  --border-highlight: #334155;/* slate-700 */
-  --border-focus: #14b8a6;   /* emerald/teal focus ring */
+  /* Border System (Crisp, Minimalist Monochromatic) */
+  --border-subtle: #27272a;  /* zinc-800 crisp border */
+  --border-highlight: #3f3f46;/* zinc-700 active highlight */
+  --border-focus: #81fcba;   /* mint green focus ring */
   --border-glass: rgba(255, 255, 255, 0.08);
 
-  /* Calming Medical Color System */
-  --primary: #14b8a6;        /* clinical teal/emerald */
-  --primary-hover: #0d9488;  /* deeper teal */
-  --primary-light: #2dd4bf;  /* bright teal highlight */
-  --primary-glow: rgba(20, 184, 166, 0.25);
+  /* Minimalist Medical Color System (Clean Mint Accent) */
+  --primary: #81fcba;        /* spring mint accent */
+  --primary-hover: #6ee7a8;  /* deeper mint */
+  --primary-light: #81fcba;  /* bright mint */
+  --primary-glow: rgba(129, 252, 186, 0.12);
 
-  --accent-ai: #6366f1;     /* calming intelligent indigo */
-  --accent-ai-light: #818cf8;
-  --accent-ai-glow: rgba(99, 102, 241, 0.25);
+  --accent-ai: #a1a1aa;     /* neutral zinc accent */
+  --accent-ai-light: #d4d4d8;
+  --accent-ai-glow: rgba(255, 255, 255, 0.05);
 
-  --success: #10b981;        /* safety verified green */
-  --success-bg: rgba(16, 185, 129, 0.12);
-  --success-border: rgba(16, 185, 129, 0.35);
+  --success: #81fcba;        /* mint green verified */
+  --success-bg: rgba(129, 252, 186, 0.1);
+  --success-border: rgba(129, 252, 186, 0.25);
 
-  --warning: #f59e0b;        /* expiry soon / precaution amber */
-  --warning-bg: rgba(245, 158, 11, 0.12);
-  --warning-border: rgba(245, 158, 11, 0.35);
+  --warning: #fbbf24;        /* caution amber */
+  --warning-bg: rgba(251, 191, 36, 0.1);
+  --warning-border: rgba(251, 191, 36, 0.25);
 
-  --danger: #ef4444;         /* critical / expired / interaction crimson */
-  --danger-bg: rgba(239, 68, 68, 0.14);
-  --danger-border: rgba(239, 68, 68, 0.4);
+  --danger: #f87171;         /* adverse / interaction crimson */
+  --danger-bg: rgba(248, 113, 113, 0.1);
+  --danger-border: rgba(248, 113, 113, 0.25);
 
-  /* High-Contrast Accessible Typography */
-  --text-primary: #f8fafc;   /* slate-50 maximum legibility */
-  --text-secondary: #cbd5e1; /* slate-300 comfortable body */
-  --text-muted: #94a3b8;     /* slate-400 supporting labels */
-  --text-inverse: #020617;
+  /* Restrained, Non-AI-Looking Typography Scale */
+  --text-primary: #fafafa;   /* zinc-50 clean solid white */
+  --text-secondary: #a1a1aa; /* zinc-400 comfortable, calm body */
+  --text-muted: #71717a;     /* zinc-500 subtle supporting labels */
+  --text-inverse: #09090b;
 
   /* Font Families */
   --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -65,15 +65,15 @@
   /* Radii */
   --radius-sm: 8px;
   --radius-md: 12px;
-  --radius-lg: 18px;
-  --radius-xl: 24px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
   --radius-full: 9999px;
 
-  /* Layered Shadows */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 8px 24px -4px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 16px 40px -8px rgba(0, 0, 0, 0.65);
-  --shadow-glow: 0 0 35px -5px var(--primary-glow);
+  /* Restrained Flat & Elevated Shadows (Zero Loud Glows) */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.75);
+  --shadow-glow: 0 0 20px var(--primary-glow);
 
   /* Interactive Timing */
   --transition-fast: 0.15s ease;
@@ -245,27 +245,28 @@ body {
 
 .btn-primary {
   background: var(--primary);
-  color: #020617;
-  box-shadow: 0 4px 14px var(--primary-glow);
+  color: #09090b;
+  font-weight: 700;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 .btn-primary:hover {
-  background: var(--primary-light);
-  box-shadow: 0 6px 20px var(--primary-glow);
-  transform: translateY(-2px);
+  background: var(--primary-hover);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  transform: translateY(-1px);
 }
 
 .btn-secondary {
   background: var(--bg-card);
   color: var(--text-primary);
-  border: 1px solid var(--border-highlight);
+  border: 1px solid var(--border-subtle);
 }
 
 .btn-secondary:hover {
   background: var(--bg-card-hover);
-  border-color: var(--primary);
-  color: var(--primary-light);
-  transform: translateY(-2px);
+  border-color: var(--border-highlight);
+  color: var(--text-primary);
+  transform: translateY(-1px);
 }
 
 .btn-outline {
@@ -382,15 +383,15 @@ body {
 }
 
 .badge-primary {
-  background: rgba(20, 184, 166, 0.14);
-  color: #5eead4;
-  border: 1px solid rgba(20, 184, 166, 0.35);
+  background: rgba(129, 252, 186, 0.1);
+  color: #81fcba;
+  border: 1px solid rgba(129, 252, 186, 0.25);
 }
 
 .badge-ai {
-  background: rgba(99, 102, 241, 0.15);
-  color: #a5b4fc;
-  border: 1px solid rgba(99, 102, 241, 0.35);
+  background: rgba(161, 161, 170, 0.12);
+  color: #e4e4e7;
+  border: 1px solid rgba(161, 161, 170, 0.25);
 }
 
 /* ==========================================================
