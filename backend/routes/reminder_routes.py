@@ -3,6 +3,18 @@ from datetime import datetime
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 
 from backend.services.medicine_service import get_all_medicines
+
+from flask import (
+    Blueprint,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    flash,
+    current_app,
+)
+
+from backend.services.reminder_email_service import send_reminder_saved_email
 from backend.services.reminder_service import (
     get_all_reminders,
     get_reminder_by_id,
@@ -58,10 +70,23 @@ def reminders():
 @reminder_bp.route("/reminders/add", methods=["POST"])
 def add_new_reminder():
     try:
-        add_reminder(_read_reminder_form())
+        reminder = add_reminder(_read_reminder_form())
     except ValueError as error:
         flash(str(error), "error")
         return redirect(url_for("reminder.reminders"))
+
+    recipient = request.form.get("email", "").strip()
+
+    if recipient:
+        try:
+            send_reminder_saved_email(recipient, reminder)
+        except Exception:
+            current_app.logger.exception("Reminder confirmation email failed")
+            flash(
+                "Reminder saved, but the confirmation email could not be sent.",
+                "warning",
+            )
+            return redirect(url_for("reminder.reminders"))
 
     flash("Reminder added successfully.", "success")
     return redirect(url_for("reminder.reminders"))

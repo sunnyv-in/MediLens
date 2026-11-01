@@ -20,17 +20,20 @@
     flex-wrap: wrap;
     margin-bottom: 36px;
   }
+
   .reminder-hero-text .hero-icon {
     font-size: 2.4rem;
     line-height: 1;
     margin-bottom: 8px;
   }
+
   .reminder-hero-text h1 {
     font-size: 2rem;
     font-weight: 700;
     color: var(--text-primary);
     margin-bottom: 4px;
   }
+
   .reminder-hero-text p {
     color: var(--text-muted);
     font-size: 1rem;
@@ -46,6 +49,7 @@
     align-items: center;
     gap: 10px;
   }
+
   .section-heading::after {
     content: "";
     flex: 1;
@@ -69,19 +73,23 @@
     grid-template-columns: 1fr 1fr;
     gap: 18px;
   }
+
   .form-full-col {
     grid-column: 1 / -1;
   }
+
   .form-field {
     display: flex;
     flex-direction: column;
     gap: 6px;
   }
+
   .form-field label {
     font-size: 0.9rem;
     font-weight: 600;
     color: var(--text-secondary);
   }
+
   .form-field input,
   .form-field select,
   .form-field textarea {
@@ -96,10 +104,12 @@
     transition: all var(--transition-fast);
     width: 100%;
   }
+
   .form-field textarea {
     min-height: 90px;
     resize: vertical;
   }
+
   .form-field input:focus,
   .form-field select:focus,
   .form-field textarea:focus {
@@ -108,6 +118,7 @@
     box-shadow: 0 0 0 3px var(--primary-glow);
     outline: none;
   }
+
   .form-field select option {
     background: var(--bg-card);
     color: var(--text-primary);
@@ -131,6 +142,7 @@
     transition: all var(--transition-fast);
     box-shadow: 0 4px 14px var(--primary-glow);
   }
+
   .btn-submit-full:hover {
     background: var(--primary-light);
     transform: translateY(-2px);
@@ -155,6 +167,7 @@
     gap: 14px;
     transition: border-color var(--transition-fast);
   }
+
   .reminder-card:hover {
     border-color: var(--border-highlight);
   }
@@ -166,6 +179,7 @@
     gap: 10px;
     flex-wrap: wrap;
   }
+
   .reminder-medicine-name {
     font-size: 1.2rem;
     font-weight: 700;
@@ -179,6 +193,7 @@
     flex-wrap: wrap;
     gap: 8px;
   }
+
   .badge-time {
     display: inline-flex;
     align-items: center;
@@ -191,6 +206,7 @@
     color: #5eead4;
     border: 1px solid rgba(20, 184, 166, 0.35);
   }
+
   .badge-freq {
     display: inline-flex;
     align-items: center;
@@ -221,6 +237,7 @@
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
   }
+
   .reminder-settings-details summary {
     padding: 10px 14px;
     font-size: 0.9rem;
@@ -233,17 +250,21 @@
     gap: 6px;
     user-select: none;
   }
+
   .reminder-settings-details summary::-webkit-details-marker {
     display: none;
   }
+
   .reminder-settings-details summary::before {
     content: "▶";
     font-size: 0.6rem;
     transition: transform var(--transition-fast);
   }
+
   .reminder-settings-details[open] summary::before {
     transform: rotate(90deg);
   }
+
   .reminder-settings-body {
     padding: 14px;
     display: flex;
@@ -251,11 +272,13 @@
     gap: 12px;
     border-top: 1px solid var(--border-subtle);
   }
+
   .settings-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
   }
+
   .settings-row select {
     min-height: 44px;
     background: var(--bg-card);
@@ -266,11 +289,13 @@
     font-size: 0.9rem;
     color: var(--text-primary);
   }
+
   .settings-row select:focus {
     border-color: var(--primary);
     outline: none;
     box-shadow: 0 0 0 3px var(--primary-glow);
   }
+
   .settings-label {
     display: block;
     font-size: 0.8rem;
@@ -278,6 +303,7 @@
     color: var(--text-muted);
     margin-bottom: 4px;
   }
+
   .btn-settings-save {
     min-height: 40px;
     padding: 8px 18px;
@@ -291,6 +317,7 @@
     transition: all var(--transition-fast);
     align-self: flex-start;
   }
+
   .btn-settings-save:hover {
     background: var(--primary-light);
   }
@@ -304,9 +331,11 @@
     padding-top: 8px;
     border-top: 1px solid var(--border-subtle);
   }
+
   .reminder-actions form {
     display: contents;
   }
+
   .btn-action-edit {
     display: inline-flex;
     align-items: center;
@@ -321,10 +350,12 @@
     border: 1px solid var(--border-highlight);
     transition: all var(--transition-fast);
   }
+
   .btn-action-edit:hover {
     border-color: var(--primary);
     color: var(--primary-light);
   }
+
   .btn-action-toggle {
     display: inline-flex;
     align-items: center;
@@ -339,10 +370,12 @@
     cursor: pointer;
     transition: all var(--transition-fast);
   }
+
   .btn-action-toggle:hover {
     background: rgba(20, 184, 166, 0.12);
     color: var(--primary-light);
   }
+
   .btn-action-delete {
     display: inline-flex;
     align-items: center;
@@ -357,11 +390,15 @@
     cursor: pointer;
     transition: all var(--transition-fast);
   }
+
   .btn-action-delete:hover {
     background: var(--danger);
     color: #fff;
   }
-  .ml-auto { margin-left: auto; }
+
+  .ml-auto {
+    margin-left: auto;
+  }
 
   /* ── Empty state ── */
   .reminder-empty {
@@ -376,15 +413,18 @@
     gap: 14px;
     box-shadow: var(--shadow-md);
   }
+
   .reminder-empty .empty-icon {
     font-size: 3rem;
     opacity: 0.6;
   }
+
   .reminder-empty h3 {
     font-size: 1.25rem;
     font-weight: 700;
     color: var(--text-primary);
   }
+
   .reminder-empty p {
     color: var(--text-muted);
     font-size: 0.95rem;
@@ -393,12 +433,29 @@
 
   /* ── Mobile ── */
   @media (max-width: 768px) {
-    .reminder-hero { flex-direction: column; }
-    .reminder-hero .btn { width: 100%; }
-    .form-two-col { grid-template-columns: 1fr; }
-    .form-full-col { grid-column: 1; }
-    .reminder-grid { grid-template-columns: 1fr; }
-    .settings-row { grid-template-columns: 1fr; }
+    .reminder-hero {
+      flex-direction: column;
+    }
+
+    .reminder-hero .btn {
+      width: 100%;
+    }
+
+    .form-two-col {
+      grid-template-columns: 1fr;
+    }
+
+    .form-full-col {
+      grid-column: 1;
+    }
+
+    .reminder-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .settings-row {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
 {% endblock %}
@@ -475,11 +532,19 @@
             </select>
           </div>
 
+          <!-- Email for confirmation -->
+          <div class="form-field form-full-col">
+            <label for="email">Email for confirmation</label>
+            <input id="email" name="email" type="email" placeholder="you@example.com">
+          </div>
+
           <!-- Instructions -->
           <div class="form-field form-full-col">
             <label for="instructions">Instructions</label>
-            <textarea id="instructions" name="instructions" placeholder="e.g. Take after food, with a full glass of water…"></textarea>
+            <textarea id="instructions" name="instructions"
+              placeholder="e.g. Take after food, with a full glass of water…"></textarea>
           </div>
+
 
         </div>
 
@@ -503,7 +568,9 @@
           {% if reminder.is_active %}
           <span class="badge badge-success">● Active</span>
           {% else %}
-          <span class="badge" style="background:rgba(148,163,184,0.1);color:var(--text-muted);border:1px solid var(--border-subtle);">● Disabled</span>
+          <span class="badge"
+            style="background:rgba(148,163,184,0.1);color:var(--text-muted);border:1px solid var(--border-subtle);">●
+            Disabled</span>
           {% endif %}
         </div>
 
@@ -562,7 +629,7 @@
           </form>
 
           <form action="{{ url_for('reminder.remove_reminder', reminder_id=reminder.id) }}" method="POST"
-                onsubmit="return confirm('Delete this reminder?');" class="ml-auto">
+            onsubmit="return confirm('Delete this reminder?');" class="ml-auto">
             <button class="btn-action-delete" type="submit">🗑 Delete</button>
           </form>
         </div>
