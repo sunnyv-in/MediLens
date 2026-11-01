@@ -716,10 +716,10 @@ Patient Command Center | MediLens
                   <a href="{{ url_for('medicine_shelf.medicine_details', medicine_id=med.id) }}" class="table-btn-icon" title="View Detailed Medical Analysis">
                     <i class="fa-solid fa-eye"></i>
                   </a>
-                  <a href="{{ url_for('reminder.add_reminder', medicine_id=med.id) }}" class="table-btn-icon" title="Set Dose Reminder for this medicine">
+                  <a href="{{ url_for('reminder.reminders') }}" class="table-btn-icon" title="Set Dose Reminder for this medicine">
                     <i class="fa-solid fa-bell"></i>
                   </a>
-                  <a href="{{ url_for('medicine_shelf.edit_medicine', medicine_id=med.id) }}" class="table-btn-icon" title="Edit Medicine Record">
+                  <a href="{{ url_for('medicine_shelf.edit_medicine_page', medicine_id=med.id) }}" class="table-btn-icon" title="Edit Medicine Record">
                     <i class="fa-solid fa-pen-to-square"></i>
                   </a>
                 </div>
