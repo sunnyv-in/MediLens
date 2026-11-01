@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from flask import Blueprint, render_template, redirect, url_for
 from flask_login import current_user
 
@@ -6,6 +6,7 @@ from backend.services.expiry_service import get_expiry_date, get_expiry_status
 from backend.services.emergency_service import get_active_interaction_warnings
 from backend.models.medicine import Medicine
 from backend.models.reminder import MedicationReminder
+from backend.models.user import CareCircleContact, DoseLog
 from backend.services.reminder_service import reminder_status, get_all_reminders
 from backend.services.medicine_service import get_all_medicines
 from backend.services.history_service import get_all_history
@@ -53,6 +54,27 @@ def _compute_dashboard_data():
     afternoon_doses = []
     evening_doses = []
 
+    # Check today's dose logs to see which doses are already taken
+    today_start = datetime.combine(date.today(), datetime.min.time())
+    today_logs = []
+    taken_med_names = set()
+
+    try:
+        if current_user.is_authenticated:
+            today_logs = DoseLog.query.filter(
+                DoseLog.user_id == current_user.id,
+                DoseLog.taken_at >= today_start,
+                DoseLog.status == "taken"
+            ).order_by(DoseLog.taken_at.desc()).all()
+        else:
+            today_logs = DoseLog.query.filter(
+                DoseLog.taken_at >= today_start,
+                DoseLog.status == "taken"
+            ).order_by(DoseLog.taken_at.desc()).all()
+        taken_med_names = {log.medicine_name.lower() for log in today_logs}
+    except Exception:
+        today_logs = []
+
     for r in active_reminders:
         status = reminder_status(r)
         if status == "Due":
@@ -61,16 +83,24 @@ def _compute_dashboard_data():
         r_time = r.reminder_time
         hour = r_time.hour if r_time else 9
         time_str = r_time.strftime("%I:%M %p") if r_time else "Scheduled"
+        med_name = r.medicine.medicine_name if r.medicine else "Medication"
+
+        # Check if already taken today
+        is_already_taken = med_name.lower() in taken_med_names
+        matching_log = next((l for l in today_logs if l.medicine_name.lower() == med_name.lower()), None)
 
         item = {
             "id": r.id,
             "medicine_id": r.medicine_id,
-            "medicine_name": r.medicine.medicine_name if r.medicine else "Medication",
+            "medicine_name": med_name,
             "time_str": time_str,
             "frequency": r.frequency,
             "instructions": r.instructions or "Take with water",
             "status": status,
             "is_due": (status == "Due"),
+            "is_taken": is_already_taken,
+            "administered_by": matching_log.administered_by if matching_log else None,
+            "taken_time": matching_log.taken_at.strftime("%I:%M %p") if matching_log else None,
         }
 
         if hour < 12:
@@ -86,6 +116,14 @@ def _compute_dashboard_data():
         recent_scans = get_all_history()[:5]
     except Exception:
         recent_scans = []
+
+    # Fetch Care Circle contacts if authenticated
+    care_circle = []
+    if current_user.is_authenticated:
+        try:
+            care_circle = CareCircleContact.query.filter_by(user_id=current_user.id).all()
+        except Exception:
+            care_circle = []
 
     dashboard = {
         "total_medicines": len(medicines),
@@ -107,6 +145,8 @@ def _compute_dashboard_data():
             "afternoon": afternoon_doses,
             "evening": evening_doses,
         },
+        "care_circle": care_circle,
+        "today_logs": today_logs,
         "recent_scans": recent_scans,
         "today_str": datetime.now().strftime("%A, %B %d, %Y"),
     }
@@ -128,6 +168,8 @@ def dashboard():
         reminders=data["reminders"],
         warnings=data["warnings"],
         schedule=data["schedule"],
+        care_circle=data["care_circle"],
+        today_logs=data["today_logs"],
         recent_scans=data["recent_scans"],
         today_str=data["today_str"],
         user=current_user,

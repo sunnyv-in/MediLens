@@ -1,6 +1,6 @@
 /**
  * MediLens - Patient Command Center Interactive Features
- * Handles search filtering, status tabs, dose checklist, and print view.
+ * Handles search filtering, status tabs, dose checklist, anti-double-dosing closer, and print view.
  */
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -61,26 +61,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // 3. Today's Medication Tracker (Mark as Taken Action)
-  const doseButtons = document.querySelectorAll(".btn-dose-action");
-  doseButtons.forEach(btn => {
-    btn.addEventListener("click", function () {
-      const itemCard = this.closest(".dose-card-item");
-      const isTaken = itemCard.classList.contains("is-taken");
-
-      if (isTaken) {
-        itemCard.classList.remove("is-taken");
-        this.classList.remove("completed");
-        this.innerHTML = '<i class="fa-solid fa-check"></i> <span>Mark Taken</span>';
-      } else {
-        itemCard.classList.add("is-taken");
-        this.classList.add("completed");
-        this.innerHTML = '<i class="fa-solid fa-circle-check"></i> <span>Taken ✓</span>';
-      }
-    });
-  });
-
-  // 4. Print / Export Medical Summary for Doctor Visit
+  // 3. Print / Export Medical Summary for Doctor Visit
   const printBtn = document.getElementById("printSummaryBtn");
   if (printBtn) {
     printBtn.addEventListener("click", function () {
@@ -88,3 +69,67 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
+
+// 4. Dose Taken / Anti-Double-Dosing Closer Engine
+window.recordDoseTaken = async function (medicineName, reminderId, medicineId, buttonElement) {
+  const itemCard = buttonElement ? buttonElement.closest(".dose-card-item") : null;
+  const broadcastBanner = document.getElementById("doseBroadcastBanner");
+
+  if (buttonElement) {
+    buttonElement.disabled = true;
+    buttonElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Updating...</span>';
+  }
+
+  try {
+    const response = await fetch("/auth/dose-taken", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        medicine_name: medicineName,
+        reminder_id: reminderId,
+        medicine_id: medicineId,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      if (itemCard) {
+        itemCard.classList.add("is-taken");
+        const parentCol = buttonElement.parentElement;
+        buttonElement.remove();
+
+        const badge = document.createElement("div");
+        badge.className = "dose-confirmed-badge";
+        badge.innerHTML = `<i class="fa-solid fa-circle-check"></i> <span>Taken at ${data.time_str} by ${data.administered_by}</span>`;
+        parentCol.appendChild(badge);
+      }
+
+      if (broadcastBanner) {
+        broadcastBanner.style.display = "flex";
+        broadcastBanner.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+            <span>${data.message}</span>
+          </div>
+          <button class="flash-close-btn" onclick="this.parentElement.style.display='none'">&times;</button>
+        `;
+        broadcastBanner.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    } else {
+      alert(data.error || "Could not log dose status.");
+      if (buttonElement) {
+        buttonElement.disabled = false;
+        buttonElement.innerHTML = '<i class="fa-solid fa-check"></i> <span>Mark Taken</span>';
+      }
+    }
+  } catch (err) {
+    console.error("Dose logging failed:", err);
+    if (buttonElement) {
+      buttonElement.disabled = false;
+      buttonElement.innerHTML = '<i class="fa-solid fa-check"></i> <span>Mark Taken</span>';
+    }
+  }
+};

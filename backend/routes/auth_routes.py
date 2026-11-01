@@ -1,4 +1,5 @@
 from uuid import uuid4
+from datetime import datetime
 
 from flask import (
     Blueprint,
@@ -20,7 +21,7 @@ from flask_login import (
 
 from backend.extensions import db
 
-from backend.models.user import User
+from backend.models.user import User, CareCircleContact, DoseLog
 from backend.models.medicine import Medicine
 from backend.models.medicine_history import MedicineHistory
 from backend.models.reminder import MedicationReminder
@@ -85,7 +86,7 @@ def migrate_guest():
 
 
 # ============================================================
-# REGISTER
+# REGISTER (PATIENT & CAREGIVER FLOW WITH CARE CIRCLE)
 # ============================================================
 
 
@@ -97,59 +98,187 @@ def register():
 
     if request.method == "POST":
 
-        name = request.form.get("name", "").strip()
+        first_name = request.form.get("first_name", "").strip()
+        last_name = request.form.get("last_name", "").strip()
+        name = f"{first_name} {last_name}".strip() or request.form.get("name", "").strip()
         email = request.form.get("email", "").strip().lower()
+        phone_number = request.form.get("phone_number", "").strip()
         password = request.form.get("password", "")
 
-        # Validate fields
-        if not name or not email or not password:
-            flash("Please fill all required fields.", "error")
+        role = request.form.get("role", "patient").strip()  # 'patient' or 'caregiver'
+        patient_name = request.form.get("patient_name", "").strip() if role == "caregiver" else None
+
+        # Validate required fields
+        if not first_name or not last_name or not email or not password:
+            flash("Please fill in First Name, Last Name, Email, and Password.", "error")
             return render_template("auth/register.html")
 
-        # Validate password
+        # Validate password length
         if len(password) < 8:
-            flash(
-                "Password must be at least 8 characters.",
-                "error",
-            )
+            flash("Password must be at least 8 characters.", "error")
             return render_template("auth/register.html")
 
         # Check existing user
         existing_user = User.query.filter_by(email=email).first()
-
         if existing_user:
             flash("An account with this email already exists.", "error")
             return render_template("auth/register.html")
 
         # Create user
         try:
-            user = User(name=name, email=email)
+            user = User(
+                name=name,
+                first_name=first_name,
+                last_name=last_name,
+                email=email,
+                phone_number=phone_number or None,
+                role=role,
+                patient_name=patient_name,
+            )
 
             user.set_password(password)
 
             db.session.add(user)
             db.session.commit()
 
+            # Process any additional Care Circle contacts submitted
+            contact_names = request.form.getlist("contact_name[]")
+            contact_relationships = request.form.getlist("contact_relationship[]")
+            contact_phones = request.form.getlist("contact_phone[]")
+
+            for c_name, c_rel, c_phone in zip(contact_names, contact_relationships, contact_phones):
+                c_name = (c_name or "").strip()
+                c_phone = (c_phone or "").strip()
+                if c_name and c_phone:
+                    c_contact = CareCircleContact(
+                        user_id=user.id,
+                        name=c_name,
+                        relationship=(c_rel or "Caregiver").strip(),
+                        phone_number=c_phone,
+                    )
+                    db.session.add(c_contact)
+
+            db.session.commit()
+
             login_user(user)
 
             flash(
-                "Account created successfully. Welcome to MediLens!",
+                f"Welcome to MediLens, {first_name}! Your account and Care Circle have been initialized.",
                 "success",
             )
 
             return redirect(url_for("auth.migrate_guest"))
 
-        except Exception:
+        except Exception as reg_err:
             db.session.rollback()
-
+            print("Registration error:", reg_err)
             flash(
                 "Could not create your account. Please try again.",
                 "error",
             )
-
             return render_template("auth/register.html")
 
     return render_template("auth/register.html")
+
+
+# ============================================================
+# CARE CIRCLE (ADD ADDITIONAL CONTACT NUMBERS)
+# ============================================================
+
+
+@auth_bp.route("/care-circle/add", methods=["POST"])
+@login_required
+def add_care_circle_contact():
+    data = request.get_json(silent=True) or request.form
+
+    name = (data.get("name") or "").strip()
+    relationship = (data.get("relationship") or "Caregiver").strip()
+    phone_number = (data.get("phone_number") or "").strip()
+
+    if not name or not phone_number:
+        if request.is_json:
+            return jsonify({"success": False, "error": "Name and phone number are required."}), 400
+        flash("Name and mobile number are required.", "error")
+        return redirect(url_for("home.dashboard"))
+
+    try:
+        contact = CareCircleContact(
+            user_id=current_user.id,
+            name=name,
+            relationship=relationship,
+            phone_number=phone_number,
+        )
+        db.session.add(contact)
+        db.session.commit()
+
+        if request.is_json:
+            return jsonify({
+                "success": True,
+                "message": f"Added {name} ({relationship}) to Care Circle.",
+                "contact": {
+                    "id": contact.id,
+                    "name": contact.name,
+                    "relationship": contact.relationship,
+                    "phone_number": contact.phone_number,
+                }
+            })
+
+        flash(f"Added {name} to your Care Circle notifications.", "success")
+    except Exception as e:
+        db.session.rollback()
+        if request.is_json:
+            return jsonify({"success": False, "error": str(e)}), 500
+        flash("Could not add contact.", "error")
+
+    return redirect(url_for("home.dashboard"))
+
+
+# ============================================================
+# DOSE TAKEN / CLOSER ENGINE (PREVENTS DOUBLE-DOSING)
+# ============================================================
+
+
+@auth_bp.route("/dose-taken", methods=["POST"])
+def record_dose_taken():
+    data = request.get_json(silent=True) or request.form
+
+    medicine_id = data.get("medicine_id")
+    reminder_id = data.get("reminder_id")
+    medicine_name = (data.get("medicine_name") or "Prescription").strip()
+
+    admin_by = (
+        data.get("administered_by")
+        or (current_user.name if current_user.is_authenticated else "Self")
+    ).strip()
+
+    now = datetime.now()
+    now_str = now.strftime("%I:%M %p")
+
+    try:
+        log = DoseLog(
+            user_id=current_user.id if current_user.is_authenticated else None,
+            guest_id=session.get("guest_id"),
+            medicine_id=int(medicine_id) if medicine_id else None,
+            reminder_id=int(reminder_id) if reminder_id else None,
+            medicine_name=medicine_name,
+            administered_by=admin_by,
+            taken_at=now,
+            status="taken",
+        )
+        db.session.add(log)
+        db.session.commit()
+
+        return jsonify({
+            "success": True,
+            "message": f"Dose completed: {medicine_name} administered by {admin_by} at {now_str}. Notifications cleared for all caretakers to prevent duplicate dosing.",
+            "administered_by": admin_by,
+            "time_str": now_str,
+            "status": "completed",
+        })
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 # ============================================================
@@ -255,7 +384,16 @@ def google_login():
 
     if not user:
         try:
-            user = User(name=name, email=email)
+            parts = name.split()
+            f_name = parts[0] if parts else "Google"
+            l_name = " ".join(parts[1:]) if len(parts) > 1 else "User"
+
+            user = User(
+                name=name,
+                first_name=f_name,
+                last_name=l_name,
+                email=email,
+            )
             user.set_password(uuid4().hex + uuid4().hex)
             db.session.add(user)
             db.session.commit()
