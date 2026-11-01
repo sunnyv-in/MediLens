@@ -1,6 +1,5 @@
 {% extends "layouts/base.html" %}
 
-
 {% block styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/medicine.css') }}">
 {% endblock %}
@@ -13,7 +12,9 @@
         <div>
             <p class="med-eyebrow">MEDICINE DETAILS</p>
             <h1>{{ medicine.medicine_name }}</h1>
-            <p class="med-muted">{{ medicine.generic_name or "Generic name not added" }}</p>
+            <p class="med-muted">
+                {{ medicine.generic_name or "Generic name not added" }}
+            </p>
         </div>
 
         <div class="med-header-actions">
@@ -73,12 +74,17 @@
             </div>
             <div>
                 <dt>Counterfeit score</dt>
-                <dd>{{ medicine.counterfeit_score if medicine.counterfeit_score is not none else "Not available" }}</dd>
+                <dd>
+                    {{ medicine.counterfeit_score
+                    if medicine.counterfeit_score is not none
+                    else "Not available" }}
+                </dd>
             </div>
             <div>
                 <dt>Added on</dt>
                 <dd>
-                    {{ medicine.created_at.strftime("%d %b %Y, %I:%M %p") if medicine.created_at else "Not available" }}
+                    {{ medicine.created_at.strftime("%d %b %Y, %I:%M %p")
+                    if medicine.created_at else "Not available" }}
                 </dd>
             </div>
         </dl>
@@ -96,12 +102,14 @@
         {% if medicine.history_id %}
         <section class="med-detail-text">
             <h2>Email scan details</h2>
+
             <form method="POST"
                 action="{{ url_for('medicine_history.email_history', history_id=medicine.history_id) }}">
                 <label for="medicine-details-recipient">Recipient email</label>
                 <input id="medicine-details-recipient" name="recipient_email" type="email"
                     value="{{ current_user.email if current_user.is_authenticated else '' }}"
                     placeholder="Enter recipient email" required>
+
                 <button class="med-btn med-btn-secondary" type="submit">
                     Email scan details and image
                 </button>
@@ -117,157 +125,5 @@
             </button>
         </form>
     </div>
-<<<<<<< HEAD
-
-    <div>
-
-        <a href="{{ url_for('medicine_shelf.edit_medicine_page', medicine_id=medicine.id) }}" class="btn">
-
-            Edit
-
-        </a>
-
-        <a href="{{ url_for('medicine_shelf.medicine_shelf') }}" class="btn">
-
-            Back
-
-        </a>
-
-    </div>
-
-</div>
-
-
-<div class="details-card">
-
-    <div class="details-grid">
-
-        <div class="detail-box">
-
-            <h3>Medicine Name</h3>
-
-            <p>{{ medicine.medicine_name }}</p>
-
-        </div>
-
-        <div class="detail-box">
-
-            <h3>Generic Name</h3>
-
-            <p>{{ medicine.generic_name or "-" }}</p>
-
-        </div>
-
-        <div class="detail-box">
-
-            <h3>Strength</h3>
-
-            <p>{{ medicine.strength or "-" }}</p>
-
-        </div>
-
-        <div class="detail-box">
-
-            <h3>Manufacturer</h3>
-
-            <p>{{ medicine.manufacturer or "-" }}</p>
-
-        </div>
-
-        <div class="detail-box">
-
-            <h3>Batch Number</h3>
-
-            <p>{{ medicine.batch_number or "-" }}</p>
-
-        </div>
-
-        <div class="detail-box">
-
-            <h3>Expiry Date</h3>
-
-            <p>{{ medicine.expiry_date or "-" }}</p>
-
-        </div>
-
-        <div class="detail-box">
-
-            <h3>Quantity</h3>
-
-            <p>{{ medicine.quantity }}</p>
-
-        </div>
-
-        <div class="detail-box">
-
-            <h3>Dosage</h3>
-
-            <p>{{ medicine.dosage or "-" }}</p>
-
-        </div>
-
-        <div class="detail-box">
-
-            <h3>Counterfeit Score</h3>
-
-            <p>{{ medicine.counterfeit_score }}</p>
-
-        </div>
-
-        <div class="detail-box">
-
-            <h3>Created</h3>
-
-            <p>{{ medicine.created_at }}</p>
-
-        </div>
-
-    </div>
-
-    <br>
-
-    <h3>
-
-        Uses
-
-    </h3>
-
-    <p>
-
-        {{ medicine.usage or "No information available." }}
-
-    </p>
-
-    <br>
-
-    <h3>
-
-        Side Effects
-
-    </h3>
-
-    <p>
-
-        {{ medicine.side_effects or "No information available." }}
-
-    </p>
-
-    <br>
-
-    <form action="{{ url_for('medicine_shelf.remove_medicine', medicine_id=medicine.id) }}" method="POST"
-        onsubmit="return confirmDelete()">
-
-        <button class="delete-btn" type="submit">
-
-            Delete Medicine
-
-        </button>
-
-    </form>
-
-</div>
-
-=======
 </section>
->>>>>>> origin/Whatsapp_integration
 {% endblock %}
