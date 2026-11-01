@@ -1,0 +1,802 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}
+Patient Command Center | MediLens
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
+<style>
+  .care-circle-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 22px;
+  }
+
+  .care-contact-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .care-contact-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .care-contact-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(20, 184, 166, 0.15);
+    color: var(--primary-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+
+  .dose-confirmed-badge {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid var(--success-border);
+    color: #6ee7b7;
+    font-size: 0.825rem;
+    padding: 6px 12px;
+    border-radius: var(--radius-md);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+  }
+
+  @media print {
+    header, footer, .welcome-actions, .quick-actions-grid, .cabinet-table-toolbar, .table-actions, .btn-dose-action, .care-circle-card {
+      display: none !important;
+    }
+    body {
+      background: white !important;
+      color: black !important;
+    }
+    .card, .patient-welcome-card, .cabinet-table-card {
+      border: 1px solid #ccc !important;
+      box-shadow: none !important;
+      background: white !important;
+      color: black !important;
+    }
+    .privacy-masked .privacy-sensitive {
+      filter: none !important;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper">
+
+  <!-- =====================================================
+       1. PATIENT WELCOME & SAFETY HEALTH STATUS BANNER
+  ====================================================== -->
+  <section class="patient-welcome-card" aria-label="Patient Status Overview">
+    <div class="patient-info-col">
+      <h1>
+        {% if current_user.is_authenticated %}
+          {% if current_user.role == 'caregiver' and current_user.patient_name %}
+            Care Center for {{ current_user.patient_name }}
+            <span class="badge badge-ai" style="font-size: 0.8rem; vertical-align: middle; margin-left: 8px;">Caregiver Mode</span>
+          {% else %}
+            Hello, {{ current_user.name.split()[0] }}
+          {% endif %}
+        {% else %}
+          Patient Command Center
+        {% endif %}
+        <span style="display: inline-block;">👋</span>
+      </h1>
+      <p>
+        <i class="fa-regular fa-calendar" style="color: var(--primary);" aria-hidden="true"></i>
+        <span>{{ today_str }}</span>
+        <span style="opacity: 0.4;">•</span>
+        <i class="fa-regular fa-clock" style="color: var(--accent-ai-light);" aria-hidden="true"></i>
+        <span id="liveClock">--:--</span>
+      </p>
+    </div>
+
+    <!-- HEALTH SAFETY STATUS PILL -->
+    <div>
+      {% if dashboard.interaction_warnings > 0 %}
+        <div class="safety-status-badge danger" role="alert">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span>Attention: {{ dashboard.interaction_warnings }} Potential Drug Conflict Detected</span>
+        </div>
+      {% elif dashboard.expired > 0 %}
+        <div class="safety-status-badge warning" role="alert">
+          <i class="fa-solid fa-hourglass-end"></i>
+          <span>Notice: {{ dashboard.expired }} Expired Medicine(s) in Cabinet</span>
+        </div>
+      {% else %}
+        <div class="safety-status-badge safe" role="status">
+          <i class="fa-solid fa-shield-check"></i>
+          <span>All Clear: Zero Adverse Drug Conflicts Detected</span>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- QUICK ACTIONS / DOCTOR EXPORT -->
+    <div class="welcome-actions">
+      <button type="button" class="btn btn-secondary btn-sm" id="printSummaryBtn" title="Print medication summary for physician">
+        <i class="fa-solid fa-print"></i>
+        <span>Print for Doctor</span>
+      </button>
+
+      {% if not current_user.is_authenticated %}
+      <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-sm">
+        <i class="fa-solid fa-cloud-arrow-up"></i>
+        <span>Save Cabinet Data</span>
+      </a>
+      {% endif %}
+    </div>
+  </section>
+
+  <!-- =====================================================
+       2. SCANNABLE KPI SUMMARY CARDS
+  ====================================================== -->
+  <section class="kpi-metrics-grid" aria-label="Key Health Statistics">
+
+    <!-- KPI 1: TOTAL MEDICINES -->
+    <div class="kpi-card kpi-teal">
+      <div class="kpi-card-header">
+        <span class="kpi-label">Cabinet Shelf</span>
+        <div class="kpi-icon-pill" aria-hidden="true">
+          <i class="fa-solid fa-pills"></i>
+        </div>
+      </div>
+      <div class="kpi-number privacy-sensitive">{{ dashboard.total_medicines }}</div>
+      <div class="kpi-subtext">
+        <i class="fa-solid fa-boxes-stacked" style="color: var(--primary);"></i>
+        <span>Total medicines tracked</span>
+      </div>
+    </div>
+
+    <!-- KPI 2: ACTIVE REMINDERS / DUE TODAY -->
+    <div class="kpi-card kpi-indigo">
+      <div class="kpi-card-header">
+        <span class="kpi-label">Doses Due Now</span>
+        <div class="kpi-icon-pill" aria-hidden="true">
+          <i class="fa-solid fa-bell"></i>
+        </div>
+      </div>
+      <div class="kpi-number privacy-sensitive">{{ dashboard.due_now }}</div>
+      <div class="kpi-subtext">
+        <i class="fa-solid fa-clock" style="color: var(--accent-ai-light);"></i>
+        <span>{{ dashboard.active_reminders }} active schedules</span>
+      </div>
+    </div>
+
+    <!-- KPI 3: EXPIRING SOON (< 30 DAYS) -->
+    <div class="kpi-card kpi-amber">
+      <div class="kpi-card-header">
+        <span class="kpi-label">Expiring Soon</span>
+        <div class="kpi-icon-pill" aria-hidden="true">
+          <i class="fa-solid fa-hourglass-half"></i>
+        </div>
+      </div>
+      <div class="kpi-number privacy-sensitive">{{ dashboard.expiring_soon }}</div>
+      <div class="kpi-subtext">
+        <i class="fa-solid fa-triangle-exclamation" style="color: var(--warning);"></i>
+        <span>Within 30 days window</span>
+      </div>
+    </div>
+
+    <!-- KPI 4: EXPIRED -->
+    <div class="kpi-card kpi-danger">
+      <div class="kpi-card-header">
+        <span class="kpi-label">Expired</span>
+        <div class="kpi-icon-pill" aria-hidden="true">
+          <i class="fa-solid fa-ban"></i>
+        </div>
+      </div>
+      <div class="kpi-number privacy-sensitive">{{ dashboard.expired }}</div>
+      <div class="kpi-subtext">
+        <i class="fa-solid fa-trash-can" style="color: var(--danger);"></i>
+        <span>Action required: Dispose safely</span>
+      </div>
+    </div>
+
+    <!-- KPI 5: INTERACTION WARNINGS -->
+    <div class="kpi-card {% if dashboard.interaction_warnings > 0 %}kpi-danger{% else %}kpi-success{% endif %}">
+      <div class="kpi-card-header">
+        <span class="kpi-label">Safety Shield</span>
+        <div class="kpi-icon-pill" aria-hidden="true">
+          <i class="fa-solid fa-shield-virus"></i>
+        </div>
+      </div>
+      <div class="kpi-number privacy-sensitive">{{ dashboard.interaction_warnings }}</div>
+      <div class="kpi-subtext">
+        {% if dashboard.interaction_warnings > 0 %}
+          <i class="fa-solid fa-circle-exclamation" style="color: var(--danger);"></i>
+          <span style="color: #fca5a5;">Requires medical review</span>
+        {% else %}
+          <i class="fa-solid fa-circle-check" style="color: var(--success);"></i>
+          <span>No conflict detected</span>
+        {% endif %}
+      </div>
+    </div>
+
+  </section>
+
+  <!-- =====================================================
+       3. HIGH-UTILITY QUICK ACTIONS COMMAND BAR
+  ====================================================== -->
+  <section class="quick-actions-grid" aria-label="Rapid Patient Actions">
+
+    <!-- 1. SCAN STRIP (HERO ACTION) -->
+    <a href="{{ url_for('scan.scan') }}" class="quick-action-card hero-action" id="qaScanMedicine">
+      <div class="quick-action-icon icon-teal">
+        <i class="fa-solid fa-camera"></i>
+      </div>
+      <div class="quick-action-text">
+        <strong>Scan Medicine Strip</strong>
+        <span>Instant OCR extraction & AI advice</span>
+      </div>
+    </a>
+
+    <!-- 2. ADD DOSE REMINDER -->
+    <a href="{{ url_for('reminder.reminders') }}" class="quick-action-card" id="qaAddReminder">
+      <div class="quick-action-icon icon-indigo">
+        <i class="fa-solid fa-bell"></i>
+      </div>
+      <div class="quick-action-text">
+        <strong>Set Dose Reminder</strong>
+        <span>Daily alarms & WhatsApp alerts</span>
+      </div>
+    </a>
+
+    <!-- 3. ADD TO CABINET -->
+    <a href="{{ url_for('medicine_shelf.add_medicine') }}" class="quick-action-card" id="qaAddCabinet">
+      <div class="quick-action-icon icon-amber">
+        <i class="fa-solid fa-plus"></i>
+      </div>
+      <div class="quick-action-text">
+        <strong>Add to Cabinet</strong>
+        <span>Log prescription or vitamin</span>
+      </div>
+    </a>
+
+    <!-- 4. EMERGENCY MODE -->
+    <a href="{{ url_for('emergency.emergency_mode') }}" class="quick-action-card emergency-action" id="qaEmergency">
+      <div class="quick-action-icon icon-red">
+        <i class="fa-solid fa-truck-medical"></i>
+      </div>
+      <div class="quick-action-text">
+        <strong style="color: #fca5a5;">Emergency Mode</strong>
+        <span>Immediate vital medical summary</span>
+      </div>
+    </a>
+
+  </section>
+
+  <!-- =====================================================
+       4. TWO-COLUMN SPLIT: TODAY'S SCHEDULE & CARE CIRCLE
+  ====================================================== -->
+  <div class="dashboard-main-columns">
+
+    <!-- LEFT: TODAY'S MEDICATION STEPPER / TIMELINE -->
+    <section class="card" aria-labelledby="todayScheduleHeading">
+      <div class="section-panel-header">
+        <h2 id="todayScheduleHeading">
+          <i class="fa-solid fa-calendar-day"></i>
+          <span>Today's Medication Schedule</span>
+        </h2>
+        <a href="{{ url_for('reminder.reminders') }}" class="btn btn-secondary btn-sm">
+          <span>Manage Reminders</span>
+          <i class="fa-solid fa-chevron-right" style="font-size: 0.75rem;"></i>
+        </a>
+      </div>
+
+      <!-- BROADCAST STATUS ALERT (SHOWS WHEN A DOSE IS TAKEN) -->
+      <div id="doseBroadcastBanner" style="display: none; margin-bottom: 16px;" class="flash success"></div>
+
+      {% if schedule.morning or schedule.afternoon or schedule.evening %}
+      <div class="schedule-timeline-container">
+
+        <!-- MORNING BLOCK -->
+        {% if schedule.morning %}
+        <div class="timeline-period-block">
+          <div class="timeline-period-header">
+            <span class="period-title">
+              <i class="fa-solid fa-sun period-icon-sun"></i> Morning Doses (Before 12 PM)
+            </span>
+            <span class="badge badge-primary">{{ schedule.morning|length }} Scheduled</span>
+          </div>
+
+          {% for item in schedule.morning %}
+          <div class="dose-card-item {% if item.is_taken %}is-taken{% endif %}" data-medicine="{{ item.medicine_name }}" data-reminder-id="{{ item.id }}" data-med-id="{{ item.medicine_id }}">
+            <div class="dose-details">
+              <div class="dose-name privacy-sensitive">{{ item.medicine_name }}</div>
+              <div class="dose-meta">
+                <span><i class="fa-regular fa-clock"></i> {{ item.time_str }}</span>
+                <span>•</span>
+                <span><i class="fa-solid fa-repeat"></i> {{ item.frequency }}</span>
+                <span>•</span>
+                <span style="color: var(--text-secondary);">{{ item.instructions }}</span>
+              </div>
+            </div>
+
+            {% if item.is_taken %}
+              <div class="dose-confirmed-badge">
+                <i class="fa-solid fa-circle-check"></i>
+                <span>Taken at {{ item.taken_time }} by {{ item.administered_by }}</span>
+              </div>
+            {% else %}
+              <button
+                type="button"
+                class="btn-dose-action"
+                onclick="window.recordDoseTaken('{{ item.medicine_name }}', '{{ item.id }}', '{{ item.medicine_id }}', this)"
+                aria-label="Mark {{ item.medicine_name }} as administered"
+              >
+                <i class="fa-solid fa-check"></i>
+                <span>Mark Taken</span>
+              </button>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- AFTERNOON BLOCK -->
+        {% if schedule.afternoon %}
+        <div class="timeline-period-block">
+          <div class="timeline-period-header">
+            <span class="period-title">
+              <i class="fa-solid fa-cloud-sun period-icon-noon"></i> Afternoon Doses (12 PM - 5 PM)
+            </span>
+            <span class="badge badge-primary">{{ schedule.afternoon|length }} Scheduled</span>
+          </div>
+
+          {% for item in schedule.afternoon %}
+          <div class="dose-card-item {% if item.is_taken %}is-taken{% endif %}" data-medicine="{{ item.medicine_name }}" data-reminder-id="{{ item.id }}" data-med-id="{{ item.medicine_id }}">
+            <div class="dose-details">
+              <div class="dose-name privacy-sensitive">{{ item.medicine_name }}</div>
+              <div class="dose-meta">
+                <span><i class="fa-regular fa-clock"></i> {{ item.time_str }}</span>
+                <span>•</span>
+                <span><i class="fa-solid fa-repeat"></i> {{ item.frequency }}</span>
+                <span>•</span>
+                <span style="color: var(--text-secondary);">{{ item.instructions }}</span>
+              </div>
+            </div>
+
+            {% if item.is_taken %}
+              <div class="dose-confirmed-badge">
+                <i class="fa-solid fa-circle-check"></i>
+                <span>Taken at {{ item.taken_time }} by {{ item.administered_by }}</span>
+              </div>
+            {% else %}
+              <button
+                type="button"
+                class="btn-dose-action"
+                onclick="window.recordDoseTaken('{{ item.medicine_name }}', '{{ item.id }}', '{{ item.medicine_id }}', this)"
+                aria-label="Mark {{ item.medicine_name }} as administered"
+              >
+                <i class="fa-solid fa-check"></i>
+                <span>Mark Taken</span>
+              </button>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- EVENING BLOCK -->
+        {% if schedule.evening %}
+        <div class="timeline-period-block">
+          <div class="timeline-period-header">
+            <span class="period-title">
+              <i class="fa-solid fa-moon period-icon-moon"></i> Evening & Bedtime Doses (5 PM+)
+            </span>
+            <span class="badge badge-primary">{{ schedule.evening|length }} Scheduled</span>
+          </div>
+
+          {% for item in schedule.evening %}
+          <div class="dose-card-item {% if item.is_taken %}is-taken{% endif %}" data-medicine="{{ item.medicine_name }}" data-reminder-id="{{ item.id }}" data-med-id="{{ item.medicine_id }}">
+            <div class="dose-details">
+              <div class="dose-name privacy-sensitive">{{ item.medicine_name }}</div>
+              <div class="dose-meta">
+                <span><i class="fa-regular fa-clock"></i> {{ item.time_str }}</span>
+                <span>•</span>
+                <span><i class="fa-solid fa-repeat"></i> {{ item.frequency }}</span>
+                <span>•</span>
+                <span style="color: var(--text-secondary);">{{ item.instructions }}</span>
+              </div>
+            </div>
+
+            {% if item.is_taken %}
+              <div class="dose-confirmed-badge">
+                <i class="fa-solid fa-circle-check"></i>
+                <span>Taken at {{ item.taken_time }} by {{ item.administered_by }}</span>
+              </div>
+            {% else %}
+              <button
+                type="button"
+                class="btn-dose-action"
+                onclick="window.recordDoseTaken('{{ item.medicine_name }}', '{{ item.id }}', '{{ item.medicine_id }}', this)"
+                aria-label="Mark {{ item.medicine_name }} as administered"
+              >
+                <i class="fa-solid fa-check"></i>
+                <span>Mark Taken</span>
+              </button>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+      </div>
+      {% else %}
+      <div class="empty-schedule-card">
+        <i class="fa-regular fa-calendar-check" aria-hidden="true"></i>
+        <h3 style="color: var(--text-primary); margin-bottom: 6px; font-size: 1.15rem;">No Doses Scheduled for Today</h3>
+        <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 380px; margin: 0 auto 18px;">
+          Set up morning, afternoon, or evening reminders to track doses and sync all caregivers.
+        </p>
+        <a href="{{ url_for('reminder.reminders') }}" class="btn btn-primary btn-sm">
+          <i class="fa-solid fa-plus"></i>
+          <span>Schedule First Reminder</span>
+        </a>
+      </div>
+      {% endif %}
+
+    </section>
+
+    <!-- RIGHT: CARE CIRCLE & HEALTH ADHERENCE -->
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+
+      <!-- CARE CIRCLE / MULTI-CAREGIVER SYNC CARD -->
+      <section class="care-circle-card" aria-labelledby="careCircleHeading">
+        <div class="section-panel-header" style="margin-bottom: 12px;">
+          <h2 id="careCircleHeading" style="font-size: 1.15rem;">
+            <i class="fa-solid fa-people-roof" style="color: var(--primary);"></i>
+            <span>Care Circle &amp; Sync</span>
+          </h2>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('addContactModal').style.display='block'">
+            <i class="fa-solid fa-plus"></i> Add
+          </button>
+        </div>
+
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 14px;">
+          All contacts receive simultaneous alerts. When a dose is taken, everyone is notified to prevent double-dosing.
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <!-- Primary Account User -->
+          <div class="care-contact-item">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div class="care-contact-avatar">
+                <i class="fa-solid fa-user"></i>
+              </div>
+              <div>
+                <strong style="color: var(--text-primary); font-size: 0.92rem; display: block;">
+                  {{ current_user.name if current_user.is_authenticated else 'Primary Patient' }}
+                </strong>
+                <small style="color: var(--text-muted);">
+                  {{ current_user.phone_number if current_user.is_authenticated and current_user.phone_number else 'Primary Contact' }} • Primary
+                </small>
+              </div>
+            </div>
+            <span class="badge badge-primary">Primary</span>
+          </div>
+
+          <!-- Additional Care Circle Contacts -->
+          {% if care_circle %}
+            {% for contact in care_circle %}
+            <div class="care-contact-item">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div class="care-contact-avatar" style="background: rgba(99, 102, 241, 0.15); color: var(--accent-ai-light);">
+                  <i class="fa-solid fa-heart-pulse"></i>
+                </div>
+                <div>
+                  <strong style="color: var(--text-primary); font-size: 0.92rem; display: block;">{{ contact.name }}</strong>
+                  <small style="color: var(--text-muted);">{{ contact.phone_number }} • {{ contact.relationship }}</small>
+                </div>
+              </div>
+              <span class="badge badge-ai">{{ contact.relationship }}</span>
+            </div>
+            {% endfor %}
+          {% else %}
+            <p style="color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 8px 0; margin: 0;">
+              No additional caregiver numbers added yet.
+            </p>
+          {% endif %}
+        </div>
+      </section>
+
+      <!-- ADHERENCE METRIC -->
+      <section class="card" aria-labelledby="adherenceHeading">
+        <div class="section-panel-header">
+          <h2 id="adherenceHeading" style="font-size: 1.15rem;">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>Weekly Adherence</span>
+          </h2>
+          <span class="badge badge-success">Good Routine</span>
+        </div>
+
+        <div class="adherence-gauge-wrapper">
+          <div class="adherence-circle-chart">
+            <svg viewBox="0 0 36 36" style="width: 100%; height: 100%; transform: rotate(-90deg);">
+              <path
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                fill="none"
+                stroke="var(--bg-card-hover)"
+                stroke-width="3.5"
+              />
+              <path
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                fill="none"
+                stroke="var(--primary)"
+                stroke-width="3.5"
+                stroke-dasharray="92, 100"
+                stroke-linecap="round"
+              />
+            </svg>
+            <div class="adherence-number">
+              92%
+              <span>On-Time</span>
+            </div>
+          </div>
+
+          <div class="adherence-info">
+            <p>You've taken <strong>11 of 12 doses</strong> this week. Consistent adherence reduces relapse risks by up to 60%.</p>
+            <div style="display: flex; gap: 6px;">
+              <span class="badge badge-primary"><i class="fa-solid fa-award"></i> 7-Day Streak</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ACTIVE DRUG INTERACTION NOTICES (IF ANY) -->
+      {% if warnings %}
+      <section class="card" style="border-left: 4px solid var(--danger);">
+        <h3 style="color: #fca5a5; font-size: 1.05rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span>Interaction Warnings ({{ warnings|length }})</span>
+        </h3>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          {% for w in warnings %}
+          <div style="background: var(--bg-surface); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+            <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">
+              <span class="privacy-sensitive">{{ w.drug_one }}</span> &amp; <span class="privacy-sensitive">{{ w.drug_two }}</span>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">{{ w.description }}</p>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+
+      <!-- QUICK EMERGENCY DIRECTORY -->
+      <section class="card">
+        <h3 style="font-size: 1.05rem; color: var(--text-primary); margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-phone-volume" style="color: var(--danger);"></i>
+          <span>Emergency Hotlines</span>
+        </h3>
+        <div class="emergency-quick-bar">
+          <a href="tel:108" class="emergency-card-pill">
+            <div class="emergency-card-info">
+              <strong>Emergency Ambulance</strong>
+              <span>Dial 108 / 112 (Nationwide)</span>
+            </div>
+            <div class="emergency-call-btn">
+              <i class="fa-solid fa-phone"></i>
+            </div>
+          </a>
+        </div>
+      </section>
+
+    </div>
+
+  </div>
+
+  <!-- =====================================================
+       5. INTERACTIVE MEDICINE CABINET DATA TABLE
+  ====================================================== -->
+  <section class="cabinet-table-card" aria-labelledby="cabinetTableHeading">
+
+    <div class="cabinet-table-toolbar">
+      <div>
+        <h2 id="cabinetTableHeading" style="font-family: var(--font-display); font-size: 1.4rem; color: var(--text-primary); margin-bottom: 4px;">
+          <i class="fa-solid fa-boxes-stacked" style="color: var(--primary); margin-right: 8px;"></i>
+          Digital Medicine Cabinet
+        </h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">
+          Real-time inventory, expiry tracking, and safety categorization.
+        </p>
+      </div>
+
+      <!-- FILTER TABS & SEARCH -->
+      <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+        <!-- SEARCH -->
+        <div class="cabinet-search-box">
+          <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+          <input
+            type="text"
+            id="cabinetSearch"
+            class="cabinet-search-input"
+            placeholder="Search medicine or formulation..."
+            aria-label="Search medicine inventory"
+          />
+        </div>
+
+        <!-- TABS -->
+        <div class="cabinet-filter-tabs" role="tablist">
+          <button type="button" class="filter-tab-btn active" data-filter="all">All ({{ medicines|length }})</button>
+          <button type="button" class="filter-tab-btn" data-filter="safe">Safe ({{ dashboard.safe_medicines }})</button>
+          <button type="button" class="filter-tab-btn" data-filter="expiring">Expiring Soon ({{ dashboard.expiring_soon }})</button>
+          <button type="button" class="filter-tab-btn" data-filter="expired">Expired ({{ dashboard.expired }})</button>
+        </div>
+
+        <a href="{{ url_for('medicine_shelf.add_medicine') }}" class="btn btn-primary btn-sm">
+          <i class="fa-solid fa-plus"></i>
+          <span>Add Medicine</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-responsive">
+      <table class="cabinet-data-table">
+        <thead>
+          <tr>
+            <th scope="col">Medicine &amp; Generic Name</th>
+            <th scope="col">Strength &amp; Dosage</th>
+            <th scope="col">Manufacturer</th>
+            <th scope="col">Expiry Status</th>
+            <th scope="col">Safety Rating</th>
+            <th scope="col" style="text-align: right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="cabinetTableBody">
+          {% if medicines %}
+            {% for med in medicines %}
+            <tr data-status="{{ med.expiry_status }}">
+              <!-- NAME -->
+              <td class="med-name-cell">
+                <strong class="privacy-sensitive">{{ med.medicine_name }}</strong>
+                <span class="privacy-sensitive">{{ med.generic_name or 'Standard formulation' }}</span>
+              </td>
+
+              <!-- DOSAGE -->
+              <td>
+                <span style="color: var(--text-primary); font-weight: 500;">{{ med.strength }}</span>
+                <br>
+                <small style="color: var(--text-muted);">{{ med.dosage }}</small>
+              </td>
+
+              <!-- MANUFACTURER -->
+              <td>
+                <span style="font-size: 0.9rem;">{{ med.manufacturer }}</span>
+              </td>
+
+              <!-- EXPIRY STATUS -->
+              <td>
+                {% if med.expiry_status == 'Expired' %}
+                  <span class="badge badge-danger">
+                    <i class="fa-solid fa-ban"></i> Expired ({{ med.parsed_expiry }})
+                  </span>
+                {% elif med.expiry_status == 'Expiring soon' %}
+                  <span class="badge badge-warning">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Soon ({{ med.parsed_expiry }})
+                  </span>
+                {% else %}
+                  <span class="badge badge-success">
+                    <i class="fa-solid fa-circle-check"></i> Valid until {{ med.parsed_expiry }}
+                  </span>
+                {% endif %}
+              </td>
+
+              <!-- COUNTERFEIT / AUTHENTICITY -->
+              <td>
+                {% if med.counterfeit_score and med.counterfeit_score > 50 %}
+                  <span class="badge badge-danger">High Risk ({{ med.counterfeit_score }}%)</span>
+                {% elif med.counterfeit_score and med.counterfeit_score > 20 %}
+                  <span class="badge badge-warning">Moderate ({{ med.counterfeit_score }}%)</span>
+                {% else %}
+                  <span class="badge badge-primary">
+                    <i class="fa-solid fa-shield-check"></i> Verified Authentic
+                  </span>
+                {% endif %}
+              </td>
+
+              <!-- ACTIONS -->
+              <td style="text-align: right;">
+                <div class="table-actions" style="justify-content: flex-end;">
+                  <a href="{{ url_for('medicine_shelf.medicine_details', medicine_id=med.id) }}" class="table-btn-icon" title="View Detailed Medical Analysis">
+                    <i class="fa-solid fa-eye"></i>
+                  </a>
+                  <a href="{{ url_for('reminder.reminders') }}" class="table-btn-icon" title="Set Dose Reminder for this medicine">
+                    <i class="fa-solid fa-bell"></i>
+                  </a>
+                  <a href="{{ url_for('medicine_shelf.edit_medicine_page', medicine_id=med.id) }}" class="table-btn-icon" title="Edit Medicine Record">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </a>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="6" style="text-align: center; padding: 48px 20px;">
+                <div style="max-width: 400px; margin: 0 auto;">
+                  <i class="fa-solid fa-pills" style="font-size: 2.5rem; color: var(--text-muted); margin-bottom: 12px;"></i>
+                  <h3 style="color: var(--text-primary); margin-bottom: 6px;">Your Medicine Cabinet is Empty</h3>
+                  <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px;">
+                    Scan your first prescription or medicine strip using MediLens OCR and AI to automatically organize your medications.
+                  </p>
+                  <a href="{{ url_for('scan.scan') }}" class="btn btn-primary btn-sm">
+                    <i class="fa-solid fa-camera"></i>
+                    <span>Scan New Medicine</span>
+                  </a>
+                </div>
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+
+  </section>
+
+</div>
+
+<!-- =====================================================
+     ADD CARE CIRCLE CONTACT MODAL
+====================================================== -->
+<div id="addContactModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); z-index: 10000; align-items: center; justify-content: center; padding: 20px;">
+  <div style="background: var(--bg-card); border: 1px solid var(--border-highlight); border-radius: var(--radius-xl); max-width: 440px; width: 100%; margin: 80px auto; padding: 28px; box-shadow: var(--shadow-lg);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+      <h3 style="color: var(--text-primary); font-size: 1.25rem;">
+        <i class="fa-solid fa-user-plus" style="color: var(--primary);"></i> Add Caregiver Number
+      </h3>
+      <button type="button" style="background: none; border: none; color: var(--text-muted); font-size: 1.4rem; cursor: pointer;" onclick="document.getElementById('addContactModal').style.display='none'">&times;</button>
+    </div>
+
+    <form method="POST" action="{{ url_for('auth.add_care_circle_contact') }}">
+      <div class="form-group">
+        <label class="form-label">Contact Name</label>
+        <input type="text" name="name" class="form-control" placeholder="e.g. Emily Jenkins" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Relationship to Patient</label>
+        <select name="relationship" class="form-control">
+          <option value="Daughter">Daughter</option>
+          <option value="Son">Son</option>
+          <option value="Spouse">Spouse</option>
+          <option value="Caregiver" selected>Caregiver</option>
+          <option value="Home Nurse">Home Nurse</option>
+          <option value="Doctor">Doctor / Physician</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">WhatsApp Mobile Number</label>
+        <input type="tel" name="phone_number" class="form-control" placeholder="+91 9876543210" required>
+        <div class="form-feedback helper">Will receive simultaneous alerts and dose completion notices.</div>
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 24px;">
+        <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="document.getElementById('addContactModal').style.display='none'">Cancel</button>
+        <button type="submit" class="btn btn-primary" style="flex: 1;">Save Contact</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

@@ -1,226 +1,172 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}Scan Medicine | MediLens{% endblock %}
+{% block title %}Scan Medicine | MediLens AI{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/scan.css') }}">
+{% endblock %}
 
 {% block content %}
-
 <section class="scan-page">
 
-    <div class="scan-header">
-        <span class="section-badge">AI MEDICINE SCANNER</span>
-
-        <h1>Scan Your <span>Medicine</span></h1>
-
-        <p>
-            Upload or capture a medicine image.
-            MediLens uses computer vision, OCR and AI
-            to extract and explain medicine information.
-        </p>
+  <!-- PAGE HERO -->
+  <div class="scan-header">
+    <div class="scan-badge">
+      <i class="fa-solid fa-sparkles"></i> AI Medicine Scanner
     </div>
+    <h1>Scan Your <span>Medicine</span></h1>
+    <p>
+      Upload or capture a photo of your medicine packaging. MediLens uses OCR computer vision and AI to extract active ingredients, verify counterfeit indicators, and detect adverse drug interactions.
+    </p>
+  </div>
 
-    <div class="scan-layout">
+  <!-- MAIN SCAN CARD -->
+  <div class="scan-card">
+    <form id="scanForm" action="{{ url_for('scan.scan') }}" method="POST" enctype="multipart/form-data">
 
-        <div class="upload-card">
+      <!-- Hidden file input -->
+      <input
+        type="file"
+        id="imageInput"
+        name="medicine_image"
+        accept="image/jpeg,image/png,image/webp"
+        hidden
+      >
 
-            <form
-                id="scanForm"
-                action="{{ url_for('scan.scan') }}"
-                method="POST"
-                enctype="multipart/form-data"
-            >
+      <div class="scan-grid">
 
-                <input
-                    type="file"
-                    id="imageInput"
-                    name="medicine_image"
-                    accept="image/jpeg,image/png,image/webp"
-                    hidden
-                >
+        <!-- LEFT COLUMN: DROPZONE & BUTTONS -->
+        <div>
+          <label for="imageInput" class="upload-area" id="uploadArea" aria-label="Drop your medicine packaging image here">
+            <div class="upload-icon-circle">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+            </div>
+            <h3>Upload Medicine Image</h3>
+            <p>Drag and drop your packaging image here</p>
+            <span class="upload-badge">JPG, PNG, or WEBP &bull; Max 15MB</span>
+          </label>
 
-                <!-- Upload area -->
+          <div class="upload-button-row">
+            <button type="button" class="btn btn-primary" id="browseBtn">
+              <i class="fa-solid fa-folder-open"></i>
+              <span>Browse Files</span>
+            </button>
 
-                <label
-                    for="imageInput"
-                    class="upload-area"
-                    id="uploadArea"
-                >
-
-                    <div class="upload-icon">
-                        <i class="fa-solid fa-cloud-arrow-up"></i>
-                    </div>
-
-                    <h3>Upload Medicine Image</h3>
-
-                    <p>
-                        Drag and drop your image here
-                    </p>
-
-                    <span>OR CLICK TO BROWSE</span>
-
-                    <small>
-                        JPG, JPEG, PNG and WEBP supported
-                    </small>
-
-                </label>
-
-                <!-- Upload actions -->
-
-                <div class="scan-actions">
-
-                    <button
-                        type="button"
-                        class="btn btn-primary"
-                        id="browseBtn"
-                    >
-                        <i class="fa-solid fa-folder-open"></i>
-                        Browse Files
-                    </button>
-
-                    <button
-                        type="button"
-                        class="btn btn-secondary"
-                        id="cameraBtn"
-                    >
-                        <i class="fa-solid fa-camera"></i>
-                        Open Camera
-                    </button>
-
-                </div>
-
-                <!-- Preview and information -->
-
-                <div class="scan-details">
-
-                    <div class="preview-card">
-
-                        <div class="card-heading">
-                            <div>
-                                <span class="small-label">PREVIEW</span>
-                                <h2>Selected Image</h2>
-                            </div>
-
-                            <span class="preview-status" id="previewStatus">
-                                No image
-                            </span>
-                        </div>
-
-                        <div class="preview-box">
-
-                            <img
-                                id="previewImage"
-                                alt="Selected medicine preview"
-                            >
-
-                            <button
-                                type="button"
-                                id="removeImage"
-                                class="remove-image"
-                                aria-label="Remove selected image"
-                            >
-                                <i class="fa-solid fa-xmark"></i>
-                            </button>
-
-                            <div id="placeholder">
-                                <i class="fa-regular fa-image"></i>
-                                <p>Your image preview will appear here</p>
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    <div class="image-info">
-
-                        <span class="small-label">IMAGE DETAILS</span>
-
-                        <h2>Image Information</h2>
-
-                        <div class="info-grid">
-
-                            <div class="info-item">
-                                <span>Filename</span>
-                                <strong id="fileName">Not selected</strong>
-                            </div>
-
-                            <div class="info-item">
-                                <span>File Size</span>
-                                <strong id="fileSize">-</strong>
-                            </div>
-
-                            <div class="info-item">
-                                <span>Resolution</span>
-                                <strong id="resolution">-</strong>
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <!-- Submit -->
-
-                <div class="analyze-section">
-
-                    <button
-                        type="submit"
-                        id="analyzeBtn"
-                        class="btn btn-primary btn-large"
-                        disabled
-                    >
-                        <i class="fa-solid fa-wand-magic-sparkles"></i>
-                        Analyze Medicine
-                    </button>
-
-                    <p>
-                        Your medicine image will be processed
-                        by MediLens AI.
-                    </p>
-
-                </div>
-
-            </form>
-
+            <button type="button" class="btn btn-secondary" id="cameraBtn">
+              <i class="fa-solid fa-camera"></i>
+              <span>Open Camera</span>
+            </button>
+          </div>
         </div>
 
+        <!-- RIGHT COLUMN: SELECTED IMAGE PREVIEW & METADATA -->
+        <div class="preview-container">
+          <div class="preview-header">
+            <h2>
+              <i class="fa-solid fa-image" style="color: var(--primary);"></i>
+              <span>Selected Image</span>
+            </h2>
+            <span class="preview-status-pill" id="previewStatus">No image</span>
+          </div>
+
+          <!-- Preview Frame -->
+          <div class="preview-box">
+            <img id="previewImage" alt="Selected medicine packaging preview">
+
+            <button
+              type="button"
+              id="removeImage"
+              class="remove-image-btn"
+              aria-label="Remove selected image"
+              title="Remove image"
+            >
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div id="placeholder" class="preview-placeholder">
+              <i class="fa-regular fa-image"></i>
+              <p>Image preview will appear here once selected</p>
+            </div>
+          </div>
+
+          <!-- Image Metadata Chips -->
+          <div class="meta-chips">
+            <div class="meta-chip">
+              <span>File Name</span>
+              <strong id="fileName" title="Not selected">Not selected</strong>
+            </div>
+
+            <div class="meta-chip">
+              <span>File Size</span>
+              <strong id="fileSize">-</strong>
+            </div>
+
+            <div class="meta-chip">
+              <span>Resolution</span>
+              <strong id="resolution">-</strong>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ANALYZE SUBMISSION BAR -->
+      <div class="analyze-bar">
+        <button
+          type="submit"
+          id="analyzeBtn"
+          class="btn-analyze"
+          disabled
+        >
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          <span>Analyze Medicine</span>
+        </button>
+
+        <p>
+          <i class="fa-solid fa-shield-halved" style="color: var(--primary);"></i>
+          <span>Encrypted client-side image processing. Your medical records remain private.</span>
+        </p>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- PATIENT TIPS / ACCESSIBILITY GUIDELINES -->
+  <div style="margin-top: 32px; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px;">
+    <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 18px 20px; display: flex; gap: 14px; align-items: flex-start;">
+      <i class="fa-solid fa-sun" style="color: #f59e0b; font-size: 1.25rem; margin-top: 2px;"></i>
+      <div>
+        <strong style="color: var(--text-primary); font-size: 0.95rem; display: block; margin-bottom: 4px;">Good Lighting</strong>
+        <span style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.5;">Take photos in a well-lit room to prevent camera glare on plastic blister strips.</span>
+      </div>
     </div>
+
+    <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 18px 20px; display: flex; gap: 14px; align-items: flex-start;">
+      <i class="fa-solid fa-expand" style="color: var(--primary); font-size: 1.25rem; margin-top: 2px;"></i>
+      <div>
+        <strong style="color: var(--text-primary); font-size: 0.95rem; display: block; margin-bottom: 4px;">Capture Text Clearly</strong>
+        <span style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.5;">Make sure brand names, active salts, batch numbers, and expiry dates are visible.</span>
+      </div>
+    </div>
+
+    <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 18px 20px; display: flex; gap: 14px; align-items: flex-start;">
+      <i class="fa-solid fa-shield-heart" style="color: var(--accent-ai-light); font-size: 1.25rem; margin-top: 2px;"></i>
+      <div>
+        <strong style="color: var(--text-primary); font-size: 0.95rem; display: block; margin-bottom: 4px;">Doctor Verification</strong>
+        <span style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.5;">Always double-check AI-extracted dosage recommendations against your doctor's prescription.</span>
+      </div>
+    </div>
+  </div>
 
 </section>
 
-<!-- Loading overlay -->
-
-<div
-    id="loadingOverlay"
-    class="loading-overlay"
-    aria-live="polite"
-    aria-hidden="true"
->
-
-    <div class="loading-card">
-
-        <div class="loader"></div>
-
-        <span class="small-label">MEDILENS AI</span>
-
-        <h2>Analyzing Your Medicine</h2>
-
-        <p id="loadingText">
-            Processing image and extracting medicine information...
-        </p>
-
-        <small>
-            This may take a little while. Please do not refresh the page.
-        </small>
-
-    </div>
-
+<!-- ==========================================================
+     AI SCANNING / OCR LOADING OVERLAY
 </div>
 
 {% endblock %}
 
-
 {% block js %}
 
 <script src="{{ url_for('static', filename='js/scan.js') }}"></script>
-
 {% endblock %}

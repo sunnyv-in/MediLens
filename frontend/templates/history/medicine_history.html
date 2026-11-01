@@ -1,89 +1,276 @@
 {% extends "layouts/base.html" %}
 
-{% block styles %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/history.css') }}">
+{% block title %}Scan History | MediLens{% endblock %}
+
+{% block css %}
+<style>
+  /* ── Page wrapper ── */
+  .history-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px;
+  }
+
+  /* ── Hero ── */
+  .history-hero {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+  .history-hero-text .hero-icon { font-size: 2.2rem; margin-bottom: 6px; }
+  .history-hero-text h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+  .history-hero-text p { color: var(--text-muted); font-size: 1rem; }
+
+  /* ── Count chip ── */
+  .history-count-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    font-weight: 700;
+    background: rgba(20, 184, 166, 0.14);
+    color: #5eead4;
+    border: 1px solid rgba(20, 184, 166, 0.35);
+    margin-bottom: 24px;
+  }
+
+  /* ── History list ── */
+  .history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* ── History card (full-width row) ── */
+  .history-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-md);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 20px;
+    align-items: start;
+    position: relative;
+    transition: border-color var(--transition-fast);
+  }
+  .history-card:hover { border-color: var(--border-highlight); }
+
+  /* ── Saved badge top-right ── */
+  .history-saved-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+  }
+
+  /* ── Left: medicine info ── */
+  .history-card-info h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 4px;
+    padding-right: 96px; /* avoid badge overlap */
+  }
+  .history-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 20px;
+    margin-top: 12px;
+  }
+  .history-meta-item dt {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+  }
+  .history-meta-item dd {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  /* ── Right: actions ── */
+  .history-card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-end;
+    flex-shrink: 0;
+    margin-top: 28px;
+  }
+  .history-card-links {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .btn-hist {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 8px 14px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    border: 1px solid var(--border-highlight);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+    font-family: var(--font-body);
+  }
+  .btn-hist:hover {
+    border-color: var(--primary);
+    color: var(--primary-light);
+    background: var(--bg-card-hover);
+  }
+  .btn-hist-danger {
+    background: var(--danger-bg);
+    color: #fca5a5;
+    border-color: var(--danger-border);
+  }
+  .btn-hist-danger:hover {
+    background: var(--danger);
+    color: #fff;
+  }
+
+  /* ── Empty state ── */
+  .history-empty {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 72px 32px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    box-shadow: var(--shadow-md);
+  }
+  .history-empty .empty-icon { font-size: 3rem; opacity: 0.55; }
+  .history-empty h2 { font-size: 1.35rem; font-weight: 700; color: var(--text-primary); }
+  .history-empty p { color: var(--text-muted); font-size: 0.95rem; max-width: 360px; }
+
+  @media (max-width: 768px) {
+    .history-hero { flex-direction: column; }
+    .history-hero .btn { width: 100%; }
+    .history-card {
+      grid-template-columns: 1fr;
+    }
+    .history-card-actions {
+      flex-direction: row;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 0;
+    }
+    .history-card-links { justify-content: flex-start; }
+    .history-card-info h2 { padding-right: 0; }
+    .history-saved-badge {
+      position: static;
+      margin-bottom: 8px;
+    }
+  }
+</style>
 {% endblock %}
 
-{% block title %}Medicine History | MediLens{% endblock %}
-
 {% block content %}
-<section class="history-page">
-    <header class="history-heading">
-        <div>
-            <p class="eyebrow">YOUR HEALTH RECORDS</p>
-            <h1>Medicine History</h1>
-            <p class="history-subtitle">
-                Review the medicines you have scanned with MediLens.
-            </p>
+<div class="history-page">
+
+  <!-- ══ HERO ══ -->
+  <div class="history-hero">
+    <div class="history-hero-text">
+      <div class="hero-icon">🕐</div>
+      <h1>Scan History</h1>
+      <p>Review the medicines you have scanned with MediLens.</p>
+    </div>
+    <a class="btn btn-primary" href="{{ url_for('scan.scan') }}">Scan Medicine →</a>
+  </div>
+
+  <!-- Count chip -->
+  <div class="history-count-chip" aria-live="polite">
+    {{ history_records | length }} saved scan{% if history_records | length != 1 %}s{% endif %}
+  </div>
+
+  {% if history_records %}
+  <div class="history-list">
+    {% for item in history_records %}
+    <article class="history-card">
+
+      <!-- Saved badge -->
+      <span class="history-saved-badge badge badge-success">✔ Saved Scan</span>
+
+      <!-- Left: info -->
+      <div class="history-card-info">
+        <h2>{{ item.medicine_name or "Unknown medicine" }}</h2>
+
+        <dl class="history-card-meta">
+          <div class="history-meta-item">
+            <dt>Manufacturer</dt>
+            <dd>{{ item.manufacturer or "Not available" }}</dd>
+          </div>
+          <div class="history-meta-item">
+            <dt>Expiry Date</dt>
+            <dd>{{ item.expiry_date or "Not available" }}</dd>
+          </div>
+          <div class="history-meta-item">
+            <dt>Scanned</dt>
+            <dd>{{ item.scan_time.strftime("%d %b %Y, %I:%M %p") if item.scan_time else "Not available" }}</dd>
+          </div>
+        </dl>
+      </div>
+
+      <!-- Right: actions -->
+      <div class="history-card-actions">
+        <div class="history-card-links">
+          <a class="btn-hist" href="{{ url_for('medicine_history.history_details', history_id=item.id) }}">
+            View Details
+          </a>
+          <a class="btn-hist" href="{{ url_for('medicine_history.edit_history', history_id=item.id) }}">
+            Edit
+          </a>
         </div>
 
-        <a class="history-primary-btn" href="{{ url_for('scan.scan') }}">
-            + Scan medicine
-        </a>
-    </header>
+        <form method="POST"
+              action="{{ url_for('medicine_history.remove_history', history_id=item.id) }}"
+              onsubmit="return confirm('Delete this scan from History?');">
+          <button class="btn-hist btn-hist-danger" type="submit">🗑 Delete</button>
+        </form>
+      </div>
 
-    <p class="history-count">
-        <strong>{{ history_records|length }}</strong>
-        saved scan{% if history_records|length != 1 %}s{% endif %}
-    </p>
+    </article>
+    {% endfor %}
+  </div>
 
-    {% if history_records %}
-    <div class="history-list">
-        {% for item in history_records %}
-        <article class="history-list-card">
-            <div class="history-card-top">
-                <span class="history-status">Saved scan</span>
-            </div>
+  {% else %}
 
-            <h2>{{ item.medicine_name or "Unknown medicine" }}</h2>
+  <!-- ══ EMPTY STATE ══ -->
+  <div class="history-empty">
+    <span class="empty-icon">📷</span>
+    <h2>No scan history yet</h2>
+    <p>Your medicine scans will appear here after you scan a medicine.</p>
+    <a class="btn btn-primary" href="{{ url_for('scan.scan') }}">Scan your first medicine</a>
+  </div>
 
-            <dl class="history-card-fields">
-                <div>
-                    <dt>Manufacturer</dt>
-                    <dd>{{ item.manufacturer or "Not available" }}</dd>
-                </div>
+  {% endif %}
 
-                <div>
-                    <dt>Expiry date</dt>
-                    <dd>{{ item.expiry_date or "Not available" }}</dd>
-                </div>
-
-                <div>
-                    <dt>Scanned</dt>
-                    <dd>
-                        {{ item.scan_time.strftime("%d %b %Y, %I:%M %p")
-                        if item.scan_time else "Not available" }}
-                    </dd>
-                </div>
-            </dl>
-
-            <div class="history-card-actions">
-                <div class="history-card-links">
-                    <a href="{{ url_for('medicine_history.history_details', history_id=item.id) }}">
-                        View details
-                    </a>
-
-                    <a href="{{ url_for('medicine_history.edit_history', history_id=item.id) }}">
-                        Edit
-                    </a>
-                </div>
-
-                <form method="POST" action="{{ url_for('medicine_history.remove_history', history_id=item.id) }}"
-                    onsubmit="return confirm('Delete this scan from History?');">
-                    <button class="history-danger-btn" type="submit">
-                        Delete
-                    </button>
-                </form>
-            </div>
-        </article>
-        {% endfor %}
-    </div>
-    {% else %}
-    <section class="history-empty">
-        <h2>No saved scans yet</h2>
-        <p>Your medicine scans will appear here after you scan a medicine.</p>
-
-<<<<<<< HEAD
+</div>
+{% endblock %}
 </div>
 
 {% if history %}
@@ -193,12 +380,5 @@
 
 {% endif %}
 
-=======
-        <a class="history-primary-btn" href="{{ url_for('scan.scan') }}">
-            Scan your first medicine
-        </a>
-    </section>
-    {% endif %}
-</section>
->>>>>>> origin/Whatsapp_integration
 {% endblock %}
+

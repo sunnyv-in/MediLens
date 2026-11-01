@@ -1,8 +1,116 @@
 {% extends "layouts/base.html" %}
-{% block styles %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/history.css') }}">
+{% block title %}Edit Scan — {{ history.medicine_name }} | MediLens{% endblock %}
+
+{% block css %}
+<style>
+  .edit-hist-page {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+  }
+  .hd-breadcrumb {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 28px; font-size: 0.875rem; color: var(--text-muted);
+  }
+  .hd-breadcrumb a { color: var(--text-muted); text-decoration: none; }
+  .hd-breadcrumb a:hover { color: var(--primary); }
+  .hd-breadcrumb i { font-size: 0.7rem; }
+  .hd-eyebrow { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; color: var(--primary); text-transform: uppercase; margin-bottom: 8px; }
+  .hd-hero { margin-bottom: 28px; }
+  .hd-hero h1 { font-size: 1.9rem; font-weight: 700; color: var(--text-primary); margin: 0 0 6px; font-family: var(--font-display); }
+  .hd-hero p { color: var(--text-muted); margin: 0; }
+
+  .edit-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .edit-full { grid-column: 1 / -1; }
+
+  .hd-card {
+    background: var(--bg-card); border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-md);
+  }
+  .hd-card-title {
+    font-size: 0.95rem; font-weight: 700; color: var(--text-primary);
+    margin-bottom: 18px; padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .hd-card-title i { color: var(--primary); }
+
+  /* Form fields */
+  .form-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+  .form-field:last-child { margin-bottom: 0; }
+  .form-field label { font-size: 0.875rem; font-weight: 600; color: var(--text-secondary); }
+  .form-field input {
+    min-height: 48px; background: var(--bg-surface);
+    border: 1.5px solid var(--border-subtle); border-radius: var(--radius-md);
+    padding: 11px 14px; font-size: 0.95rem; color: var(--text-primary);
+    font-family: var(--font-body);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    width: 100%;
+  }
+  .form-field input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
+
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--primary); color: #fff; border: none;
+    border-radius: var(--radius-md); padding: 12px 28px;
+    font-size: 1rem; font-weight: 600; min-height: 48px;
+    cursor: pointer; text-decoration: none;
+    transition: background var(--transition-fast); width: 100%; justify-content: center;
+    margin-top: 4px;
+  }
+  .btn-primary:hover { background: var(--primary-hover); }
+
+  /* Read-only field list */
+  .ro-fields { display: flex; flex-direction: column; gap: 10px; }
+  .ro-row { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--border-subtle); }
+  .ro-row:last-child { border-bottom: none; }
+  .ro-row dt { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); flex-shrink: 0; min-width: 130px; }
+  .ro-row dd { font-size: 0.9rem; color: var(--text-primary); margin: 0; text-align: right; }
+
+  /* AI box */
+  .ai-box {
+    background: var(--bg-surface); border: 1px solid rgba(99,102,241,0.25);
+    border-left: 3px solid var(--accent-ai); border-radius: var(--radius-md);
+    padding: 16px; color: var(--text-secondary); line-height: 1.7;
+    font-size: 0.92rem; white-space: pre-wrap;
+  }
+
+  /* OCR details */
+  .hd-details { margin-top: 10px; }
+  .hd-details summary {
+    cursor: pointer; padding: 10px 14px;
+    background: var(--bg-surface); border-radius: var(--radius-md);
+    color: var(--text-secondary); font-size: 0.9rem; font-weight: 500;
+    border: 1px solid var(--border-subtle); list-style: none;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .hd-details summary:hover { border-color: var(--border-highlight); color: var(--text-primary); }
+  .hd-ocr-text {
+    background: var(--bg-base); border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md); padding: 14px;
+    font-family: var(--font-mono); font-size: 0.82rem;
+    color: var(--text-muted); margin-top: 10px; white-space: pre-wrap;
+    max-height: 220px; overflow-y: auto; line-height: 1.6;
+  }
+  .ranked-list { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+  .ranked-item {
+    background: var(--bg-surface); border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md); padding: 10px 14px;
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  }
+  .ranked-item strong { font-size: 0.88rem; color: var(--text-primary); }
+  .ranked-item .ranked-meta { display: flex; gap: 10px; font-size: 0.78rem; color: var(--text-muted); }
+
+  @media (max-width: 720px) {
+    .edit-grid { grid-template-columns: 1fr; }
+    .edit-full { grid-column: 1; }
+  }
+</style>
 {% endblock %}
-{% block title %}Edit Saved Scan | MediLens{% endblock %}
 
 {% block content %}
 {% set data = history.scan_data or {} %}
@@ -12,182 +120,137 @@
 {% set ocr_items = data.get("ocr_text") %}
 {% set ranked_items = data.get("ranked_ocr") %}
 
-<section class="history-page">
-    <header class="history-heading">
-        <div>
-            <p class="eyebrow">YOUR HEALTH RECORDS</p>
-            <h1>Edit Saved Scan</h1>
-            <p class="history-subtitle">
-                Update the saved medicine details and review the scan information.
-            </p>
+<div class="edit-hist-page">
+
+  <nav class="hd-breadcrumb" aria-label="Breadcrumb">
+    <a href="{{ url_for('medicine_history.medicine_history') }}"><i class="fa-solid fa-clock-rotate-left"></i> History</a>
+    <i class="fa-solid fa-chevron-right"></i>
+    <a href="{{ url_for('medicine_history.history_details', history_id=history.id) }}">{{ history.medicine_name }}</a>
+    <i class="fa-solid fa-chevron-right"></i>
+    <span>Edit</span>
+  </nav>
+
+  <div class="hd-hero">
+    <p class="hd-eyebrow">🕐 Your Health Records</p>
+    <h1>Edit Saved Scan</h1>
+    <p>Update the saved medicine details and review the scan information.</p>
+  </div>
+
+  <div class="edit-grid">
+
+    <!-- Edit Form -->
+    <div class="hd-card">
+      <h2 class="hd-card-title"><i class="fa-solid fa-pen-to-square"></i> Edit Details</h2>
+      <form method="POST" action="{{ url_for('medicine_history.edit_history', history_id=history.id) }}">
+        <div class="form-field">
+          <label for="medicine_name">Medicine Name</label>
+          <input id="medicine_name" name="medicine_name" type="text" value="{{ history.medicine_name or '' }}" required>
         </div>
-
-        <a class="history-secondary-btn"
-            href="{{ url_for('medicine_history.history_details', history_id=history.id) }}">
-            Back to details
-        </a>
-    </header>
-
-    <div class="history-detail-grid">
-        <article class="history-detail-card">
-            <h2>Medicine details</h2>
-
-            <form class="history-edit-form" method="POST"
-                action="{{ url_for('medicine_history.edit_history', history_id=history.id) }}">
-                <label for="medicine_name">Medicine name</label>
-                <input id="medicine_name" name="medicine_name" type="text" value="{{ history.medicine_name or '' }}"
-                    required>
-
-                <label for="manufacturer">Manufacturer</label>
-                <input id="manufacturer" name="manufacturer" type="text" value="{{ history.manufacturer or '' }}">
-
-                <label for="expiry_date">Expiry date</label>
-                <input id="expiry_date" name="expiry_date" type="text" value="{{ history.expiry_date or '' }}"
-                    placeholder="For example, 10/2027">
-
-                <label for="counterfeit_score">Counterfeit score</label>
-                <input id="counterfeit_score" name="counterfeit_score" type="number"
-                    value="{{ history.counterfeit_score if history.counterfeit_score is not none else '' }}">
-
-                <button class="history-primary-btn" type="submit">
-                    Save changes
-                </button>
-            </form>
-        </article>
-
-        <article class="history-detail-card">
-            <h2>Medicine information</h2>
-
-            {% if medicine_info %}
-            <dl class="history-detail-fields">
-                {% for key, value in medicine_info.items() %}
-                <div>
-                    <dt>{{ key|replace("_", " ")|title }}</dt>
-                    <dd>{{ value if value else "Not available" }}</dd>
-                </div>
-                {% endfor %}
-            </dl>
-            {% else %}
-            <p class="history-muted">
-                Medicine information was not saved for this scan.
-            </p>
-            {% endif %}
-        </article>
-
-        <article class="history-detail-card history-full-width">
-            <h2>AI explanation</h2>
-            <div class="history-long-text">
-                {{ data.get("ai_explanation") or "No AI explanation saved." }}
-            </div>
-        </article>
-
-        <article class="history-detail-card history-full-width">
-            <h2>Counterfeit analysis</h2>
-
-            {% if counterfeit %}
-            <dl class="history-detail-fields">
-                {% for key, value in counterfeit.items() %}
-                <div>
-                    <dt>{{ key|replace("_", " ")|title }}</dt>
-                    <dd>{{ value if value is not none else "Not available" }}</dd>
-                </div>
-                {% endfor %}
-            </dl>
-            {% else %}
-            <p class="history-muted">
-                No counterfeit analysis was saved for this scan.
-            </p>
-            {% endif %}
-        </article>
-
-        <article class="history-detail-card history-full-width">
-            <h2>Scan text and OCR results</h2>
-
-            <details class="history-collapsible">
-                <summary>Show OCR text</summary>
-
-                <div class="history-ocr-text">
-                    {% if ocr_items is string %}
-                    {{ ocr_items }}
-                    {% elif ocr_items is sequence and ocr_items is not mapping %}
-                    {% for item in ocr_items %}
-                    {% if item is mapping %}
-                    {{ item.get("text", "") }}{% if not loop.last %} {% endif %}
-                    {% else %}
-                    {{ item }}{% if not loop.last %} {% endif %}
-                    {% endif %}
-                    {% endfor %}
-                    {% elif ocr_items %}
-                    {{ ocr_items }}
-                    {% else %}
-                    No OCR text was saved for this scan.
-                    {% endif %}
-                </div>
-            </details>
-
-            <details class="history-collapsible">
-                <summary>Show ranked OCR results</summary>
-
-                {% if ranked_items is sequence
-                and ranked_items is not string
-                and ranked_items is not mapping %}
-                <ol class="ranked-ocr-list">
-                    {% for item in ranked_items %}
-                    <li>
-                        {% if item is mapping %}
-                        <strong>{{ item.get("text", "No text") }}</strong>
-
-                        {% if item.get("confidence") is not none %}
-                        <span>
-                            Confidence:
-                            {{ "%.1f"|format(item.get("confidence") * 100) }}%
-                        </span>
-                        {% endif %}
-
-                        {% if item.get("score") is not none %}
-                        <span>
-                            Score: {{ "%.2f"|format(item.get("score")) }}
-                        </span>
-                        {% endif %}
-                        {% else %}
-                        {{ item }}
-                        {% endif %}
-                    </li>
-                    {% endfor %}
-                </ol>
-                {% elif ranked_items %}
-                <div class="history-ocr-text">{{ ranked_items }}</div>
-                {% else %}
-                <p>No ranked OCR data was saved for this scan.</p>
-                {% endif %}
-            </details>
-        </article>
-
-        <article class="history-detail-card history-full-width">
-            <h2>Scan metadata</h2>
-
-            <dl class="history-detail-fields">
-                <div>
-                    <dt>Scanned at</dt>
-                    <dd>
-                        {{ history.scan_time.strftime("%d %b %Y, %I:%M %p")
-                        if history.scan_time else "Not available" }}
-                    </dd>
-                </div>
-
-                <div>
-                    <dt>Image filename</dt>
-                    <dd>{{ history.image_filename or "Not available" }}</dd>
-                </div>
-
-                {% for key, value in metadata.items() %}
-                <div>
-                    <dt>{{ key|replace("_", " ")|title }}</dt>
-                    <dd>{{ value if value else "Not available" }}</dd>
-                </div>
-                {% endfor %}
-            </dl>
-        </article>
+        <div class="form-field">
+          <label for="manufacturer">Manufacturer</label>
+          <input id="manufacturer" name="manufacturer" type="text" value="{{ history.manufacturer or '' }}">
+        </div>
+        <div class="form-field">
+          <label for="expiry_date">Expiry Date</label>
+          <input id="expiry_date" name="expiry_date" type="text" value="{{ history.expiry_date or '' }}" placeholder="e.g. 10/2027">
+        </div>
+        <div class="form-field">
+          <label for="counterfeit_score">Counterfeit Score</label>
+          <input id="counterfeit_score" name="counterfeit_score" type="number"
+            value="{{ history.counterfeit_score if history.counterfeit_score is not none else '' }}">
+        </div>
+        <button class="btn-primary" type="submit">
+          <i class="fa-solid fa-floppy-disk"></i> Save Changes
+        </button>
+      </form>
     </div>
-</section>
+
+    <!-- Medicine Info (read-only) -->
+    <div class="hd-card">
+      <h2 class="hd-card-title"><i class="fa-solid fa-pills"></i> Extracted Info</h2>
+      {% if medicine_info %}
+      <dl class="ro-fields">
+        {% for key, value in medicine_info.items() %}
+        <div class="ro-row">
+          <dt>{{ key|replace("_", " ")|title }}</dt>
+          <dd>{{ value if value else "—" }}</dd>
+        </div>
+        {% endfor %}
+      </dl>
+      {% else %}
+      <p style="color:var(--text-muted);font-size:0.9rem;">No extracted medicine info saved.</p>
+      {% endif %}
+    </div>
+
+    <!-- AI Explanation -->
+    <div class="hd-card edit-full">
+      <h2 class="hd-card-title"><i class="fa-solid fa-sparkles" style="color:var(--accent-ai)"></i> AI Explanation</h2>
+      <div class="ai-box">{{ data.get("ai_explanation") or "No AI explanation saved for this scan." }}</div>
+    </div>
+
+    <!-- Counterfeit Analysis -->
+    <div class="hd-card edit-full">
+      <h2 class="hd-card-title"><i class="fa-solid fa-shield-halved"></i> Counterfeit Analysis</h2>
+      {% if counterfeit %}
+      <dl class="ro-fields">
+        {% for key, value in counterfeit.items() %}
+        <div class="ro-row">
+          <dt>{{ key|replace("_", " ")|title }}</dt>
+          <dd>{{ value if value is not none else "—" }}</dd>
+        </div>
+        {% endfor %}
+      </dl>
+      {% else %}
+      <p style="color:var(--text-muted);font-size:0.9rem;">No counterfeit analysis saved.</p>
+      {% endif %}
+    </div>
+
+    <!-- OCR Data -->
+    <div class="hd-card edit-full">
+      <h2 class="hd-card-title"><i class="fa-solid fa-font"></i> OCR Text Results</h2>
+      <details class="hd-details">
+        <summary>Show OCR text <i class="fa-solid fa-chevron-down" style="font-size:0.75rem;"></i></summary>
+        <div class="hd-ocr-text">
+          {% if ocr_items is string %}{{ ocr_items }}
+          {% elif ocr_items is sequence and ocr_items is not mapping %}
+            {% for item in ocr_items %}{{ item.get("text","") if item is mapping else item }}{% if not loop.last %} {% endif %}{% endfor %}
+          {% elif ocr_items %}{{ ocr_items }}
+          {% else %}No OCR text saved.{% endif %}
+        </div>
+      </details>
+      <details class="hd-details" style="margin-top:10px;">
+        <summary>Show ranked OCR results <i class="fa-solid fa-chevron-down" style="font-size:0.75rem;"></i></summary>
+        {% if ranked_items is sequence and ranked_items is not string and ranked_items is not mapping %}
+        <div class="ranked-list">
+          {% for item in ranked_items %}
+          <div class="ranked-item">
+            {% if item is mapping %}
+            <strong>{{ item.get("text","No text") }}</strong>
+            <div class="ranked-meta">
+              {% if item.get("confidence") is not none %}<span>{{ "%.1f"|format(item.get("confidence")*100) }}%</span>{% endif %}
+              {% if item.get("score") is not none %}<span>Score: {{ "%.2f"|format(item.get("score")) }}</span>{% endif %}
+            </div>
+            {% else %}{{ item }}{% endif %}
+          </div>
+          {% endfor %}
+        </div>
+        {% elif ranked_items %}<div class="hd-ocr-text">{{ ranked_items }}</div>
+        {% else %}<p style="color:var(--text-muted);font-size:0.9rem;margin-top:10px;">No ranked OCR data saved.</p>{% endif %}
+      </details>
+    </div>
+
+    <!-- Scan Metadata -->
+    <div class="hd-card edit-full">
+      <h2 class="hd-card-title"><i class="fa-solid fa-clock"></i> Scan Metadata</h2>
+      <dl class="ro-fields">
+        <div class="ro-row"><dt>Scanned At</dt><dd>{{ history.scan_time.strftime("%d %b %Y, %I:%M %p") if history.scan_time else "—" }}</dd></div>
+        <div class="ro-row"><dt>Image File</dt><dd>{{ history.image_filename or "—" }}</dd></div>
+        {% for key, value in metadata.items() %}
+        <div class="ro-row"><dt>{{ key|replace("_"," ")|title }}</dt><dd>{{ value if value else "—" }}</dd></div>
+        {% endfor %}
+      </dl>
+    </div>
+
+  </div>
+</div>
 {% endblock %}

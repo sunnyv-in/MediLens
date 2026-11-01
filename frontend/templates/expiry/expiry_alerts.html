@@ -1,57 +1,241 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}
-Expiry Alerts
+{% block title %}Expiry Alerts | MediLens{% endblock %}
+
+{% block css %}
+<style>
+  /* ── Page wrapper ── */
+  .expiry-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px;
+  }
+
+  /* ── Hero ── */
+  .expiry-hero {
+    margin-bottom: 32px;
+  }
+  .expiry-hero .hero-icon { font-size: 2.2rem; margin-bottom: 8px; }
+  .expiry-hero h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+  .expiry-hero p { color: var(--text-muted); font-size: 1rem; }
+
+  /* ── KPI strip ── */
+  .expiry-kpi-strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 36px;
+  }
+  .kpi-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 24px 20px;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+    overflow: hidden;
+  }
+  .kpi-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+  .kpi-card-danger::before { background: var(--danger); }
+  .kpi-card-warning::before { background: var(--warning); }
+  .kpi-card-success::before { background: var(--success); }
+
+  .kpi-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .kpi-card-danger .kpi-label { color: #fca5a5; }
+  .kpi-card-warning .kpi-label { color: #fcd34d; }
+  .kpi-card-success .kpi-label { color: #6ee7b7; }
+
+  .kpi-count {
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1;
+    font-family: var(--font-display);
+  }
+  .kpi-card-danger .kpi-count { color: #fca5a5; }
+  .kpi-card-warning .kpi-count { color: #fcd34d; }
+  .kpi-card-success .kpi-count { color: #6ee7b7; }
+
+  .kpi-desc {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  /* ── Alert grid ── */
+  .expiry-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 18px;
+  }
+
+  /* ── Alert card ── */
+  .expiry-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: border-color var(--transition-fast);
+    position: relative;
+    overflow: hidden;
+  }
+  .expiry-card:hover { border-color: var(--border-highlight); }
+
+  /* Left-border accent for expired */
+  .expiry-card-expired {
+    border-left: 4px solid var(--danger);
+  }
+  .expiry-card-expiring-soon {
+    border-left: 4px solid var(--warning);
+  }
+  .expiry-card-safe {
+    border-left: 4px solid var(--success);
+  }
+
+  .expiry-card h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .expiry-date-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+  }
+  .expiry-date-label {
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+  .expiry-date-value {
+    color: var(--text-secondary);
+  }
+
+  /* ── Empty state ── */
+  .expiry-empty {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 72px 32px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    box-shadow: var(--shadow-md);
+  }
+  .expiry-empty .empty-icon { font-size: 3rem; opacity: 0.6; }
+  .expiry-empty h2 { font-size: 1.35rem; font-weight: 700; color: var(--text-primary); }
+  .expiry-empty p { color: var(--text-muted); font-size: 0.95rem; max-width: 360px; }
+
+  @media (max-width: 768px) {
+    .expiry-kpi-strip { grid-template-columns: 1fr; }
+    .expiry-grid { grid-template-columns: 1fr; }
+  }
+</style>
 {% endblock %}
 
 {% block content %}
+<div class="expiry-page">
 
-<div class="page-header">
+  <!-- ══ HERO ══ -->
+  <div class="expiry-hero">
+    <div class="hero-icon">⚠️</div>
+    <h1>Expiry Alerts</h1>
+    <p>Track medicine expiry status across your shelf.</p>
+  </div>
 
-    <div>
+  {% if alerts %}
 
-        <h1>Expiry Alerts</h1>
+  <!-- ══ KPI STRIP ══ -->
+  {% set expired_count = alerts | selectattr('status', 'equalto', 'Expired') | list | length %}
+  {% set expiring_count = alerts | selectattr('status', 'equalto', 'Expiring Soon') | list | length %}
+  {% set safe_count = alerts | selectattr('status', 'equalto', 'Safe') | list | length %}
 
-        <p>
-            Track which medicines are expired, expiring soon, or safe.
-        </p>
-
+  <div class="expiry-kpi-strip" role="list" aria-label="Expiry summary">
+    <div class="kpi-card kpi-card-danger" role="listitem">
+      <span class="kpi-label">🔴 Expired</span>
+      <span class="kpi-count">{{ expired_count }}</span>
+      <span class="kpi-desc">medicine{{ "s" if expired_count != 1 }} past expiry</span>
     </div>
+    <div class="kpi-card kpi-card-warning" role="listitem">
+      <span class="kpi-label">🟡 Expiring Soon</span>
+      <span class="kpi-count">{{ expiring_count }}</span>
+      <span class="kpi-desc">medicine{{ "s" if expiring_count != 1 }} expiring soon</span>
+    </div>
+    <div class="kpi-card kpi-card-success" role="listitem">
+      <span class="kpi-label">🟢 Safe</span>
+      <span class="kpi-count">{{ safe_count }}</span>
+      <span class="kpi-desc">medicine{{ "s" if safe_count != 1 }} in date</span>
+    </div>
+  </div>
+
+  <!-- ══ ALERT GRID ══ -->
+  <div class="expiry-grid">
+    {% for alert in alerts %}
+
+    {% if alert.status == 'Expired' %}
+      {% set card_class = 'expiry-card-expired' %}
+      {% set badge_class = 'badge-danger' %}
+    {% elif alert.status == 'Expiring Soon' %}
+      {% set card_class = 'expiry-card-expiring-soon' %}
+      {% set badge_class = 'badge-warning' %}
+    {% else %}
+      {% set card_class = 'expiry-card-safe' %}
+      {% set badge_class = 'badge-success' %}
+    {% endif %}
+
+    <article class="expiry-card {{ card_class }}">
+      <h2>{{ alert.medicine_name }}</h2>
+
+      <div class="expiry-date-row">
+        <span class="expiry-date-label">Expiry Date:</span>
+        <span class="expiry-date-value">
+          {{ alert.expiry_date if alert.expiry_date else "Unknown" }}
+        </span>
+      </div>
+
+      <span class="badge {{ badge_class }}">{{ alert.status }}</span>
+    </article>
+
+    {% endfor %}
+  </div>
+
+  {% else %}
+
+  <!-- ══ EMPTY STATE ══ -->
+  <div class="expiry-empty">
+    <span class="empty-icon">✅</span>
+    <h2>All clear!</h2>
+    <p>No medicines to alert on. Scan or add medicines to track their expiry status.</p>
+  </div>
+
+  {% endif %}
 
 </div>
-
-{% if alerts %}
-
-<div class="medicine-grid">
-
-{% for alert in alerts %}
-
-<div class="medicine-card status-{{ alert.status | lower | replace(' ', '-') }}">
-
-    <h2>{{ alert.medicine_name }}</h2>
-
-    <p>
-        <strong>Expiry Date</strong>
-        <br>
-        {{ alert.expiry_date if alert.expiry_date else "Unknown" }}
-    </p>
-
-    <p>
-        <strong>Status</strong>
-        <br>
-        {{ alert.status }}
-    </p>
-
-</div>
-
-{% endfor %}
-
-</div>
-
-{% else %}
-
-<p>No medicines found. Scan a medicine first.</p>
-
-{% endif %}
-
 {% endblock %}

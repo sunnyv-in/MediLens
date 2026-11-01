@@ -1,71 +1,185 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}
-Add Drug Interaction
-{% endblock %}
+{% block title %}Add Drug Interaction | MediLens{% endblock %}
 
 {% block content %}
+<style>
+  .ixform-wrap {
+    max-width: 680px;
+    margin: 40px auto;
+    padding: 0 20px 60px;
+  }
+  .ixform-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-bottom: 28px;
+    transition: color 0.15s;
+  }
+  .ixform-back:hover { color: var(--primary); }
 
-<div class="page-header">
+  .ixform-hero { margin-bottom: 28px; }
+  .ixform-hero h1 {
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0 0 6px;
+  }
+  .ixform-hero p { color: var(--text-muted); margin: 0; }
 
-<h1>Add Drug Interaction</h1>
+  .ixform-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    box-shadow: var(--shadow-md);
+  }
 
-<a
-href="{{ url_for('drug_interaction.interaction_list') }}"
-class="btn">
+  .ixform-group { margin-bottom: 22px; }
+  .ixform-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .ixform-group input,
+  .ixform-group select,
+  .ixform-group textarea {
+    width: 100%;
+    min-height: 50px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 0.97rem;
+    font-family: var(--font-body), sans-serif;
+    padding: 0 16px;
+    box-sizing: border-box;
+    transition: border-color 0.18s;
+    outline: none;
+  }
+  .ixform-group textarea {
+    min-height: 110px;
+    padding: 14px 16px;
+    resize: vertical;
+  }
+  .ixform-group select { padding: 0 16px; cursor: pointer; }
+  .ixform-group input:focus,
+  .ixform-group select:focus,
+  .ixform-group textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.12);
+  }
 
-Back
+  .ixform-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 4px 0 22px;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+  .ixform-divider::before,
+  .ixform-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-subtle);
+  }
 
-</a>
+  .ixform-footer {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 30px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-subtle);
+    flex-wrap: wrap;
+  }
+  .ixform-submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--primary);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.97rem;
+    padding: 0 28px;
+    min-height: 48px;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: background 0.18s, transform 0.15s;
+  }
+  .ixform-submit:hover { background: var(--primary-hover); transform: translateY(-1px); }
+  .ixform-cancel {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.15s;
+  }
+  .ixform-cancel:hover { color: var(--text-primary); }
+</style>
+
+<div class="ixform-wrap">
+
+  <a href="{{ url_for('drug_interaction.interaction_list') }}" class="ixform-back">
+    ← Drug Interactions
+  </a>
+
+  <div class="ixform-hero">
+    <h1>Add Interaction</h1>
+    <p>Record a new drug-drug interaction</p>
+  </div>
+
+  <div class="ixform-card">
+    <form method="POST">
+
+      <div class="ixform-group">
+        <label for="drug_one">Medicine One</label>
+        <input type="text" id="drug_one" name="drug_one" placeholder="e.g. Aspirin" required>
+      </div>
+
+      <div class="ixform-divider">↔ Interacts with</div>
+
+      <div class="ixform-group">
+        <label for="drug_two">Medicine Two</label>
+        <input type="text" id="drug_two" name="drug_two" placeholder="e.g. Warfarin" required>
+      </div>
+
+      <div class="ixform-group">
+        <label for="severity">Severity Level</label>
+        <select id="severity" name="severity">
+          <option value="Low">Low</option>
+          <option value="Moderate">Moderate</option>
+          <option value="High">High</option>
+        </select>
+      </div>
+
+      <div class="ixform-group">
+        <label for="description">Description</label>
+        <textarea id="description" name="description" placeholder="Describe how these drugs interact…"></textarea>
+      </div>
+
+      <div class="ixform-group">
+        <label for="recommendation">Recommendation</label>
+        <textarea id="recommendation" name="recommendation" placeholder="Clinical advice or recommended action…"></textarea>
+      </div>
+
+      <div class="ixform-footer">
+        <button type="submit" class="ixform-submit">Save Interaction →</button>
+        <a href="{{ url_for('drug_interaction.interaction_list') }}" class="ixform-cancel">Cancel</a>
+      </div>
+
+    </form>
+  </div>
 
 </div>
-
-<form method="POST">
-
-<label>Medicine One</label>
-
-<input
-type="text"
-name="drug_one"
-required>
-
-<label>Medicine Two</label>
-
-<input
-type="text"
-name="drug_two"
-required>
-
-<label>Severity</label>
-
-<select name="severity">
-
-<option>Low</option>
-
-<option>Moderate</option>
-
-<option>High</option>
-
-</select>
-
-<label>Description</label>
-
-<textarea
-name="description"></textarea>
-
-<label>Recommendation</label>
-
-<textarea
-name="recommendation"></textarea>
-
-<button
-class="btn"
-type="submit">
-
-Save Interaction
-
-</button>
-
-</form>
-
 {% endblock %}

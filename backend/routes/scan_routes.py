@@ -1,30 +1,49 @@
 import os
 import time
+import json
 import textwrap
+import requests
 from uuid import uuid4
 
-import requests
 from flask import (
     Blueprint,
-    Response,
-    current_app,
-    jsonify,
     render_template,
     request,
     send_from_directory,
+    current_app,
+    jsonify,
+    Response,
 )
+
 from werkzeug.utils import secure_filename
 
 from backend.services.image_processor import (
-    assess_image_quality,
     process_image,
+    assess_image_quality,
 )
+
 from backend.services.ocr_service import (
     clean_ocr_text,
     extract_text_fast,
     is_ocr_unreadable,
     rank_ocr_lines,
+    is_ocr_unreadable,
 )
+
+from backend.services.gemini_service import (
+    extract_medicine_info_and_explanation,
+)
+
+from backend.services.counterfeit_service import (
+    analyze_counterfeit_risk,
+)
+
+from backend.services.medicine_record_service import (
+    build_medicine_record,
+)
+
+from backend.services.history_service import save_history
+
 from backend.services.gemini_service import (
     extract_medicine_info_and_explanation,
 )
@@ -118,6 +137,7 @@ def scan():
             ),
         )
 
+
     counterfeit_result = analyze_counterfeit_risk(medicine_info)
 
     medicine_record = build_medicine_record(
@@ -131,28 +151,29 @@ def scan():
 
     score = None
     if isinstance(counterfeit_result, dict):
-        score = counterfeit_result.get("risk_score")
-        if score is None:
-            score = counterfeit_result.get("score")
+        score = counterfeit_result.get("risk_score") or counterfeit_result.get("score")
 
-    # Ensure save_scanned_medicine is imported from its actual module.
-    save_scanned_medicine(
-        {
-            "medicine_name": (
-                medicine_info.get("medicine_name")
-                or medicine_info.get("medicine")
-                or medicine_info.get("name")
-            ),
-            "generic_name": medicine_info.get("generic_name"),
-            "strength": medicine_info.get("strength"),
-            "manufacturer": medicine_info.get("manufacturer"),
-            "batch_number": medicine_info.get("batch_number"),
-            "expiry_date": medicine_info.get("expiry_date"),
-            "counterfeit_score": score,
-            "image_filename": filename,
-            "history_id": medicine_record.get("history_id"),
-        }
-    )
+    try:
+        from backend.services.medicine_service import save_scanned_medicine
+        save_scanned_medicine(
+            {
+                "medicine_name": (
+                    medicine_info.get("medicine_name")
+                    or medicine_info.get("medicine")
+                    or medicine_info.get("name")
+                ),
+                "generic_name": medicine_info.get("generic_name"),
+                "strength": medicine_info.get("strength"),
+                "manufacturer": medicine_info.get("manufacturer"),
+                "batch_number": medicine_info.get("batch_number"),
+                "expiry_date": medicine_info.get("expiry_date"),
+                "counterfeit_score": score,
+                "image_filename": filename,
+                "history_id": medicine_record.get("history_id"),
+            }
+        )
+    except Exception as med_err:
+        current_app.logger.debug("Medicine shelf auto-save notice: %s", med_err)
 
     try:
         save_history(
@@ -175,6 +196,7 @@ def scan():
                     if isinstance(counterfeit_result, dict)
                     else 0
                 ),
+                "scan_data": medicine_record,
             }
         )
     except Exception as history_error:
@@ -197,6 +219,10 @@ def scan():
         counterfeit_result=counterfeit_result,
     )
 
+
+# ==========================================================
+# TRANSLATION & TEXT-TO-SPEECH (FROM MAIN)
+# ==========================================================
 
 @scan_bp.route("/scan/translate", methods=["POST"])
 def translate_explanation():
@@ -353,8 +379,96 @@ def text_to_speech():
         current_app.logger.exception("TTS request failed")
         return jsonify({"error": "TTS failed"}), 500
 
+    except Exception:
+        current_app.logger.exception("TTS request failed")
+        return jsonify({"error": "TTS failed"}), 500
 
-@scan_bp.route("/uploads/<path:filename>")
+
+@scan_bp.route("/scan/translate", methods=["POST"])
+def translate_explanation():
+    data = request.get_json(silent=True) or {}
+    text = (data.get("text") or "").strip()
+    target_lang = (data.get("target_lang") or "hi").strip().lower()
+
+    if not text:
+        return jsonify({"success": False, "error": "No text provided."}), 400
+
+    if target_lang == "en":
+        return jsonify({"success": True, "translated_text": text, "lang": "en"})
+
+    if target_lang not in SUPPORTED_LANGUAGES:
+        return jsonify({"success": False, "error": "Unsupported language."}), 400
+
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+
+    try:
+        gtx_url = "https://translate.googleapis.com/translate_a/single"
+        params = {"client": "gtx", "sl": "auto", "tl": target_lang, "dt": "t"}
+        response = requests.post(gtx_url, params=params, data={"q": text}, headers=headers, timeout=6)
+        if response.status_code == 200:
+            res_data = response.json()
+            translated_text = "".join([chunk[0] for chunk in res_data[0] if chunk[0]])
+            return jsonify({"success": True, "translated_text": translated_text, "lang": target_lang})
+    except Exception as e:
+        print("Google Translate fallback triggered:", e)
+
+    try:
+        chunks = textwrap.wrap(text, 420)
+        translated_chunks = []
+        for chunk in chunks:
+            my_url = "https://api.mymemory.translated.net/get"
+            my_res = requests.get(my_url, params={"q": chunk, "langpair": f"en|{target_lang}"}, headers=headers, timeout=6)
+            if my_res.status_code == 200:
+                my_data = my_res.json()
+                translated_chunks.append(my_data.get("responseData", {}).get("translatedText", chunk))
+        final_text = " ".join(translated_chunks)
+        if final_text.strip():
+            return jsonify({"success": True, "translated_text": final_text, "lang": target_lang})
+    except Exception as my_err:
+        print("MyMemory error:", my_err)
+
+    return jsonify({"success": False, "error": "Translation service temporarily unavailable."}), 500
+
+
+@scan_bp.route("/scan/tts", methods=["POST"])
+def text_to_speech():
+    data = request.get_json(silent=True) or {}
+    text = (data.get("text") or "").strip()
+    lang = (data.get("lang") or "en").strip().lower()
+
+    if not text:
+        return jsonify({"error": "No text"}), 400
+
+    clean_text = text.replace("+", " and ").replace("*", " ").replace("#", " ")
+    raw_sentences = [s.strip() for s in clean_text.replace("\n", ". ").split(".") if s.strip()]
+    chunks = []
+    for s in raw_sentences:
+        if len(s) <= 180:
+            chunks.append(s)
+        else:
+            chunks.extend(textwrap.wrap(s, 180))
+
+    audio_bytes = bytearray()
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+
+    try:
+        for chunk in chunks[:25]:
+            tts_url = "https://translate.google.com/translate_tts"
+            params = {"ie": "UTF-8", "client": "tw-ob", "tl": lang, "q": chunk}
+            resp = requests.get(tts_url, params=params, headers=headers, timeout=6)
+            if resp.status_code == 200 and resp.content:
+                audio_bytes.extend(resp.content)
+
+        if not audio_bytes:
+            return jsonify({"error": "TTS empty"}), 500
+
+        return Response(bytes(audio_bytes), mimetype="audio/mpeg")
+    except Exception as e:
+        print("TTS stream error:", e)
+        return jsonify({"error": "TTS failed"}), 500
+
+
+@scan_bp.route("/uploads/<filename>")
 def uploaded_file(filename):
     return send_from_directory(
         current_app.config["UPLOAD_FOLDER"],

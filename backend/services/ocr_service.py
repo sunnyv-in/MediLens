@@ -1,4 +1,3 @@
-import easyocr
 import difflib
 import re
 import os

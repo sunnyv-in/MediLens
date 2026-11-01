@@ -1,0 +1,340 @@
+/* ==========================================================
+   AUTH PAGES (LOGIN & REGISTER) — HERO-SPLIT MODERN DESIGN
+   Theme: Slate-950 Dark Mode Foundation with Calming Accents
+   Accessible for Patients, Elderly, and Caregivers
+========================================================== */
+
+.auth-viewport {
+  min-height: calc(100vh - 180px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(20px, 4vw, 50px) 0;
+}
+
+.auth-split-container {
+  width: 100%;
+  max-width: 1100px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  position: relative;
+}
+
+/* Subtle glowing highlight edge */
+.auth-split-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--accent-ai), transparent);
+}
+
+/* ==========================================================
+   LEFT SIDE: BRANDING & PATIENT BENEFIT HERO
+========================================================== */
+
+.auth-hero-pane {
+  background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(2, 6, 23, 0.98));
+  padding: clamp(36px, 5vw, 60px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-right: 1px solid var(--border-subtle);
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-hero-pane::after {
+  content: "";
+  position: absolute;
+  bottom: -100px;
+  left: -100px;
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(20, 184, 166, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.auth-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  background: rgba(20, 184, 166, 0.12);
+  border: 1px solid rgba(20, 184, 166, 0.3);
+  color: var(--primary-light);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  width: fit-content;
+}
+
+.auth-hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.25;
+  margin-bottom: 16px;
+  letter-spacing: -0.02em;
+}
+
+.auth-hero-title span {
+  color: var(--primary);
+  background: none;
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: initial;
+}
+
+.auth-hero-desc {
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  margin-bottom: 36px;
+}
+
+.auth-perks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.auth-perk-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.auth-perk-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: rgba(20, 184, 166, 0.1);
+  border: 1px solid rgba(20, 184, 166, 0.25);
+  color: var(--primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1rem;
+  margin-top: 2px;
+}
+
+.auth-perk-text strong {
+  display: block;
+  color: var(--text-primary);
+  font-size: 0.98rem;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.auth-perk-text p {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.auth-hero-footer {
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+/* ==========================================================
+   RIGHT SIDE: AUTH CARD & FORM
+========================================================== */
+
+.auth-form-pane {
+  padding: clamp(32px, 5vw, 55px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: var(--bg-card);
+}
+
+.auth-form-header {
+  margin-bottom: 28px;
+}
+
+.auth-form-header h1 {
+  font-family: var(--font-display);
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+
+.auth-form-header p {
+  color: var(--text-muted);
+  font-size: 0.98rem;
+}
+
+/* Google OAuth Button */
+.btn-google {
+  width: 100%;
+  min-height: 50px;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-highlight);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.98rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 22px;
+}
+
+.btn-google:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+.btn-google:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Divider with centered label */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 18px 0 24px;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.auth-divider span {
+  padding: 0 16px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+/* Password Toggle Eye Icon */
+.password-toggle-btn {
+  position: absolute;
+  right: 14px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 1.05rem;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-fast);
+}
+
+.password-toggle-btn:hover {
+  color: var(--text-primary);
+}
+
+/* Form Actions Row (Forgot Password) */
+.form-options-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  font-size: 0.9rem;
+}
+
+.auth-link {
+  color: var(--primary-light);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color var(--transition-fast);
+}
+
+.auth-link:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+/* Guest Button */
+.btn-guest {
+  width: 100%;
+  min-height: 48px;
+  background: transparent;
+  border: 1.5px dashed var(--border-highlight);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+  margin-top: 14px;
+  transition: all var(--transition-fast);
+}
+
+.btn-guest:hover {
+  background: rgba(20, 184, 166, 0.08);
+  border-color: var(--primary);
+  color: var(--primary-light);
+}
+
+/* Footer Link (Create account / Sign in) */
+.auth-switch-text {
+  text-align: center;
+  margin-top: 24px;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+/* ==========================================================
+   RESPONSIVE BEHAVIOR
+========================================================== */
+
+@media (max-width: 900px) {
+  .auth-split-container {
+    grid-template-columns: 1fr;
+    max-width: 540px;
+  }
+
+  .auth-hero-pane {
+    display: none; /* Mobile optimization: reduce cognitive load directly to auth card */
+  }
+
+  .auth-form-pane {
+    padding: 36px 24px;
+  }
+}

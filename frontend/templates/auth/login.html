@@ -1,131 +1,294 @@
 {% extends "layouts/base.html" %}
 
 {% block title %}
-Login | MediLens
+Patient Login | MediLens
 {% endblock %}
 
 {% block css %}
-<style>
-    .auth-page {
-        min-height: 70vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .auth-card {
-        width: 420px;
-        background: white;
-        padding: 40px;
-        border-radius: 20px;
-        box-shadow: 0 15px 45px rgba(0, 0, 0, 0.08);
-    }
-
-    .auth-card h1 {
-        margin-bottom: 8px;
-    }
-
-    .auth-card p {
-        color: #64748b;
-        margin-bottom: 28px;
-    }
-
-    .auth-group {
-        margin-bottom: 18px;
-    }
-
-    .auth-group label {
-        display: block;
-        margin-bottom: 7px;
-        font-weight: 600;
-    }
-
-    .auth-group input {
-        width: 100%;
-        padding: 13px;
-        border: 1px solid #dbe2ea;
-        border-radius: 10px;
-        box-sizing: border-box;
-    }
-
-    .auth-btn {
-        width: 100%;
-        border: none;
-        padding: 14px;
-        background: #2563eb;
-        color: white;
-        border-radius: 10px;
-        font-weight: 600;
-        cursor: pointer;
-    }
-
-    .auth-links {
-        text-align: center;
-        margin-top: 20px;
-    }
-
-    .guest-btn {
-        display: block;
-        text-align: center;
-        margin-top: 15px;
-        padding: 12px;
-        border: 1px solid #2563eb;
-        color: #2563eb;
-        border-radius: 10px;
-        text-decoration: none;
-    }
-</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
 {% endblock %}
 
 {% block content %}
+<div class="auth-viewport">
 
-<div class="auth-page">
+  <div class="auth-split-container">
 
-    <div class="auth-card">
-
-        <h1>Welcome Back</h1>
-
-        <p>
-            Login to save your MediLens data permanently.
-        </p>
-
-        <form method="POST">
-
-            <div class="auth-group">
-                <label>Email</label>
-
-                <input type="email" name="email" required>
-            </div>
-
-            <div class="auth-group">
-                <label>Password</label>
-
-                <input type="password" name="password" required>
-            </div>
-
-            <button class="auth-btn">
-                Sign In
-            </button>
-
-        </form>
-
-        <div class="auth-links">
-
-            <p>
-                Don't have an account?
-                <a href="{{ url_for('auth.register') }}">
-                    Create Account
-                </a>
-            </p>
-
-            <a class="guest-btn" href="{{ url_for('auth.guest') }}">
-                Continue as Guest
-            </a>
-
+    <!-- =====================================================
+         LEFT HERO SPLIT: PATIENT CARE SHOWCASE
+    ====================================================== -->
+    <section class="auth-hero-pane" aria-label="MediLens Features Overview">
+      <div>
+        <div class="auth-hero-badge">
+          <i class="fa-solid fa-heart-pulse"></i> Patient-First AI Medicine Care
         </div>
 
-    </div>
+        <h2 class="auth-hero-title">
+          Smart medicine tracking, <span>simplified for you.</span>
+        </h2>
+
+        <p class="auth-hero-desc">
+          Log in to access your personal medicine shelf, timely dose reminders, and AI-driven counterfeit & safety analysis.
+        </p>
+
+        <div class="auth-perks-list">
+          <!-- Perk 1 -->
+          <div class="auth-perk-item">
+            <div class="auth-perk-icon" aria-hidden="true">
+              <i class="fa-solid fa-camera"></i>
+            </div>
+            <div class="auth-perk-text">
+              <strong>High-Precision Strip Scanner</strong>
+              <p>Extracts small-print medicine names, batch numbers, and expiry dates with OCR.</p>
+            </div>
+          </div>
+
+          <!-- Perk 2 -->
+          <div class="auth-perk-item">
+            <div class="auth-perk-icon" aria-hidden="true">
+              <i class="fa-solid fa-bell"></i>
+            </div>
+            <div class="auth-perk-text">
+              <strong>Smart Medication Reminders</strong>
+              <p>Audio, visual, and WhatsApp alerts tailored to morning, afternoon, and night doses.</p>
+            </div>
+          </div>
+
+          <!-- Perk 3 -->
+          <div class="auth-perk-item">
+            <div class="auth-perk-icon" aria-hidden="true">
+              <i class="fa-solid fa-shield-virus"></i>
+            </div>
+            <div class="auth-perk-text">
+              <strong>Drug Safety & Expiry Shield</strong>
+              <p>Instant warnings if two medicines conflict or if a dose is expired.</p>
+            </div>
+          </div>
+
+          <!-- Perk 4 -->
+          <div class="auth-perk-item">
+            <div class="auth-perk-icon" aria-hidden="true">
+              <i class="fa-solid fa-user-shield"></i>
+            </div>
+            <div class="auth-perk-text">
+              <strong>Patient Data Privacy & Security</strong>
+              <p>Discreet privacy mode masks your prescription names whenever needed in public.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="auth-hero-footer">
+        <i class="fa-solid fa-circle-check" style="color: var(--success);" aria-hidden="true"></i>
+        <span>WCAG 2.2 AA Accessible • 100% Patient Centric</span>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         RIGHT SIDE: STREAMLINED AUTH CARD
+    ====================================================== -->
+    <section class="auth-form-pane" aria-labelledby="loginHeading">
+
+      <div class="auth-form-header">
+        <h1 id="loginHeading">Welcome Back</h1>
+        <p>Sign in to your account or continue with Google.</p>
+      </div>
+
+      <!-- Feedback container for live JS / Firebase errors -->
+      <div id="authFeedback" style="display: none; margin-bottom: 16px;"></div>
+
+      <!-- 1. GOOGLE LOGIN WITH FIREBASE -->
+      <button
+        type="button"
+        id="googleSignInBtn"
+        class="btn-google"
+        onclick="window.handleFirebaseGoogleSignIn()"
+        aria-label="Continue with Google Account"
+      >
+        <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+        </svg>
+        <span>Continue with Google</span>
+      </button>
+
+      <!-- DIVIDER -->
+      <div class="auth-divider" role="separator" aria-label="or sign in with email">
+        <span>or sign in with email</span>
+      </div>
+
+      <!-- 2. STANDARD EMAIL / PASSWORD FORM -->
+      <form method="POST" id="loginForm" novalidate>
+
+        <!-- EMAIL INPUT -->
+        <div class="form-group">
+          <label for="loginEmail" class="form-label">Email Address</label>
+          <div class="form-control-wrapper">
+            <i class="fa-regular fa-envelope form-control-icon" aria-hidden="true"></i>
+            <input
+              type="email"
+              id="loginEmail"
+              name="email"
+              class="form-control"
+              placeholder="e.g. patient@example.com"
+              required
+              autocomplete="email"
+              aria-describedby="emailFeedback"
+            />
+          </div>
+          <div id="emailFeedback" class="form-feedback helper">
+            Enter the email address linked to your account.
+          </div>
+        </div>
+
+        <!-- PASSWORD INPUT -->
+        <div class="form-group">
+          <label for="loginPassword" class="form-label">Password</label>
+          <div class="form-control-wrapper">
+            <i class="fa-solid fa-lock form-control-icon" aria-hidden="true"></i>
+            <input
+              type="password"
+              id="loginPassword"
+              name="password"
+              class="form-control"
+              placeholder="Enter your password"
+              required
+              autocomplete="current-password"
+              aria-describedby="passwordFeedback"
+            />
+            <button
+              type="button"
+              class="password-toggle-btn"
+              id="passwordToggleBtn"
+              aria-label="Toggle password visibility"
+            >
+              <i class="fa-regular fa-eye" id="passwordToggleIcon"></i>
+            </button>
+          </div>
+          <div id="passwordFeedback" class="form-feedback helper">
+            Your credentials are encrypted and secure.
+          </div>
+        </div>
+
+        <!-- OPTIONS ROW -->
+        <div class="form-options-row">
+          <label style="display: flex; align-items: center; gap: 8px; color: var(--text-secondary); cursor: pointer; user-select: none;">
+            <input type="checkbox" name="remember" style="accent-color: var(--primary); width: 16px; height: 16px;">
+            <span>Remember me</span>
+          </label>
+          <a href="{{ url_for('auth.forgot_password') }}" class="auth-link">
+            Forgot password?
+          </a>
+        </div>
+
+        <!-- SUBMIT BUTTON -->
+        <button type="submit" class="btn btn-primary" id="loginSubmitBtn" style="width: 100%; min-height: 52px;">
+          <i class="fa-solid fa-right-to-bracket" aria-hidden="true"></i>
+          <span>Sign In</span>
+        </button>
+
+      </form>
+
+      <!-- 3. CONTINUE AS GUEST -->
+      <a class="btn-guest" href="{{ url_for('auth.guest') }}" title="Try MediLens immediately without creating an account">
+        <i class="fa-regular fa-compass" aria-hidden="true"></i>
+        <span>Continue as Guest</span>
+      </a>
+
+      <!-- SWITCH TO REGISTER -->
+      <div class="auth-switch-text">
+        <span>Don't have an account yet?</span>
+        <a href="{{ url_for('auth.register') }}" class="auth-link" style="margin-left: 6px;">
+          Create Patient Account
+        </a>
+      </div>
+
+    </section>
+
+  </div>
 
 </div>
+{% endblock %}
 
+{% block js %}
+<!-- Firebase App & Auth SDKs for Google Sign-In -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="{{ url_for('static', filename='js/firebase-auth.js') }}"></script>
+
+<script>
+  (function() {
+    // 1. Password Visibility Toggle
+    const passwordInput = document.getElementById("loginPassword");
+    const toggleBtn = document.getElementById("passwordToggleBtn");
+    const toggleIcon = document.getElementById("passwordToggleIcon");
+
+    if (toggleBtn && passwordInput) {
+      toggleBtn.addEventListener("click", function() {
+        const isPassword = passwordInput.getAttribute("type") === "password";
+        passwordInput.setAttribute("type", isPassword ? "text" : "password");
+        toggleIcon.className = isPassword ? "fa-regular fa-eye-slash" : "fa-regular fa-eye";
+        toggleBtn.setAttribute("aria-label", isPassword ? "Hide password" : "Show password");
+      });
+    }
+
+    // 2. Client-side Form Validation Micro-interactions
+    const loginForm = document.getElementById("loginForm");
+    const emailInput = document.getElementById("loginEmail");
+    const emailFeedback = document.getElementById("emailFeedback");
+    const submitBtn = document.getElementById("loginSubmitBtn");
+
+    if (emailInput) {
+      emailInput.addEventListener("input", function() {
+        const val = emailInput.value.trim();
+        const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+
+        if (val.length === 0) {
+          emailInput.classList.remove("is-valid", "is-invalid");
+          emailFeedback.className = "form-feedback helper";
+          emailFeedback.textContent = "Enter the email address linked to your account.";
+        } else if (!isValidEmail) {
+          emailInput.classList.add("is-invalid");
+          emailInput.classList.remove("is-valid");
+          emailFeedback.className = "form-feedback error";
+          emailFeedback.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Please enter a valid email (e.g. name@domain.com)';
+        } else {
+          emailInput.classList.remove("is-invalid");
+          emailInput.classList.add("is-valid");
+          emailFeedback.className = "form-feedback helper";
+          emailFeedback.innerHTML = '<i class="fa-solid fa-circle-check" style="color: var(--success);"></i> Valid email format';
+        }
+      });
+    }
+
+    if (loginForm) {
+      loginForm.addEventListener("submit", function(e) {
+        let hasError = false;
+
+        const emailVal = emailInput ? emailInput.value.trim() : "";
+        const passVal = passwordInput ? passwordInput.value : "";
+
+        if (!emailVal) {
+          emailInput.classList.add("is-invalid");
+          emailFeedback.className = "form-feedback error";
+          emailFeedback.textContent = "Email is required.";
+          hasError = true;
+        }
+
+        if (!passVal) {
+          passwordInput.classList.add("is-invalid");
+          hasError = true;
+        }
+
+        if (hasError) {
+          e.preventDefault();
+        } else if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Signing in...';
+        }
+      });
+    }
+  })();
+</script>
 {% endblock %}

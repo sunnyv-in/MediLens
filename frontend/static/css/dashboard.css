@@ -1,0 +1,794 @@
+/* ==========================================================
+   MEDILENS PATIENT COMMAND CENTER — DASHBOARD STYLES
+   Theme: Slate-950 Dark Mode Foundation with Subtle Border Highlights
+   WCAG 2.2 AA Accessible, Low Cognitive Load, Patient-Centric
+========================================================== */
+
+.dashboard-wrapper {
+  padding-bottom: 60px;
+}
+
+/* ==========================================================
+   1. WELCOME & HEALTH SAFETY STATUS BANNER
+========================================================== */
+
+.patient-welcome-card {
+  background: linear-gradient(135deg, var(--bg-card), var(--bg-surface));
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: clamp(24px, 3.5vw, 36px);
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+[data-theme="light"] .patient-welcome-card {
+  background: linear-gradient(135deg, #ffffff, #f8fafc);
+  border: 1px solid var(--border-highlight);
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.08);
+}
+
+[data-theme="light"] .patient-info-col h1 {
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .patient-info-col p {
+  color: var(--text-muted);
+}
+
+[data-theme="light"] .safety-status-badge.safe {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #047857;
+}
+
+[data-theme="light"] .safety-status-badge.warning {
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #b45309;
+}
+
+[data-theme="light"] .safety-status-badge.danger {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #b91c1c;
+}
+
+/* Glowing accent edge */
+.patient-welcome-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), transparent);
+}
+
+.patient-info-col h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 2.5vw, 2.3rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+
+.patient-info-col p {
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.safety-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  border-radius: var(--radius-full);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.safety-status-badge.safe {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #6ee7b7;
+}
+
+.safety-status-badge.warning {
+  background: rgba(245, 158, 11, 0.14);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #fcd34d;
+}
+
+.safety-status-badge.danger {
+  background: rgba(239, 68, 68, 0.16);
+  border: 1px solid rgba(239, 68, 68, 0.45);
+  color: #fca5a5;
+}
+
+.welcome-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ==========================================================
+   2. QUICK COMMAND ACTIONS BAR
+========================================================== */
+
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.quick-action-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.quick-action-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--primary);
+  box-shadow: var(--shadow-md);
+  background: var(--bg-card-hover);
+}
+
+.quick-action-card.hero-action {
+  background: rgba(129, 252, 186, 0.08); border-color: rgba(129, 252, 186, 0.3);
+  border: 1px solid rgba(20, 184, 166, 0.4);
+}
+
+.quick-action-card.hero-action:hover {
+  border-color: var(--primary-light);
+  box-shadow: 0 8px 25px var(--primary-glow);
+}
+
+.quick-action-card.emergency-action {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.quick-action-card.emergency-action:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: var(--danger);
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.25);
+}
+
+.quick-action-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  transition: transform var(--transition-fast);
+}
+
+.quick-action-card:hover .quick-action-icon {
+  transform: scale(1.08);
+}
+
+.icon-teal {
+  background: rgba(20, 184, 166, 0.15);
+  color: var(--primary-light);
+  border: 1px solid rgba(20, 184, 166, 0.35);
+}
+
+.icon-indigo {
+  background: rgba(99, 102, 241, 0.15);
+  color: var(--accent-ai-light);
+  border: 1px solid rgba(99, 102, 241, 0.35);
+}
+
+.icon-amber {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fcd34d;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+}
+
+.icon-red {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+}
+
+.quick-action-text strong {
+  display: block;
+  font-size: 1.05rem;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.quick-action-text span {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+/* ==========================================================
+   3. SCANNABLE KPI METRICS CARDS
+========================================================== */
+
+.kpi-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 18px;
+  margin-bottom: 36px;
+}
+
+.kpi-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.kpi-card:hover {
+  border-color: var(--border-highlight);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.kpi-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.kpi-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.kpi-icon-pill {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+.kpi-number {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.kpi-subtext {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Specific KPI Accents */
+.kpi-card.kpi-teal {
+  border-left: 4px solid var(--primary);
+}
+
+.kpi-card.kpi-teal .kpi-icon-pill {
+  background: rgba(20, 184, 166, 0.12);
+  color: var(--primary-light);
+}
+
+.kpi-card.kpi-indigo {
+  border-left: 4px solid var(--accent-ai);
+}
+
+.kpi-card.kpi-indigo .kpi-icon-pill {
+  background: rgba(99, 102, 241, 0.12);
+  color: var(--accent-ai-light);
+}
+
+.kpi-card.kpi-amber {
+  border-left: 4px solid var(--warning);
+}
+
+.kpi-card.kpi-amber .kpi-icon-pill {
+  background: var(--warning-bg);
+  color: #fcd34d;
+}
+
+.kpi-card.kpi-danger {
+  border-left: 4px solid var(--danger);
+}
+
+.kpi-card.kpi-danger .kpi-icon-pill {
+  background: var(--danger-bg);
+  color: #fca5a5;
+}
+
+.kpi-card.kpi-success {
+  border-left: 4px solid var(--success);
+}
+
+.kpi-card.kpi-success .kpi-icon-pill {
+  background: var(--success-bg);
+  color: #6ee7b7;
+}
+
+/* ==========================================================
+   4. TWO-COLUMN HIGH UTILITY SECTION
+========================================================== */
+
+.dashboard-main-columns {
+  display: grid;
+  grid-template-columns: 1.45fr 1fr;
+  gap: 24px;
+  margin-bottom: 36px;
+}
+
+@media (max-width: 1080px) {
+  .dashboard-main-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* SECTION HEADINGS */
+.section-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.section-panel-header h2 {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-panel-header h2 i {
+  color: var(--primary-light);
+}
+
+/* ==========================================================
+   5. TODAY'S MEDICATION STEPPER / SCHEDULE
+========================================================== */
+
+.schedule-timeline-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.timeline-period-block {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+}
+
+.timeline-period-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.period-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 0.98rem;
+  color: var(--text-primary);
+}
+
+.period-icon-sun {
+  color: #f59e0b;
+}
+
+.period-icon-noon {
+  color: #0ea5e9;
+}
+
+.period-icon-moon {
+  color: #a855f7;
+}
+
+.dose-card-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  margin-bottom: 8px;
+  transition: all var(--transition-fast);
+}
+
+.dose-card-item:last-child {
+  margin-bottom: 0;
+}
+
+.dose-card-item.is-taken {
+  opacity: 0.65;
+  background: rgba(16, 185, 129, 0.05);
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.dose-card-item.is-taken .dose-name {
+  text-decoration: line-through;
+}
+
+.dose-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dose-name {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.dose-meta {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-dose-action {
+  background: var(--bg-surface);
+  border: 1.5px solid var(--primary);
+  color: var(--primary-light);
+  min-height: 42px;
+  padding: 8px 18px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all var(--transition-fast);
+}
+
+.btn-dose-action:hover {
+  background: var(--primary);
+  color: #09090b;
+  transform: translateY(-2px);
+}
+
+.btn-dose-action.completed {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: var(--success);
+  color: #6ee7b7;
+}
+
+/* Empty Schedule Placeholder */
+.empty-schedule-card {
+  text-align: center;
+  padding: 40px 20px;
+  background: var(--bg-surface);
+  border: 1.5px dashed var(--border-subtle);
+  border-radius: var(--radius-lg);
+}
+
+.empty-schedule-card i {
+  font-size: 2.5rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+/* ==========================================================
+   6. ADHERENCE & SAFETY ANALYTICS GAUGE
+========================================================== */
+
+.analytics-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.adherence-gauge-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 16px 0;
+}
+
+.adherence-circle-chart {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  flex-shrink: 0;
+}
+
+.adherence-number {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--text-primary);
+}
+
+.adherence-number span {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.adherence-info p {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+/* ==========================================================
+   7. INTERACTIVE MEDICINE CABINET TABLE
+========================================================== */
+
+.cabinet-table-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 26px;
+  box-shadow: var(--shadow-md);
+  margin-bottom: 36px;
+}
+
+.cabinet-table-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.cabinet-search-box {
+  position: relative;
+  flex: 1;
+  max-width: 360px;
+  min-width: 240px;
+}
+
+.cabinet-search-box i {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.cabinet-search-input {
+  width: 100%;
+  height: 44px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding-left: 40px;
+  padding-right: 14px;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  transition: all var(--transition-fast);
+}
+
+.cabinet-search-input:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+.cabinet-filter-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-tab-btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.filter-tab-btn:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
+.filter-tab-btn.active {
+  background: rgba(20, 184, 166, 0.15);
+  border-color: var(--primary);
+  color: var(--primary-light);
+}
+
+/* DATA TABLE */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+}
+
+.cabinet-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+.cabinet-data-table th {
+  background: var(--bg-surface);
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.cabinet-data-table td {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  vertical-align: middle;
+}
+
+.cabinet-data-table tbody tr {
+  transition: background var(--transition-fast);
+}
+
+.cabinet-data-table tbody tr:hover {
+  background: var(--bg-card-hover);
+}
+
+.med-name-cell strong {
+  display: block;
+  font-size: 1.05rem;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.med-name-cell span {
+  font-size: 0.825rem;
+  color: var(--text-muted);
+}
+
+.table-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.table-btn-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all var(--transition-fast);
+}
+
+.table-btn-icon:hover {
+  border-color: var(--primary);
+  color: var(--primary-light);
+  background: var(--bg-card-hover);
+}
+
+/* ==========================================================
+   8. EMERGENCY CONTACT CARDS
+========================================================== */
+
+.emergency-quick-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.emergency-card-pill {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1.5px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--radius-lg);
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.emergency-card-pill:hover {
+  background: rgba(239, 68, 68, 0.16);
+  border-color: var(--danger);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.25);
+}
+
+.emergency-card-info strong {
+  display: block;
+  color: #fca5a5;
+  font-size: 1rem;
+  margin-bottom: 2px;
+}
+
+.emergency-card-info span {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.emergency-call-btn {
+  background: var(--danger);
+  color: white;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}

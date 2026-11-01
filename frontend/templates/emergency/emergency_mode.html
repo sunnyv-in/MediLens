@@ -6,103 +6,301 @@
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/emergency.css') }}">
 
-<section class="emergency-page">
+<style>
+  /* ── EMERGENCY PAGE LAYOUT ── */
+  .em-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+  }
 
-    <header class="emergency-header">
-        <p class="med-eyebrow">QUICK ACCESS</p>
+  /* HERO */
+  .em-hero {
+    background: linear-gradient(135deg, rgba(127,29,29,0.85) 0%, rgba(153,27,27,0.6) 100%);
+    border: 1px solid rgba(239,68,68,0.35);
+    border-radius: var(--radius-lg);
+    padding: 40px 36px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .em-hero h1 {
+    font-size: 2.4rem;
+    font-weight: 900;
+    color: #fff;
+    margin: 0 0 10px;
+    letter-spacing: -0.02em;
+  }
+  .em-hero p {
+    color: rgba(255,255,255,0.8);
+    font-size: 1.05rem;
+    margin: 0;
+  }
 
-        <h1>Emergency Mode</h1>
+  /* WARNING BANNER */
+  .em-warning {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: rgba(245,158,11,0.12);
+    border: 1px solid rgba(245,158,11,0.35);
+    border-radius: var(--radius-md);
+    padding: 14px 20px;
+    margin-bottom: 28px;
+    color: #fbbf24;
+    font-weight: 600;
+    font-size: 0.97rem;
+  }
 
-        <p>
-            Quickly access your saved medicine list and contact emergency
-            services or a trusted person.
-        </p>
-    </header>
+  /* TWO-PANEL GRID */
+  .em-panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  @media (max-width: 760px) {
+    .em-panels { grid-template-columns: 1fr; }
+  }
 
-    <!-- Emergency Contacts -->
+  /* PANEL CARD */
+  .em-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    box-shadow: var(--shadow-lg);
+  }
+  .em-panel h2 {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0 0 20px;
+  }
 
-    <section class="emergency-panel">
+  /* PANEL A – CONTACTS */
+  .em-panel-contacts { border-top: 3px solid var(--danger); }
 
-        <h2>Emergency contacts</h2>
+  .em-label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .em-tel-input {
+    width: 100%;
+    min-height: 50px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    padding: 0 16px;
+    box-sizing: border-box;
+    margin-bottom: 18px;
+    outline: none;
+    transition: border-color 0.18s;
+    font-family: var(--font-body), sans-serif;
+  }
+  .em-tel-input:focus {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 3px rgba(239,68,68,0.15);
+  }
 
-        <p class="emergency-note">
-            Enter a number with country code. WhatsApp opens a prepared
-            message for you to review and send.
-        </p>
+  /* 112 CALL BUTTON */
+  .em-btn-call {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 64px;
+    background: #dc2626;
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 800;
+    text-decoration: none;
+    border-radius: var(--radius-md);
+    margin-bottom: 14px;
+    letter-spacing: 0.01em;
+    box-shadow: 0 4px 20px rgba(220,38,38,0.45);
+    transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+    border: 2px solid rgba(255,255,255,0.15);
+  }
+  .em-btn-call:hover {
+    background: #b91c1c;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 28px rgba(220,38,38,0.55);
+  }
 
-        <div class="emergency-actions">
+  /* WHATSAPP BUTTON */
+  .em-btn-whatsapp {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 52px;
+    background: #15803d;
+    color: #fff;
+    font-size: 0.97rem;
+    font-weight: 700;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    box-shadow: 0 2px 12px rgba(21,128,61,0.3);
+    transition: background 0.15s, transform 0.1s;
+    font-family: var(--font-body), sans-serif;
+  }
+  .em-btn-whatsapp:hover { background: #166534; transform: translateY(-1px); }
 
-            <label for="guardianNumber">
-                Guardian or emergency contact number
-            </label>
+  .em-contact-error {
+    margin-top: 12px;
+    font-size: 0.88rem;
+    color: var(--danger);
+    min-height: 20px;
+  }
 
-            <input id="guardianNumber" type="tel" inputmode="tel" autocomplete="tel" value="{{ phone_number or '' }}"
-                placeholder="e.g. +91 9876543210">
+  /* PANEL B – MEDICINES */
+  .em-panel-meds { border-top: 3px solid var(--primary); }
 
-            <a class="emergency-action emergency-action-danger" href="tel:112">
-                Call emergency services (112)
-            </a>
+  .em-med-list { display: flex; flex-direction: column; gap: 14px; }
 
-            <button class="emergency-action emergency-action-whatsapp" type="button" onclick="openEmergencyWhatsApp()">
-                Prepare WhatsApp message
-            </button>
+  .em-med-item {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 16px 18px;
+  }
+  .em-med-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .em-med-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .em-med-meta {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: 3px 0;
+  }
+  .em-med-meta strong { color: var(--text-secondary); }
 
-            <p class="emergency-note" id="emergencyContactError" role="alert" aria-live="polite"></p>
+  /* STATUS BADGES */
+  .em-status {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 3px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .status-safe           { background: rgba(16,185,129,0.15); color: #10b981; }
+  .status-expiring-soon  { background: rgba(245,158,11,0.15); color: #f59e0b; }
+  .status-expired        { background: rgba(239,68,68,0.15);  color: #ef4444; }
+  .status-unknown        { background: rgba(148,163,184,0.12); color: #94a3b8; }
 
-        </div>
+  /* EMPTY & SHELF LINK */
+  .em-no-meds {
+    color: var(--text-muted);
+    font-size: 0.93rem;
+    padding: 20px 0 12px;
+  }
+  .em-shelf-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 18px;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: color 0.15s;
+  }
+  .em-shelf-link:hover { color: var(--primary-hover); }
+</style>
 
-    </section>
+<div class="em-page">
 
-    <!-- Saved Medicines -->
+  <!-- HERO -->
+  <div class="em-hero">
+    <h1>🚨 Emergency Mode</h1>
+    <p>Quick access to emergency services and your medicine list</p>
+  </div>
 
-    <section class="emergency-panel">
+  <!-- WARNING BANNER -->
+  <div class="em-warning">
+    ⚠️ This page is for emergencies. Stay calm and follow the instructions below.
+  </div>
 
-        <h2>Saved medicines</h2>
+  <!-- PANELS -->
+  <div class="em-panels">
 
-        {% if medicines %}
+    <!-- PANEL A: EMERGENCY CONTACTS -->
+    <div class="em-panel em-panel-contacts">
+      <h2>🆘 Emergency Contacts</h2>
 
-        {% for medicine in medicines %}
+      <label class="em-label" for="guardianNumber">Guardian or emergency contact number</label>
+      <input
+        id="guardianNumber"
+        type="tel"
+        inputmode="tel"
+        autocomplete="tel"
+        class="em-tel-input"
+        value="{{ phone_number or '' }}"
+        placeholder="e.g. +91 9876543210">
 
-        <article class="emergency-medicine">
+      <a class="em-btn-call" href="tel:112">
+        📞 Call Emergency Services (112)
+      </a>
 
-            <div class="emergency-medicine-heading">
+      <button class="em-btn-whatsapp" type="button" onclick="openEmergencyWhatsApp()">
+        💬 Send WhatsApp Alert
+      </button>
 
-                <h3>
-                    {{ medicine.medicine_name or "Unnamed medicine" }}
-                </h3>
+      <p class="em-contact-error" id="emergencyContactError" role="alert" aria-live="polite"></p>
+    </div>
 
-                <span
-                    class="emergency-status status-{{ (medicine.expiry_status or 'unknown')|lower|replace(' ', '-') }}">
-                    {{ medicine.expiry_status or "Expiry status unavailable" }}
-                </span>
+    <!-- PANEL B: YOUR MEDICINES -->
+    <div class="em-panel em-panel-meds">
+      <h2>💊 Your Medicines</h2>
 
+      {% if medicines %}
+        <div class="em-med-list">
+          {% for medicine in medicines %}
+          <article class="em-med-item">
+            <div class="em-med-head">
+              <span class="em-med-name">{{ medicine.medicine_name or "Unnamed medicine" }}</span>
+              <span class="em-status status-{{ (medicine.expiry_status or 'unknown')|lower|replace(' ', '-') }}">
+                {{ medicine.expiry_status or "Unknown" }}
+              </span>
             </div>
+            <p class="em-med-meta"><strong>Dosage:</strong> {{ medicine.dosage or "Not recorded" }}</p>
+            <p class="em-med-meta"><strong>Expiry date:</strong> {{ medicine.expiry_date or "Not recorded" }}</p>
+          </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="em-no-meds">No medicines saved. Add medicines to your shelf first.</p>
+      {% endif %}
 
-            <p>
-                <strong>Dosage:</strong>
-                {{ medicine.dosage or "Not recorded" }}
-            </p>
+      <a href="{{ url_for('medicine_shelf.medicine_shelf') }}" class="em-shelf-link">
+        Go to Medicine Shelf →
+      </a>
+    </div>
 
-            <p>
-                <strong>Expiry date:</strong>
-                {{ medicine.expiry_date or "Not recorded" }}
-            </p>
+  </div>
 
-        </article>
-
-        {% endfor %}
-
-        {% else %}
-
-        <p class="emergency-note">
-            No medicines are currently saved on your shelf.
-        </p>
-
-        {% endif %}
-
-    </section>
-
-</section>
+</div>
 
 <script>
     function openEmergencyWhatsApp() {

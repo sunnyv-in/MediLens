@@ -1,129 +1,309 @@
 {% extends "layouts/base.html" %}
-
-{% block styles %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/medicine.css') }}">
-{% endblock %}
-
 {% block title %}{{ medicine.medicine_name }} | MediLens{% endblock %}
 
+{% block css %}
+<style>
+  .med-details-page {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+  }
+
+  /* ── BREADCRUMB ── */
+  .med-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 28px;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+  }
+  .med-breadcrumb a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+  .med-breadcrumb a:hover { color: var(--primary); }
+  .med-breadcrumb i { font-size: 0.7rem; }
+
+  /* ── PAGE HERO ── */
+  .med-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+  .med-eyebrow {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--primary);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .med-hero h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 6px;
+    font-family: var(--font-display);
+  }
+  .med-hero p {
+    color: var(--text-muted);
+    font-size: 1rem;
+    margin: 0;
+  }
+  .med-hero-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+  }
+
+  /* ── BUTTONS ── */
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--primary); color: #fff;
+    border: none; border-radius: var(--radius-md);
+    padding: 10px 22px; font-size: 0.95rem; font-weight: 600;
+    min-height: 44px; cursor: pointer; text-decoration: none;
+    transition: background var(--transition-fast), transform var(--transition-fast);
+  }
+  .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+  .btn-secondary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: transparent; color: var(--text-secondary);
+    border: 1.5px solid var(--border-highlight); border-radius: var(--radius-md);
+    padding: 10px 20px; font-size: 0.95rem; font-weight: 500;
+    min-height: 44px; cursor: pointer; text-decoration: none;
+    transition: all var(--transition-fast);
+  }
+  .btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
+  .btn-danger {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: transparent; color: var(--danger);
+    border: 1.5px solid var(--danger-border); border-radius: var(--radius-md);
+    padding: 10px 20px; font-size: 0.95rem; font-weight: 500;
+    min-height: 44px; cursor: pointer; text-decoration: none;
+    transition: all var(--transition-fast);
+  }
+  .btn-danger:hover { background: var(--danger-bg); }
+
+  /* ── INFO CARD ── */
+  .info-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 20px;
+  }
+  .info-card-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .info-card-title i { color: var(--primary); }
+
+  /* ── DETAIL GRID ── */
+  .detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+  .detail-item dt {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .detail-item dd {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  /* ── TEXT SECTION ── */
+  .text-section { margin-top: 20px; }
+  .text-section h3 {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--primary);
+    margin-bottom: 10px;
+  }
+  .text-section p {
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  /* ── EMAIL FORM ── */
+  .email-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    margin-top: 16px;
+  }
+  .email-row .email-input {
+    flex: 1;
+    min-width: 200px;
+    min-height: 44px;
+    background: var(--bg-surface);
+    border: 1.5px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    transition: border-color var(--transition-fast);
+  }
+  .email-row .email-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-glow);
+  }
+
+  /* ── DANGER ZONE ── */
+  .danger-zone {
+    border: 1px solid var(--danger-border);
+    background: var(--danger-bg);
+    border-radius: var(--radius-lg);
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+  }
+  .danger-zone-text strong {
+    display: block;
+    color: #fca5a5;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .danger-zone-text span {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+
+  @media (max-width: 640px) {
+    .med-hero { flex-direction: column; }
+    .med-hero-actions { width: 100%; }
+    .med-hero-actions a, .med-hero-actions button { flex: 1; justify-content: center; }
+    .detail-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+{% endblock %}
+
 {% block content %}
-<section class="med-page">
-    <header class="med-page-header">
-        <div>
-            <p class="med-eyebrow">MEDICINE DETAILS</p>
-            <h1>{{ medicine.medicine_name }}</h1>
-            <p class="med-muted">
-                {{ medicine.generic_name or "Generic name not added" }}
-            </p>
-        </div>
+<div class="med-details-page">
 
-        <div class="med-header-actions">
-            {% if medicine.history_id %}
-            <a class="med-btn med-btn-secondary"
-                href="{{ url_for('medicine_history.edit_history', history_id=medicine.history_id) }}">
-                Edit scan details
-            </a>
-            {% else %}
-            <a class="med-btn med-btn-secondary"
-                href="{{ url_for('medicine_shelf.edit_medicine_page', medicine_id=medicine.id) }}">
-                Edit
-            </a>
-            {% endif %}
+  <!-- Breadcrumb -->
+  <nav class="med-breadcrumb" aria-label="Breadcrumb">
+    <a href="{{ url_for('medicine_shelf.medicine_shelf') }}"><i class="fa-solid fa-pills"></i> Medicine Shelf</a>
+    <i class="fa-solid fa-chevron-right"></i>
+    <span>{{ medicine.medicine_name or "Medicine Details" }}</span>
+  </nav>
 
-            <a class="med-btn med-btn-secondary" href="{{ url_for('medicine_shelf.medicine_shelf') }}">
-                Back to shelf
-            </a>
-        </div>
-    </header>
-
-    <div class="med-detail-card">
-        <h2>Medicine information</h2>
-
-        <dl class="med-info-grid med-info-grid-detail">
-            <div>
-                <dt>Medicine name</dt>
-                <dd>{{ medicine.medicine_name or "Not added" }}</dd>
-            </div>
-            <div>
-                <dt>Generic name</dt>
-                <dd>{{ medicine.generic_name or "Not added" }}</dd>
-            </div>
-            <div>
-                <dt>Strength</dt>
-                <dd>{{ medicine.strength or "Not added" }}</dd>
-            </div>
-            <div>
-                <dt>Manufacturer</dt>
-                <dd>{{ medicine.manufacturer or "Not added" }}</dd>
-            </div>
-            <div>
-                <dt>Batch number</dt>
-                <dd>{{ medicine.batch_number or "Not added" }}</dd>
-            </div>
-            <div>
-                <dt>Expiry date</dt>
-                <dd>{{ medicine.expiry_date or "Not added" }}</dd>
-            </div>
-            <div>
-                <dt>Quantity</dt>
-                <dd>{{ medicine.quantity if medicine.quantity is not none else 0 }}</dd>
-            </div>
-            <div>
-                <dt>Dosage</dt>
-                <dd>{{ medicine.dosage or "Not added" }}</dd>
-            </div>
-            <div>
-                <dt>Counterfeit score</dt>
-                <dd>
-                    {{ medicine.counterfeit_score
-                    if medicine.counterfeit_score is not none
-                    else "Not available" }}
-                </dd>
-            </div>
-            <div>
-                <dt>Added on</dt>
-                <dd>
-                    {{ medicine.created_at.strftime("%d %b %Y, %I:%M %p")
-                    if medicine.created_at else "Not available" }}
-                </dd>
-            </div>
-        </dl>
-
-        <div class="med-detail-text">
-            <h3>Uses</h3>
-            <p>{{ medicine.usage or "No information has been added." }}</p>
-        </div>
-
-        <div class="med-detail-text">
-            <h3>Side effects</h3>
-            <p>{{ medicine.side_effects or "No information has been added." }}</p>
-        </div>
-
-        {% if medicine.history_id %}
-        <section class="med-detail-text">
-            <h2>Email scan details</h2>
-
-            <form method="POST"
-                action="{{ url_for('medicine_history.email_history', history_id=medicine.history_id) }}">
-                <label for="medicine-details-recipient">Recipient email</label>
-                <input id="medicine-details-recipient" name="recipient_email" type="email"
-                    value="{{ current_user.email if current_user.is_authenticated else '' }}"
-                    placeholder="Enter recipient email" required>
-
-                <button class="med-btn med-btn-secondary" type="submit">
-                    Email scan details and image
-                </button>
-            </form>
-        </section>
-        {% endif %}
-
-        <form class="med-delete-form" method="POST"
-            action="{{ url_for('medicine_shelf.remove_medicine', medicine_id=medicine.id) }}"
-            onsubmit="return confirm('Delete this medicine from your shelf? This cannot be undone.');">
-            <button class="med-btn med-btn-danger" type="submit">
-                Delete medicine
-            </button>
-        </form>
+  <!-- Hero -->
+  <div class="med-hero">
+    <div>
+      <p class="med-eyebrow">💊 Medicine Details</p>
+      <h1>{{ medicine.medicine_name }}</h1>
+      <p>{{ medicine.generic_name or "Generic name not recorded" }}</p>
     </div>
-</section>
+    <div class="med-hero-actions">
+      {% if medicine.history_id %}
+      <a class="btn-secondary" href="{{ url_for('medicine_history.edit_history', history_id=medicine.history_id) }}">
+        <i class="fa-solid fa-pen-to-square"></i> Edit Scan Details
+      </a>
+      {% else %}
+      <a class="btn-secondary" href="{{ url_for('medicine_shelf.edit_medicine_page', medicine_id=medicine.id) }}">
+        <i class="fa-solid fa-pen"></i> Edit
+      </a>
+      {% endif %}
+      <a class="btn-secondary" href="{{ url_for('medicine_shelf.medicine_shelf') }}">
+        <i class="fa-solid fa-arrow-left"></i> Back to Shelf
+      </a>
+    </div>
+  </div>
+
+  <!-- Core Info Card -->
+  <div class="info-card">
+    <h2 class="info-card-title"><i class="fa-solid fa-circle-info"></i> Medicine Information</h2>
+    <dl class="detail-grid">
+      <div class="detail-item"><dt>Medicine Name</dt><dd>{{ medicine.medicine_name or "Not added" }}</dd></div>
+      <div class="detail-item"><dt>Generic Name</dt><dd>{{ medicine.generic_name or "Not added" }}</dd></div>
+      <div class="detail-item"><dt>Strength</dt><dd>{{ medicine.strength or "Not added" }}</dd></div>
+      <div class="detail-item"><dt>Manufacturer</dt><dd>{{ medicine.manufacturer or "Not added" }}</dd></div>
+      <div class="detail-item"><dt>Batch Number</dt><dd>{{ medicine.batch_number or "Not added" }}</dd></div>
+      <div class="detail-item"><dt>Expiry Date</dt><dd>{{ medicine.expiry_date or "Not added" }}</dd></div>
+      <div class="detail-item"><dt>Quantity</dt><dd>{{ medicine.quantity if medicine.quantity is not none else 0 }}</dd></div>
+      <div class="detail-item"><dt>Dosage</dt><dd>{{ medicine.dosage or "Not added" }}</dd></div>
+      <div class="detail-item"><dt>Counterfeit Score</dt><dd>{{ medicine.counterfeit_score if medicine.counterfeit_score is not none else "N/A" }}</dd></div>
+      <div class="detail-item"><dt>Added On</dt><dd>{{ medicine.created_at.strftime("%d %b %Y") if medicine.created_at else "N/A" }}</dd></div>
+    </dl>
+
+    {% if medicine.usage %}
+    <div class="text-section">
+      <h3><i class="fa-solid fa-stethoscope"></i> Uses</h3>
+      <p>{{ medicine.usage }}</p>
+    </div>
+    {% endif %}
+
+    {% if medicine.side_effects %}
+    <div class="text-section">
+      <h3><i class="fa-solid fa-triangle-exclamation"></i> Side Effects</h3>
+      <p>{{ medicine.side_effects }}</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Email Scan -->
+  {% if medicine.history_id %}
+  <div class="info-card">
+    <h2 class="info-card-title"><i class="fa-solid fa-envelope"></i> Email Scan Details</h2>
+    <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:0;">Send the medicine scan report and image to an email address.</p>
+    <form method="POST" action="{{ url_for('medicine_history.email_history', history_id=medicine.history_id) }}">
+      <div class="email-row">
+        <input class="email-input" id="medicine-details-recipient" name="recipient_email" type="email"
+          value="{{ current_user.email if current_user.is_authenticated else '' }}"
+          placeholder="Enter recipient email" required aria-label="Recipient email">
+        <button class="btn-primary" type="submit">
+          <i class="fa-solid fa-paper-plane"></i> Send Email
+        </button>
+      </div>
+    </form>
+  </div>
+  {% endif %}
+
+  <!-- Danger Zone -->
+  <div class="danger-zone">
+    <div class="danger-zone-text">
+      <strong>Delete this medicine</strong>
+      <span>This will permanently remove it from your shelf and cannot be undone.</span>
+    </div>
+    <form method="POST" action="{{ url_for('medicine_shelf.remove_medicine', medicine_id=medicine.id) }}"
+      onsubmit="return confirm('Delete this medicine from your shelf? This cannot be undone.');">
+      <button class="btn-danger" type="submit">
+        <i class="fa-solid fa-trash"></i> Delete Medicine
+      </button>
+    </form>
+  </div>
+
+</div>
 {% endblock %}

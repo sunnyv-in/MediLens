@@ -1,64 +1,416 @@
 {% extends "layouts/base.html" %}
 
 {% block title %}
-Create Account | MediLens
+Create Account | Patient & Caregiver Setup | MediLens
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
+<style>
+  .role-selector-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .role-option-card {
+    border: 1.5px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    cursor: pointer;
+    background: var(--bg-surface);
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .role-option-card:hover {
+    border-color: var(--primary);
+    background: var(--bg-card-hover);
+  }
+
+  .role-option-card.selected {
+    border-color: var(--primary);
+    background: rgba(20, 184, 166, 0.12);
+  }
+
+  .role-option-card input[type="radio"] {
+    accent-color: var(--primary);
+    width: 18px;
+    height: 18px;
+    margin-top: 3px;
+  }
+
+  .role-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .role-desc {
+    font-size: 0.825rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  /* Care Circle Repeater */
+  .care-circle-section {
+    background: var(--bg-surface);
+    border: 1px dashed var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+
+  .care-circle-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .contact-repeater-row {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1.2fr 36px;
+    gap: 8px;
+    margin-bottom: 10px;
+    align-items: center;
+  }
+
+  @media (max-width: 600px) {
+    .role-selector-grid {
+      grid-template-columns: 1fr;
+    }
+    .contact-repeater-row {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>
 {% endblock %}
 
 {% block content %}
+<div class="auth-viewport">
 
-<div class="auth-page">
+  <div class="auth-split-container">
 
-    <div class="auth-card">
+    <!-- =====================================================
+         LEFT HERO SPLIT: MULTI-CAREGIVER PEACE OF MIND
+    ====================================================== -->
+    <section class="auth-hero-pane" aria-label="Why Register With MediLens">
+      <div>
+        <div class="auth-hero-badge">
+          <i class="fa-solid fa-people-roof"></i> Multi-Caregiver Sync
+        </div>
 
-        <h1>Create Account</h1>
+        <h2 class="auth-hero-title">
+          Never worry if a dose was <span>given or forgotten.</span>
+        </h2>
 
-        <p>
-            Save your medicines, history and reminders.
+        <p class="auth-hero-desc">
+          Designed for independent patients and caring families. Connect multiple phone numbers so everyone receives timely dose alerts—and when one caregiver administers the medicine, the reminder clears for everyone to prevent dangerous double-dosing.
         </p>
 
-        <form method="POST">
-
-            <div class="auth-group">
-                <label>Name</label>
-
-                <input type="text" name="name" required>
+        <div class="auth-perks-list">
+          <div class="auth-perk-item">
+            <div class="auth-perk-icon" aria-hidden="true">
+              <i class="fa-solid fa-user-doctor"></i>
             </div>
-
-            <div class="auth-group">
-                <label>Email</label>
-
-                <input type="email" name="email" required>
+            <div class="auth-perk-text">
+              <strong>Patient or Remote Caretaker Setup</strong>
+              <p>Manage your own medicines or coordinate prescriptions for parents or grandparents from afar.</p>
             </div>
+          </div>
 
-            <div class="auth-group">
-                <label>Password</label>
-
-                <input type="password" name="password" minlength="6" required>
+          <div class="auth-perk-item">
+            <div class="auth-perk-icon" aria-hidden="true">
+              <i class="fa-solid fa-mobile-screen-button"></i>
             </div>
+            <div class="auth-perk-text">
+              <strong>Multiple Care Circle Phone Numbers</strong>
+              <p>Add the patient, spouse, daughter, son, or home nurse to receive simultaneous alerts.</p>
+            </div>
+          </div>
 
-            <button class="auth-btn">
-                Create Account
-            </button>
+          <div class="auth-perk-item">
+            <div class="auth-perk-icon" aria-hidden="true">
+              <i class="fa-solid fa-shield-check"></i>
+            </div>
+            <div class="auth-perk-text">
+              <strong>Anti-Double-Dose Closer</strong>
+              <p>One person taps "Medicine Taken" and everyone gets notified that the dose is already complete.</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        </form>
+      <div class="auth-hero-footer">
+        <i class="fa-solid fa-lock" style="color: var(--primary);" aria-hidden="true"></i>
+        <span>Encrypted data • Family medication security</span>
+      </div>
+    </section>
 
-        <div class="auth-links">
+    <!-- =====================================================
+         RIGHT SIDE: PROGRESSIVE REGISTRATION FORM
+    ====================================================== -->
+    <section class="auth-form-pane" aria-labelledby="registerHeading">
 
-            <p>
-                Already have an account?
-                <a href="{{ url_for('auth.login') }}">
-                    Login
-                </a>
-            </p>
+      <div class="auth-form-header">
+        <h1 id="registerHeading">Setup Your Account</h1>
+        <p>Personalize for yourself or a loved one.</p>
+      </div>
 
-            <a class="guest-btn" href="{{ url_for('auth.guest') }}">
-                Continue as Guest
-            </a>
+      <div id="authFeedback" style="display: none; margin-bottom: 16px;"></div>
+
+      <!-- FORM -->
+      <form method="POST" id="registerForm" novalidate>
+
+        <!-- 1. ROLE / PERSONA SELECTION -->
+        <label class="form-label">How will you be using MediLens?</label>
+        <div class="role-selector-grid" role="radiogroup" aria-label="User Persona">
+          
+          <label class="role-option-card selected" id="rolePatientCard">
+            <input type="radio" name="role" value="patient" checked id="rolePatient">
+            <div>
+              <span class="role-title"><i class="fa-solid fa-person" style="color: var(--primary);"></i> For Myself</span>
+              <p class="role-desc">I am taking and tracking my own prescriptions.</p>
+            </div>
+          </label>
+
+          <label class="role-option-card" id="roleCaregiverCard">
+            <input type="radio" name="role" value="caregiver" id="roleCaregiver">
+            <div>
+              <span class="role-title"><i class="fa-solid fa-hand-holding-heart" style="color: var(--accent-ai-light);"></i> For a Loved One</span>
+              <p class="role-desc">I am a caregiver/family member assisting someone.</p>
+            </div>
+          </label>
 
         </div>
 
-    </div>
+        <!-- CONDITIONAL PATIENT NAME FIELD (IF CAREGIVER) -->
+        <div class="form-group" id="caregiverPatientGroup" style="display: none;">
+          <label for="regPatientName" class="form-label">Patient's Full Name / Relation</label>
+          <div class="form-control-wrapper">
+            <i class="fa-solid fa-heart form-control-icon" style="color: #f43f5e;" aria-hidden="true"></i>
+            <input
+              type="text"
+              id="regPatientName"
+              name="patient_name"
+              class="form-control"
+              placeholder="e.g. Robert Smith (Father)"
+            />
+          </div>
+          <div class="form-feedback helper">The name of the patient receiving daily medication.</div>
+        </div>
+
+        <!-- 2. NAME (FIRST & LAST NAME) -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label for="regFirstName" class="form-label">First Name</label>
+            <div class="form-control-wrapper">
+              <i class="fa-regular fa-user form-control-icon" aria-hidden="true"></i>
+              <input
+                type="text"
+                id="regFirstName"
+                name="first_name"
+                class="form-control"
+                placeholder="First name"
+                required
+                autocomplete="given-name"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="regLastName" class="form-label">Last Name</label>
+            <div class="form-control-wrapper">
+              <i class="fa-regular fa-user form-control-icon" aria-hidden="true"></i>
+              <input
+                type="text"
+                id="regLastName"
+                name="last_name"
+                class="form-control"
+                placeholder="Last name"
+                required
+                autocomplete="family-name"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. EMAIL & PRIMARY MOBILE NUMBER -->
+        <div style="display: grid; grid-template-columns: 1.1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label for="regEmail" class="form-label">Email Address</label>
+            <div class="form-control-wrapper">
+              <i class="fa-regular fa-envelope form-control-icon" aria-hidden="true"></i>
+              <input
+                type="email"
+                id="regEmail"
+                name="email"
+                class="form-control"
+                placeholder="name@example.com"
+                required
+                autocomplete="email"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="regPhone" class="form-label">Mobile Number</label>
+            <div class="form-control-wrapper">
+              <i class="fa-solid fa-phone form-control-icon" aria-hidden="true"></i>
+              <input
+                type="tel"
+                id="regPhone"
+                name="phone_number"
+                class="form-control"
+                placeholder="+91 / +1 Mobile"
+                autocomplete="tel"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. PASSWORD -->
+        <div class="form-group">
+          <label for="regPassword" class="form-label">Password</label>
+          <div class="form-control-wrapper">
+            <i class="fa-solid fa-lock form-control-icon" aria-hidden="true"></i>
+            <input
+              type="password"
+              id="regPassword"
+              name="password"
+              class="form-control"
+              placeholder="Minimum 8 characters"
+              required
+              minlength="8"
+              autocomplete="new-password"
+            />
+            <button
+              type="button"
+              class="password-toggle-btn"
+              id="regPasswordToggle"
+              aria-label="Toggle password visibility"
+            >
+              <i class="fa-regular fa-eye" id="regPasswordIcon"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- 5. CARE CIRCLE: ADD ADDITIONAL NUMBERS -->
+        <div class="care-circle-section">
+          <div class="care-circle-header">
+            <div>
+              <strong style="color: var(--text-primary); font-size: 0.95rem; display: block;">
+                <i class="fa-solid fa-users" style="color: var(--primary);"></i> Care Circle Contacts
+              </strong>
+              <small style="color: var(--text-muted);">Add family or caregivers to receive shared alerts.</small>
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm" id="addContactBtn">
+              <i class="fa-solid fa-plus"></i>
+              <span>Add Number</span>
+            </button>
+          </div>
+
+          <div id="contactRepeaterList">
+            <!-- Dynamic rows will be inserted here -->
+          </div>
+        </div>
+
+        <!-- SUBMIT -->
+        <button type="submit" class="btn btn-primary" id="regSubmitBtn" style="width: 100%; min-height: 52px;">
+          <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+          <span>Create Account &amp; Activate Care Circle</span>
+        </button>
+
+      </form>
+
+      <!-- SWITCH TO LOGIN -->
+      <div class="auth-switch-text">
+        <span>Already have an account?</span>
+        <a href="{{ url_for('auth.login') }}" class="auth-link" style="margin-left: 6px;">
+          Sign In
+        </a>
+      </div>
+
+    </section>
+
+  </div>
 
 </div>
+{% endblock %}
 
+{% block js %}
+<script>
+  (function() {
+    // 1. Password Visibility Toggle
+    const passwordInput = document.getElementById("regPassword");
+    const toggleBtn = document.getElementById("regPasswordToggle");
+    const toggleIcon = document.getElementById("regPasswordIcon");
+
+    if (toggleBtn && passwordInput) {
+      toggleBtn.addEventListener("click", function() {
+        const isPassword = passwordInput.getAttribute("type") === "password";
+        passwordInput.setAttribute("type", isPassword ? "text" : "password");
+        toggleIcon.className = isPassword ? "fa-regular fa-eye-slash" : "fa-regular fa-eye";
+      });
+    }
+
+    // 2. Role Selector (Patient vs Caregiver)
+    const patientRadio = document.getElementById("rolePatient");
+    const caregiverRadio = document.getElementById("roleCaregiver");
+    const patientCard = document.getElementById("rolePatientCard");
+    const caregiverCard = document.getElementById("roleCaregiverCard");
+    const caregiverGroup = document.getElementById("caregiverPatientGroup");
+
+    function updateRoleUI() {
+      if (caregiverRadio && caregiverRadio.checked) {
+        caregiverCard.classList.add("selected");
+        patientCard.classList.remove("selected");
+        if (caregiverGroup) caregiverGroup.style.display = "block";
+      } else {
+        patientCard.classList.add("selected");
+        caregiverCard.classList.remove("selected");
+        if (caregiverGroup) caregiverGroup.style.display = "none";
+      }
+    }
+
+    if (patientRadio && caregiverRadio) {
+      patientRadio.addEventListener("change", updateRoleUI);
+      caregiverRadio.addEventListener("change", updateRoleUI);
+    }
+
+    // 3. Dynamic "Add Additional Mobile Numbers" Repeater
+    const addBtn = document.getElementById("addContactBtn");
+    const repeaterList = document.getElementById("contactRepeaterList");
+
+    if (addBtn && repeaterList) {
+      addBtn.addEventListener("click", function() {
+        const row = document.createElement("div");
+        row.className = "contact-repeater-row";
+        row.innerHTML = `
+          <input type="text" name="contact_name[]" class="form-control" style="min-height: 42px; padding: 8px 12px;" placeholder="Contact Name" required>
+          <select name="contact_relationship[]" class="form-control" style="min-height: 42px; padding: 8px 10px;">
+            <option value="Daughter">Daughter</option>
+            <option value="Son">Son</option>
+            <option value="Spouse">Spouse</option>
+            <option value="Caregiver" selected>Caregiver</option>
+            <option value="Nurse">Home Nurse</option>
+            <option value="Doctor">Physician</option>
+          </select>
+          <input type="tel" name="contact_phone[]" class="form-control" style="min-height: 42px; padding: 8px 12px;" placeholder="Mobile Number" required>
+          <button type="button" class="btn btn-danger btn-sm" style="min-height: 38px; width: 36px; padding: 0;" title="Remove Number" onclick="this.parentElement.remove()">
+            &times;
+          </button>
+        `;
+        repeaterList.appendChild(row);
+      });
+    }
+  })();
+</script>
 {% endblock %}

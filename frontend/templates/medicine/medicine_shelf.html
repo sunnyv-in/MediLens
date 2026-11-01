@@ -2,172 +2,466 @@
 
 {% block title %}Medicine Shelf | MediLens{% endblock %}
 
-{% block styles %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/medicine.css') }}">
+{% block css %}
+<style>
+  /* ── Page wrapper ── */
+  .shelf-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px;
+  }
+
+  /* ── Hero ── */
+  .shelf-hero {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+  .shelf-hero-text .hero-icon { font-size: 2.2rem; margin-bottom: 6px; }
+  .shelf-hero-text h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+  .shelf-hero-text p { color: var(--text-muted); font-size: 1rem; }
+
+  /* ── Search bar ── */
+  .shelf-search-label {
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
+  .shelf-search-wrap {
+    position: relative;
+    margin-bottom: 32px;
+    width: 100%;
+  }
+  .shelf-search-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.95rem;
+    pointer-events: none;
+    color: var(--text-muted);
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+  .shelf-search {
+    width: 100%;
+    min-height: 48px;
+    background: var(--bg-card);
+    border: 1.5px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 12px 18px 12px 44px;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    transition: all var(--transition-fast);
+  }
+  .shelf-search:hover { border-color: var(--border-highlight); }
+  .shelf-search:focus {
+    border-color: var(--primary);
+    background: var(--bg-surface);
+    box-shadow: 0 0 0 3px var(--primary-glow);
+    outline: none;
+  }
+  .shelf-search::placeholder { color: var(--text-muted); }
+
+  /* ── Grid ── */
+  .shelf-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 20px;
+  }
+
+  /* ── Medicine card ── */
+  .med-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  }
+  .med-card:hover {
+    border-color: var(--border-highlight);
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* ── Card heading row ── */
+  .med-card-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .med-card-heading h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+  }
+  .med-generic {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .med-qty-badge {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: var(--radius-full);
+    font-size: 0.8rem;
+    font-weight: 700;
+    background: rgba(20, 184, 166, 0.14);
+    color: #5eead4;
+    border: 1px solid rgba(20, 184, 166, 0.35);
+    white-space: nowrap;
+  }
+
+  /* ── Info grid ── */
+  .med-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 16px;
+  }
+  .med-info-item dt {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 2px;
+  }
+  .med-info-item dd {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  /* ── Counterfeit bar ── */
+  .counterfeit-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .counterfeit-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    display: flex;
+    justify-content: space-between;
+  }
+  .counterfeit-bar-bg {
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: var(--border-subtle);
+    overflow: hidden;
+  }
+  .counterfeit-bar-fill {
+    height: 100%;
+    border-radius: var(--radius-full);
+    background: linear-gradient(90deg, var(--success), var(--primary));
+    transition: width var(--transition-smooth);
+  }
+
+  /* ── Action row ── */
+  .med-card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-subtle);
+  }
+  .med-card-actions form { display: contents; }
+
+  .btn-med {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 8px 14px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    border: 1px solid var(--border-highlight);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+    font-family: var(--font-body);
+  }
+  .btn-med:hover {
+    border-color: var(--primary);
+    color: var(--primary-light);
+    background: var(--bg-card-hover);
+  }
+  .btn-med-danger {
+    background: var(--danger-bg);
+    color: #fca5a5;
+    border-color: var(--danger-border);
+  }
+  .btn-med-danger:hover {
+    background: var(--danger);
+    color: #fff;
+  }
+  .btn-med-ml { margin-left: auto; }
+
+  /* ── Email inline form ── */
+  .med-email-form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding-top: 8px;
+    border-top: 1px dashed var(--border-subtle);
+  }
+  .med-email-input {
+    flex: 1;
+    min-height: 38px;
+    background: var(--bg-surface);
+    border: 1.5px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    color: var(--text-primary);
+  }
+  .med-email-input:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 2px var(--primary-glow);
+  }
+  .btn-email {
+    min-height: 38px;
+    padding: 8px 14px;
+    background: var(--primary);
+    color: #020617;
+    font-weight: 700;
+    font-size: 0.875rem;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+    font-family: var(--font-body);
+  }
+  .btn-email:hover { background: var(--primary-light); }
+
+  /* ── No-match message ── */
+  .shelf-no-match {
+    color: var(--text-muted);
+    text-align: center;
+    padding: 32px 0;
+    font-size: 1rem;
+  }
+  .med-hidden { display: none !important; }
+
+  /* ── Empty state ── */
+  .shelf-empty {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 72px 32px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    box-shadow: var(--shadow-md);
+  }
+  .shelf-empty .empty-icon { font-size: 3rem; opacity: 0.55; }
+  .shelf-empty h2 { font-size: 1.35rem; font-weight: 700; color: var(--text-primary); }
+  .shelf-empty p { color: var(--text-muted); font-size: 0.95rem; max-width: 340px; }
+
+  @media (max-width: 768px) {
+    .shelf-hero { flex-direction: column; }
+    .shelf-hero .btn { width: 100%; }
+    .shelf-grid { grid-template-columns: 1fr; }
+    .med-info-grid { grid-template-columns: 1fr; }
+  }
+</style>
 {% endblock %}
 
 {% block content %}
-<section class="med-page">
-    <header class="med-page-header">
+<div class="shelf-page">
+
+  <!-- ══ HERO ══ -->
+  <div class="shelf-hero">
+    <div class="shelf-hero-text">
+      <div class="hero-icon">💊</div>
+      <h1>Medicine Shelf</h1>
+      <p>View and manage medicines saved to your shelf.</p>
+    </div>
+    <a class="btn btn-primary" href="{{ url_for('medicine_shelf.add_medicine_page') }}">+ Add Medicine</a>
+  </div>
+
+  <!-- ══ SEARCH ══ -->
+  <label class="shelf-search-label" for="medicineSearch">Search your shelf</label>
+  <div class="shelf-search-wrap">
+    <i class="fa-solid fa-magnifying-glass shelf-search-icon" aria-hidden="true"></i>
+    <input class="shelf-search" id="medicineSearch" type="search"
+           placeholder="Search by name, manufacturer, or batch…"
+           oninput="filterMedicineShelf()">
+  </div>
+
+  {% if medicines %}
+
+  <!-- ══ GRID ══ -->
+  <div class="shelf-grid" id="medicineGrid">
+    {% for medicine in medicines %}
+    <article class="med-card"
+             data-search="{{ (medicine.medicine_name or '') ~ ' ' ~ (medicine.generic_name or '') ~ ' ' ~ (medicine.manufacturer or '') ~ ' ' ~ (medicine.batch_number or '') }}">
+
+      <!-- Heading row -->
+      <div class="med-card-heading">
         <div>
-            <p class="med-eyebrow">YOUR MEDICINE RECORDS</p>
-            <h1>Medicine Shelf</h1>
-            <p class="med-muted">View and manage medicines saved to your shelf.</p>
+          <h2>{{ medicine.medicine_name or "Unnamed medicine" }}</h2>
+          <p class="med-generic">{{ medicine.generic_name or "Generic name not added" }}</p>
         </div>
+        <span class="med-qty-badge">Qty: {{ medicine.quantity or 0 }}</span>
+      </div>
 
-        <a class="med-btn med-btn-primary" href="{{ url_for('medicine_shelf.add_medicine_page') }}">
-            + Add medicine
+      <!-- Info grid -->
+      <dl class="med-info-grid">
+        <div class="med-info-item">
+          <dt>Strength</dt>
+          <dd>{{ medicine.strength or "Not added" }}</dd>
+        </div>
+        <div class="med-info-item">
+          <dt>Manufacturer</dt>
+          <dd>{{ medicine.manufacturer or "Not added" }}</dd>
+        </div>
+        <div class="med-info-item">
+          <dt>Batch No.</dt>
+          <dd>{{ medicine.batch_number or "Not added" }}</dd>
+        </div>
+        <div class="med-info-item">
+          <dt>Expiry Date</dt>
+          <dd>{{ medicine.expiry_date or "Not added" }}</dd>
+        </div>
+      </dl>
+
+      <!-- Counterfeit score -->
+      {% if medicine.counterfeit_score is not none %}
+      <div class="counterfeit-wrap">
+        <span class="counterfeit-label">
+          <span>Authenticity Score</span>
+          <span>{{ medicine.counterfeit_score }}%</span>
+        </span>
+        <div class="counterfeit-bar-bg">
+          <div class="counterfeit-bar-fill" style="width: {{ medicine.counterfeit_score }}%;"></div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Action row -->
+      <div class="med-card-actions">
+        <a class="btn-med" href="{{ url_for('medicine_shelf.medicine_details', medicine_id=medicine.id) }}">
+          View Details
         </a>
-    </header>
 
-    <label class="med-search-label" for="medicineSearch">Search your shelf</label>
-    <input class="med-search" id="medicineSearch" type="search" placeholder="Search name, manufacturer, or batch number"
-        oninput="filterMedicineShelf()">
+        {% if medicine.history_id %}
+        <a class="btn-med" href="{{ url_for('medicine_history.edit_history', history_id=medicine.history_id) }}">
+          Edit Scan
+        </a>
+        {% else %}
+        <a class="btn-med" href="{{ url_for('medicine_shelf.edit_medicine_page', medicine_id=medicine.id) }}">
+          Edit
+        </a>
+        {% endif %}
 
-    {% if medicines %}
-    <div class="med-shelf-grid" id="medicineGrid">
-        <form class="med-email-shelf" method="POST" action="{{ url_for('medicine_shelf.email_medicine_shelf') }}">
-            <div>
-                <h2>Email your saved medicines</h2>
-                <p>Send all medicines currently on your shelf to your email.</p>
-            </div>
-
-            <div class="med-email-controls">
-                <input type="email" name="recipient_email"
-                    value="{{ current_user.email if current_user.is_authenticated else '' }}"
-                    placeholder="Email address" aria-label="Email address" required>
-                <button class="med-btn med-btn-primary" type="submit">
-                    Email entire shelf
-                </button>
-            </div>
+        <form method="POST"
+              action="{{ url_for('medicine_shelf.remove_medicine', medicine_id=medicine.id) }}"
+              onsubmit="return confirm('Delete this medicine from your shelf?');"
+              class="btn-med-ml">
+          <button class="btn-med btn-med-danger" type="submit">🗑 Delete</button>
         </form>
+      </div>
 
-        {% for medicine in medicines %}
-        <article class="med-card"
-            data-search="{{ (medicine.medicine_name or '') ~ ' ' ~ (medicine.generic_name or '') ~ ' ' ~ (medicine.manufacturer or '') ~ ' ' ~ (medicine.batch_number or '') }}">
-            <div class="med-card-heading">
-                <div>
-                    <h2>{{ medicine.medicine_name or "Unnamed medicine" }}</h2>
-                    <p class="med-muted">
-                        {{ medicine.generic_name or "Generic name not added" }}
-                    </p>
-                </div>
+      <!-- Email scan (only if history_id) -->
+      {% if medicine.history_id %}
+      <form class="med-email-form"
+            method="POST"
+            action="{{ url_for('medicine_history.email_history', history_id=medicine.history_id) }}">
+        <label class="visually-hidden" for="email_{{ medicine.id }}">Recipient email</label>
+        <input class="med-email-input" id="email_{{ medicine.id }}"
+               type="email" name="recipient_email"
+               value="{{ current_user.email if current_user.is_authenticated else '' }}"
+               placeholder="Recipient email" required>
+        <button class="btn-email" type="submit">✉ Email</button>
+      </form>
+      {% endif %}
 
-                <span class="med-quantity">
-                    Qty: {{ medicine.quantity or 0 }}
-                </span>
-            </div>
+    </article>
+    {% endfor %}
+  </div>
 
-            <dl class="med-info-grid">
-                <div>
-                    <dt>Strength</dt>
-                    <dd>{{ medicine.strength or "Not added" }}</dd>
-                </div>
+  <p class="shelf-no-match med-hidden" id="noMedicineMatch">
+    No medicines match your search.
+  </p>
 
-                <div>
-                    <dt>Manufacturer</dt>
-                    <dd>{{ medicine.manufacturer or "Not added" }}</dd>
-                </div>
+  {% else %}
 
-                <div>
-                    <dt>Batch number</dt>
-                    <dd>{{ medicine.batch_number or "Not added" }}</dd>
-                </div>
+  <!-- ══ EMPTY STATE ══ -->
+  <div class="shelf-empty">
+    <span class="empty-icon">💊</span>
+    <h2>Your shelf is empty</h2>
+    <p>Add a medicine to keep its details organised in one place.</p>
+    <a class="btn btn-primary" href="{{ url_for('medicine_shelf.add_medicine_page') }}">Add your first medicine</a>
+  </div>
 
-                <div>
-                    <dt>Expiry date</dt>
-                    <dd>{{ medicine.expiry_date or "Not added" }}</dd>
-                </div>
+  {% endif %}
 
-                <div>
-                    <dt>Dosage</dt>
-                    <dd>{{ medicine.dosage or "Not added" }}</dd>
-                </div>
-
-                <div>
-                    <dt>Counterfeit score</dt>
-                    <dd>
-                        {{ medicine.counterfeit_score if medicine.counterfeit_score is not none else "Not available" }}
-                    </dd>
-                </div>
-            </dl>
-
-            <div class="med-card-actions">
-                <a class="med-btn med-btn-secondary"
-                    href="{{ url_for('medicine_shelf.medicine_details', medicine_id=medicine.id) }}">
-                    View details
-                </a>
-
-                {% if medicine.history_id %}
-                <a class="med-btn med-btn-secondary"
-                    href="{{ url_for('medicine_history.edit_history', history_id=medicine.history_id) }}">
-                    Edit scan details
-                </a>
-
-                <form method="POST"
-                    action="{{ url_for('medicine_history.email_history', history_id=medicine.history_id) }}">
-                    <input type="email" name="recipient_email"
-                        value="{{ current_user.email if current_user.is_authenticated else '' }}"
-                        placeholder="Recipient email" aria-label="Recipient email" required>
-                    <button class="med-btn med-btn-secondary" type="submit">
-                        Email scan
-                    </button>
-                </form>
-                {% else %}
-                <a class="med-btn med-btn-secondary"
-                    href="{{ url_for('medicine_shelf.edit_medicine_page', medicine_id=medicine.id) }}">
-                    Edit
-                </a>
-                {% endif %}
-            </div>
-
-            <form method="POST" action="{{ url_for('medicine_shelf.remove_medicine', medicine_id=medicine.id) }}"
-                onsubmit="return confirm('Delete this medicine from your shelf?');">
-                <button class="med-btn med-btn-danger" type="submit">
-                    Delete
-                </button>
-            </form>
-        </article>
-        {% endfor %}
-    </div>
-
-    <p class="med-empty med-hidden" id="noMedicineMatch">
-        No medicines match your search.
-    </p>
-    {% else %}
-    <div class="med-empty">
-        <h2>Your shelf is empty</h2>
-        <p>Add a medicine to keep its details in one place.</p>
-        <a class="med-btn med-btn-primary" href="{{ url_for('medicine_shelf.add_medicine_page') }}">
-            Add your first medicine
-        </a>
-    </div>
-    {% endif %}
-</section>
+</div>
 
 <script>
-    function filterMedicineShelf() {
-        const searchInput = document.getElementById("medicineSearch");
-        const query = searchInput.value.trim().toLowerCase();
-        const cards = document.querySelectorAll(".med-card");
-        let visible = 0;
+  function filterMedicineShelf() {
+    const query = document
+      .getElementById("medicineSearch")
+      .value
+      .trim()
+      .toLowerCase();
 
-        cards.forEach((card) => {
-            const searchText = (card.dataset.search || "").toLowerCase();
-            const matches = searchText.includes(query);
+    const cards = document.querySelectorAll(".med-card");
+    let visible = 0;
 
-            card.classList.toggle("med-hidden", !matches);
+    cards.forEach(card => {
+      const searchText = (card.dataset.search || "").toLowerCase();
+      const match = searchText.includes(query);
 
-            if (matches) {
-                visible++;
-            }
-        });
+      card.classList.toggle("med-hidden", !match);
 
-        const noMatch = document.getElementById("noMedicineMatch");
+      if (match) {
+        visible++;
+      }
+    });
 
-        if (noMatch) {
-            noMatch.classList.toggle("med-hidden", visible !== 0);
-        }
+    const noMatch = document.getElementById("noMedicineMatch");
+
+    if (noMatch) {
+      noMatch.classList.toggle("med-hidden", visible !== 0);
     }
+  }
 </script>
+
 {% endblock %}
