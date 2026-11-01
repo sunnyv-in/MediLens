@@ -1,8 +1,10 @@
 import os
 import json
+from PIL.ImagePalette import raw
 from google import genai
 from dotenv import load_dotenv
 from backend.services.fallback_extractor import extract_medicine_info_fallback
+import traceback
 
 load_dotenv()
 
@@ -14,7 +16,8 @@ if not api_key:
 client = genai.Client(api_key=api_key)
 
 
-def extract_medicine_info_ai(cleaned_data, ranked_data):
+
+def extract_medicine_info_and_explanation(cleaned_data, ranked_data):
     all_lines = []
 
     # Highest priority OCR lines
@@ -31,21 +34,21 @@ def extract_medicine_info_ai(cleaned_data, ranked_data):
     prompt = f"""
 You are an expert pharmacist and medicine identification assistant.
 
-You are given OCR text extracted from a medicine strip, in top-to-bottom
-reading order. The OCR may contain spelling mistakes, missing letters,
-wrong characters, or partially detected company names.
+You are given OCR text extracted from a medicine package.
+The OCR may contain spelling mistakes, missing letters, wrong characters,
+broken words, duplicated text, or partially detected company names.
 
-Your job is to infer the correct medicine information.
-Medicine names usually:
+Your task has TWO parts:
 
-- appear in the largest font
-- appear near the top of the package
-- are brand names
-- are often followed by their generic composition
-- should not be confused with the generic medicine name
+PART 1 — MEDICINE INFORMATION
+
+Extract the following information.
+
+IMPORTANT:
+
+medicine_name means the COMMERCIAL BRAND NAME printed on the package.
 
 Examples:
-
 DOLO 650
 AZITHRAL 500
 DUOLIN
@@ -53,157 +56,53 @@ MAHACEF
 ECOSPRIN AV 75
 MONOCEF-O
 
-Examples:
-MEOFZRD -> MEDOFORD
-ALEMBLC -> ALEMBIC
-SUNPHARMA -> SUN PHARMA
-GLAXO -> GLAXOSMITHKLINE
+These are examples only. Do not copy them unless they are actually present
+in the OCR text.
+
+Do NOT use the generic composition as medicine_name.
+
+If both a brand name and generic composition exist, choose the BRAND NAME.
 
 Correct OCR mistakes only when there is strong evidence.
 
-If OCR already appears correct,
-preserve the original wording.
+If OCR already appears correct, preserve the original wording.
 
 Never invent information.
-Correct obvious OCR mistakes whenever possible.
 
 IMPORTANT RULES FOR BATCH NUMBER AND DATES:
 
 - For batch_number, manufacturing_date, and expiry_date, extract values
-  only if they are explicitly supported by the OCR text.
+  only if explicitly supported by OCR text.
+- Never guess or invent these values.
+- The label and its value may appear on separate consecutive lines.
+- Do not confuse manufacturing licence numbers with batch numbers.
+- Batch numbers are usually associated with B.NO, BATCH, BATCH NO, or LOT.
+- Manufacturing dates are usually associated with MFG, MFD, MFG DATE,
+  or MANUFACTURED.
+- Expiry dates are usually associated with EXP, EXPIRY, or EXP DATE.
+- If there is insufficient evidence, return an empty string.
 
-- Never guess, invent, or infer a batch number, manufacturing date,
-  or expiry date that is not present in the OCR text.
+PART 2 — MEDICINE EXPLANATION
 
-- The label and its value may appear on separate consecutive lines
-  because OCR sometimes splits them (e.g. "B.No:" then "GP2409A" on
-  the next line). Treat such adjacent lines as belonging together.
+Using the medicine information you extracted, provide a simple explanation
+for an ordinary patient.
 
-- Do not confuse manufacturing licence numbers such as
-  "Mfg. Lic. No.", "Lic. No.", or values like "MNB/06/291"
-  with the medicine batch number.
+Include:
 
-- Batch numbers are usually associated with labels such as:
-  "B.NO", "B. NO.", "BATCH", "BATCH NO", or "LOT".
+What is this medicine?
+Uses
+How to take it
+Common Side Effects
+Important Precautions
+Storage
+Important Note
 
-- Manufacturing dates are usually associated with:
-  "MFG", "MFD", "MFG DATE", or "MANUFACTURED".
-
-- Expiry dates are usually associated with:
-  "EXP", "EXPIRY", or "EXP DATE".
-
-- If there is insufficient OCR evidence for any field,
-  return an empty string.
-
-OCR TEXT (highest-confidence lines appear first)
-
-The OCR may contain:
-
-- spelling mistakes
-- broken words
-- words split across multiple lines
-- duplicated text
-- rotated text
-- incomplete manufacturer names
-
-Use ALL OCR lines together before deciding that information is missing.
-
-OCR TEXT:
-
-{combined_text}
-
-The first lines are the most reliable OCR results.
-Lower lines may still contain useful missing information.
-Use all available OCR evidence before deciding a field is missing.
-
-Extract as many fields as possible.
-
-If one field is missing, continue extracting the remaining fields.
-
-Do not leave every field empty simply because one field cannot be determined.
-
-Return ONLY valid JSON.
-
-{{
-    "medicine":"",
-    "manufacturer":"",
-    "generic_name":"",
-    "strength":"",
-    "composition":"",
-    "batch_number":"",
-    "manufacturing_date":"",
-    "expiry_date":"",
-    "dosage":"",
-    "storage":"",
-    "warnings":"",
-    "pack_size":""
-}}
-"""
-
-    try:
-        response = client.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=prompt,
-                config={
-                    "temperature": 0,
-                    "max_output_tokens": 2048,
-                    "response_mime_type": "application/json",
-                    "thinking_config": {"thinking_budget": 0}
-                }
-        )
-        raw = response.candidates[0].content.parts[0].text.strip()
-
-        if not raw:
-            raise ValueError("Gemini returned an empty response.")
-
-        if raw.startswith("```"):
-            raw = raw.replace("```json", "").replace("```", "").strip()
-
-        return json.loads(raw)
-
-    except json.JSONDecodeError:
-        print("Gemini returned invalid JSON. Using general fallback extractor.")
-        return extract_medicine_info_fallback(cleaned_data, ranked_data)
-
-    except Exception as e:
-        print(f"Gemini medicine extraction error: {e}")
-        print("Using general fallback extractor.")
-        return extract_medicine_info_fallback(cleaned_data, ranked_data)
-
-
-def get_ai_explanation(medicine_info):
-    """Feature 3: AI Medicine Explanation"""
-    
-    medicine_name = medicine_info.get("medicine")
-    if not medicine_name:
-        return (
-            "Medicine name could not be detected from the uploaded image. "
-            "AI explanation is unavailable."
-        )
-
-    prompt = f"""
-You are an experienced pharmacist.
-
-Explain the medicine "{medicine_name}" in simple language that an ordinary patient can understand.
-
-Return the explanation in the following format:
-
-## What is this medicine?
-Explain what this medicine is.
-
-## Uses
-Mention what diseases or conditions it is commonly used to treat.
-
-## How to take it
-Explain generally how medicines of this type are usually taken.
 Do NOT prescribe an exact dosage.
-Mention that patients should always follow the doctor's prescription or the instructions on the medicine strip.
 
-## Common Side Effects
-Mention common side effects in bullet points.
+Tell the patient to follow their doctor's prescription or the instructions
+on the medicine package.
 
-## Important Precautions
-Mention important precautions like:
+Mention important precautions such as:
 - Pregnancy
 - Alcohol
 - Driving
@@ -211,41 +110,140 @@ Mention important precautions like:
 - Allergies
 - Drug interactions
 
-## Storage
-Explain how to store the medicine.
+Use simple English.
 
-## Important Note
-End with:
+Minimum 100 words.
+Maximum 300 words.
+
+End the explanation with:
 
 "This information is for educational purposes only. Always consult your doctor or pharmacist before starting or stopping any medicine."
 
-Use simple English.
-Minimum 100 words.
-Maximum 350 words.
+Do not use # symbols.
 
-if you can explain the medicine in a way that is easy for an ordinary patient to understand, do so. If you cannot find enough information about this medicine, explain that the information is limited and provide general advice about consulting a doctor or pharmacist.
+IMPORTANT:
+Base the explanation on the medicine information extracted from the OCR.
+Do not invent medicine-specific information when the medicine identity is
+uncertain.
 
-Don't use any # symbols in the explanation use italic formatting instead.
-Return plain text only.
+OCR TEXT:
+
+{combined_text}
+
+Return ONLY valid JSON in exactly this structure:
+
+{{
+    "medicine": {{
+        "medicine_name": "",
+        "manufacturer": "",
+        "generic_name": "",
+        "strength": "",
+        "composition": "",
+        "batch_number": "",
+        "manufacturing_date": "",
+        "expiry_date": "",
+        "dosage": "",
+        "storage": "",
+        "warnings": "",
+        "pack_size": ""
+    }},
+    "explanation": ""
+}}
 """
 
     try:
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-3.5-flash",
             contents=prompt,
             config={
-                "temperature": 0.4,
-                "max_output_tokens": 900,
-                "thinking_config": {"thinking_budget": 0}
+                "temperature": 0,
+                "max_output_tokens": 1400,
+                "response_mime_type": "application/json",
+                "thinking_config": {
+                    "thinking_budget": 0
+                }
             }
         )
 
-        return response.text.strip()
+        raw = response.text.strip()
 
-    except Exception as e:
-        print(f"Gemini explanation error: {e}")
+        if not raw:
+            raise ValueError("Gemini returned an empty response.")
+
+        # Remove markdown code fences if Gemini adds them
+        if raw.startswith("```"):
+            raw = (
+                raw
+                .replace("```json", "")
+                .replace("```", "")
+                .strip()
+            )
+
+        # --------------------------------------------------
+        # JSON PARSING
+        # --------------------------------------------------
+
+        try:
+            result = json.loads(raw)
+
+        except json.JSONDecodeError:
+
+            # Gemini may occasionally return additional text
+            # before or after the JSON object.
+            start = raw.find("{")
+            end = raw.rfind("}")
+
+            if start == -1 or end == -1 or end <= start:
+                raise
+
+            json_text = raw[start:end + 1]
+
+            result = json.loads(json_text)
+
+        # --------------------------------------------------
+        # EXTRACT MEDICINE INFORMATION + EXPLANATION
+        # --------------------------------------------------
+
+        medicine_info = result.get("medicine", {})
+        explanation = result.get("explanation", "")
+
+        # Make sure the expected medicine object exists
+        if not isinstance(medicine_info, dict):
+            raise ValueError(
+                "Gemini returned an invalid medicine object."
+            )
+
+        # Make sure explanation is a string
+        if not isinstance(explanation, str):
+            explanation = ""
+
+        return medicine_info, explanation
+
+    except json.JSONDecodeError:
+        print(
+            "Gemini returned invalid JSON. "
+            "Using general fallback extractor."
+        )
+
+        medicine_info = extract_medicine_info_fallback(
+            cleaned_data,
+            ranked_data
+        )
 
         return (
-            "AI explanation is temporarily unavailable because the AI service "
-            "quota or request limit has been reached. Please try again later."
+            medicine_info,
+            "AI explanation is temporarily unavailable."
+        )
+
+    except Exception:
+        traceback.print_exc()
+
+        medicine_info = extract_medicine_info_fallback(
+            cleaned_data,
+            ranked_data
+        )
+
+        return (
+            medicine_info,
+            "AI explanation is temporarily unavailable."
         )

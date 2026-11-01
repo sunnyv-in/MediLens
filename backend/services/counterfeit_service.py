@@ -60,7 +60,7 @@ def analyze_counterfeit_risk(medicine_info):
     risk_score = 100
     checks = []
 
-    medicine = medicine_info.get("medicine", "").strip()
+    medicine = medicine_info.get("medicine_name", "").strip()
     manufacturer = medicine_info.get("manufacturer", "").strip()
     strength = medicine_info.get("strength", "").strip()
     batch = medicine_info.get("batch_number", "").strip()

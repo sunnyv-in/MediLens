@@ -1,0 +1,535 @@
+/* ================================================================
+   ABOUT PAGE — MediLens
+   Identity: "Scan → Signal". The hero shows what the product does —
+   messy label text resolving into clean structured data — instead
+   of just describing it. Teal = scan/precision, Violet = AI layer.
+   Everything is scoped under .about-page so nothing leaks into
+   shared components (.result-card / .info-row look reused elsewhere).
+   ================================================================ */
+
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+.about-page {
+  --ink: #0a0e1a;
+  --paper: #f6f8fb;
+  --scan: #14b8a6;
+  --ai: #6c5ce7;
+  --ember: #e8590c;
+  --mist: #e7ecf3;
+  --slate: #56637a;
+
+  --font-display: "Space Grotesk", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+}
+
+/* ================= HERO ================= */
+
+.about-page .hero-section {
+  position: relative;
+  overflow: hidden;
+  padding: 100px 24px 90px;
+  background:
+    radial-gradient(
+        circle at 1px 1px,
+        rgba(10, 14, 26, 0.06) 1px,
+        transparent 0
+      )
+      0 0/28px 28px,
+    linear-gradient(180deg, #eff3fa 0%, var(--paper) 60%);
+}
+
+.about-page .hero-section::after {
+  content: "";
+  position: absolute;
+  inset: -20% -10% auto -10%;
+  height: 340px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(20, 184, 166, 0.14),
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.about-page .hero-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 1180px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 56px;
+  align-items: center;
+  text-align: left;
+}
+
+.about-page .hero-content {
+  max-width: 620px;
+}
+
+.about-page .hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(20, 184, 166, 0.1);
+  border: 1px solid rgba(20, 184, 166, 0.35);
+  color: #0e7c6f;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 8px 16px 8px 12px;
+  border-radius: 999px;
+  margin-bottom: 28px;
+}
+
+.about-page .hero-badge::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--scan);
+  animation: pulseDot 2.2s ease-out infinite;
+}
+
+@keyframes pulseDot {
+  0% {
+    box-shadow: 0 0 0 0 rgba(20, 184, 166, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(20, 184, 166, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(20, 184, 166, 0);
+  }
+}
+
+.about-page .hero-section h1 {
+  font-family: var(--font-display);
+  font-size: 3.4rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin-bottom: 22px;
+  line-height: 1.12;
+}
+
+.about-page .hero-section h1 span {
+  background: linear-gradient(100deg, var(--scan) 0%, var(--ai) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.about-page .hero-section p {
+  font-size: 1.1rem;
+  color: var(--slate);
+  line-height: 1.8;
+  max-width: 520px;
+  margin: 0;
+}
+
+/* ---- Hero signature: scan panel ---- */
+
+.about-page .scan-panel {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.about-page .scan-panel__frame {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  min-height: 220px;
+  background: var(--ink);
+  border-radius: 14px;
+  padding: 26px 24px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px -20px rgba(10, 14, 26, 0.45);
+}
+
+.about-page .scan-panel__corner {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(20, 184, 166, 0.9);
+  opacity: 0.85;
+}
+.about-page .scan-panel__corner--tl {
+  top: 10px;
+  left: 10px;
+  border-right: none;
+  border-bottom: none;
+}
+.about-page .scan-panel__corner--tr {
+  top: 10px;
+  right: 10px;
+  border-left: none;
+  border-bottom: none;
+}
+.about-page .scan-panel__corner--bl {
+  bottom: 10px;
+  left: 10px;
+  border-right: none;
+  border-top: none;
+}
+.about-page .scan-panel__corner--br {
+  bottom: 10px;
+  right: 10px;
+  border-left: none;
+  border-top: none;
+}
+
+.about-page .scan-panel__stage {
+  display: grid;
+}
+.about-page .scan-panel__raw,
+.about-page .scan-panel__clean {
+  grid-area: 1 / 1;
+}
+
+.about-page .scan-panel__raw {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.9;
+  color: rgba(255, 255, 255, 0.55);
+  animation: rawFade 6s ease-in-out infinite;
+}
+
+.about-page .scan-panel__clean {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: cleanFade 6s ease-in-out infinite;
+}
+
+.about-page .scan-panel__row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 8px;
+}
+
+.about-page .scan-panel__row span {
+  font-family: var(--font-mono);
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+}
+
+.about-page .scan-panel__row strong {
+  color: #fff;
+  font-weight: 500;
+}
+.about-page .scan-panel__row--safe strong {
+  color: var(--scan);
+}
+
+.about-page .scan-panel__line {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--scan), transparent);
+  box-shadow: 0 0 12px 2px rgba(20, 184, 166, 0.7);
+  animation: sweep 3s linear infinite;
+}
+
+.about-page .scan-panel__tag {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--slate);
+}
+
+@keyframes rawFade {
+  0%,
+  20% {
+    opacity: 1;
+  }
+  35%,
+  80% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes cleanFade {
+  0%,
+  20% {
+    opacity: 0;
+  }
+  35%,
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes sweep {
+  0% {
+    top: 6%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    top: 94%;
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-page .hero-badge::before,
+  .about-page .scan-panel__line {
+    animation: none;
+  }
+  .about-page .scan-panel__raw {
+    animation: none;
+    opacity: 0;
+  }
+  .about-page .scan-panel__clean {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* ================= CONTENT ================= */
+
+.about-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px 80px;
+}
+
+.about-page .result-card {
+  position: relative;
+  margin-bottom: 28px;
+  padding: 40px 36px;
+  background: #fff;
+  border: 1px solid var(--mist);
+  border-radius: 16px;
+}
+
+.about-page .result-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 36px;
+  width: 44px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--scan), var(--ai));
+  border-radius: 0 0 3px 3px;
+}
+
+.about-page h2 {
+  font-family: var(--font-display);
+  text-align: left;
+  margin-bottom: 24px;
+  color: var(--ink);
+  font-size: 1.7rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* ================= PARAGRAPHS ================= */
+
+.about-page .result-card p {
+  color: var(--slate);
+  line-height: 1.85;
+  font-size: 1.03rem;
+}
+
+/* ================= LISTS ================= */
+
+.about-page .result-card ul {
+  margin-top: 18px;
+  padding-left: 0;
+  list-style: none;
+}
+
+.about-page .result-card ul li {
+  position: relative;
+  margin-bottom: 14px;
+  padding-left: 26px;
+  color: var(--slate);
+  line-height: 1.7;
+}
+
+.about-page .result-card ul li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 8px;
+  height: 8px;
+  background: var(--scan);
+  border-radius: 2px;
+}
+
+/* "How MediLens Works" is a real pipeline — numbering earns its place here */
+
+.about-page .result-card ol {
+  margin-top: 18px;
+  padding-left: 0;
+  list-style: none;
+  counter-reset: stage;
+}
+
+.about-page .result-card ol li {
+  counter-increment: stage;
+  position: relative;
+  margin-bottom: 18px;
+  padding: 4px 0 4px 88px;
+  min-height: 32px;
+  color: var(--ink);
+  line-height: 1.7;
+  font-weight: 500;
+}
+
+.about-page .result-card ol li::before {
+  content: "STAGE " counter(stage, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 2px;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  color: #fff;
+  background: var(--ink);
+  padding: 4px 8px;
+  border-radius: 5px;
+}
+
+/* ================= INFO TABLE (features / stack / team) ================= */
+
+.about-page .info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  transition: 0.25s ease;
+}
+
+.about-page .info-row:hover {
+  background: var(--mist);
+}
+
+.about-page .info-row span {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--slate);
+  white-space: nowrap;
+}
+
+.about-page .info-row strong {
+  color: var(--ink);
+  font-weight: 500;
+  text-align: right;
+}
+
+/* ================= DISCLAIMER ================= */
+
+.about-page .analysis-note {
+  margin-top: 40px;
+  padding: 28px 32px;
+  border-radius: 14px;
+  border: 1px solid rgba(232, 89, 12, 0.25);
+  border-left: 4px solid var(--ember);
+  background: #fff6f0;
+}
+
+.about-page .analysis-note strong {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ember);
+  margin-bottom: 12px;
+}
+
+.about-page .analysis-note strong::before {
+  content: "⚠";
+  font-size: 0.9rem;
+}
+
+.about-page .analysis-note p {
+  color: var(--slate);
+  line-height: 1.8;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 900px) {
+  .about-page .hero-inner {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  .about-page .hero-content {
+    max-width: 620px;
+    margin: 0 auto;
+  }
+  .about-page .hero-section p {
+    margin: 0 auto;
+  }
+  .about-page .scan-panel {
+    margin-top: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-page .hero-section {
+    padding: 70px 18px 60px;
+  }
+  .about-page .hero-section h1 {
+    font-size: 2.25rem;
+  }
+  .about-page .hero-section p {
+    font-size: 1rem;
+  }
+  .about-page {
+    padding: 0 15px 50px;
+  }
+  .about-page h2 {
+    font-size: 1.4rem;
+  }
+  .about-page .result-card {
+    padding: 28px 22px;
+  }
+  .about-page .result-card::before {
+    left: 22px;
+  }
+  .about-page .info-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .about-page .info-row strong {
+    text-align: left;
+  }
+}

@@ -1,0 +1,137 @@
+/* ==========================
+   GOOGLE FONT
+========================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap");
+
+/* ==========================
+   RESET
+========================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ==========================
+   ROOT COLORS — "Scan → Signal" identity
+   --primary now points at teal instead of blue, so any page
+   already using var(--primary)/var(--secondary)/etc. picks up
+   the refresh automatically without needing its own edits.
+========================== */
+
+:root {
+  --primary: #14b8a6;
+  --primary-light: #2dd4bf;
+  --primary-dark: #0e7c6f;
+
+  --accent-ai: #6c5ce7;
+
+  --secondary: #56637a;
+
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+
+  --dark: #0a0e1a;
+  --light: #f6f8fb;
+  --white: #ffffff;
+
+  --border: #e7ecf3;
+  --shadow: 0 8px 30px rgba(10, 14, 26, 0.08);
+
+  --font-display: "Space Grotesk", "Poppins", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+/* ==========================
+   BODY
+========================== */
+
+body {
+  font-family: "Poppins", sans-serif;
+  background: var(--light);
+  color: var(--dark);
+  overflow-x: hidden;
+}
+
+/* ==========================
+   CONTAINER
+========================== */
+
+.container {
+  width: min(1200px, 92%);
+  margin: auto;
+}
+
+/* ==========================
+   LINKS
+========================== */
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ==========================
+   BUTTONS
+========================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 30px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--primary-light);
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background: white;
+  color: var(--primary);
+  border: 2px solid var(--primary);
+}
+
+.btn-secondary:hover {
+  background: var(--primary);
+  color: white;
+}
+
+/* ==========================
+   SECTION
+========================== */
+
+section {
+  padding: 90px 0;
+}
+
+section h2 {
+  font-size: 38px;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+/* ==========================
+   CARDS
+========================== */
+
+.card {
+  background: white;
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+}

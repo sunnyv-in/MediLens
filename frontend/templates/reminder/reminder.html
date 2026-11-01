@@ -1,0 +1,147 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Medicine Reminders{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Medicine Reminders</h1>
+        <p>Schedule reminders for your medicines.</p>
+    </div>
+</div>
+
+<div class="form-card">
+    <h2>Add Reminder</h2>
+
+    <form action="{{ url_for('reminder.add_new_reminder') }}" method="POST">
+        <label for="medicine_id">Medicine</label>
+        <select id="medicine_id" name="medicine_id" required>
+            {% for medicine in medicines %}
+            <option value="{{ medicine.id }}">
+                {{ medicine.medicine_name }}
+            </option>
+            {% endfor %}
+        </select>
+
+        <label for="reminder_time">Reminder Time</label>
+        <input id="reminder_time" type="time" name="reminder_time" required>
+
+        <label for="frequency">Frequency</label>
+        <select id="frequency" name="frequency">
+            <option value="Daily">Daily</option>
+            <option value="Twice Daily">Twice Daily</option>
+            <option value="Weekly">Weekly</option>
+            <option value="Monthly">Monthly</option>
+        </select>
+
+        <label for="instructions">Instructions</label>
+        <textarea id="instructions" name="instructions" placeholder="Take after food..."></textarea>
+
+        <label for="add_lead_minutes">Remind me before the scheduled time</label>
+        <select id="add_lead_minutes" name="lead_minutes">
+            <option value="0">At scheduled time</option>
+            <option value="10">10 minutes before</option>
+            <option value="15">15 minutes before</option>
+            <option value="30" selected>30 minutes before</option>
+            <option value="60">1 hour before</option>
+        </select>
+
+        <label for="add_repeat_minutes">Repeat reminder every</label>
+        <select id="add_repeat_minutes" name="repeat_minutes">
+            <option value="5" selected>5 minutes</option>
+            <option value="10">10 minutes</option>
+            <option value="15">15 minutes</option>
+            <option value="30">30 minutes</option>
+        </select>
+
+        <button class="btn" type="submit">Add Reminder</button>
+    </form>
+</div>
+
+<br>
+
+<h2>Current Reminders</h2>
+
+{% if reminders %}
+<div class="reminder-grid">
+    {% for reminder in reminders %}
+    <div class="reminder-card">
+        <h3>{{ reminder.medicine.medicine_name }}</h3>
+
+        <p>
+            <strong>Time</strong><br>
+            {{ reminder.reminder_time }}
+        </p>
+
+        <p>
+            <strong>Frequency</strong><br>
+            {{ reminder.frequency }}
+        </p>
+
+        <p>
+            <strong>Status</strong><br>
+            {% if reminder.is_active %}
+            Active
+            {% else %}
+            Disabled
+            {% endif %}
+        </p>
+
+        <p>
+            <strong>Instructions</strong><br>
+            {{ reminder.instructions or "No instructions added." }}
+        </p>
+
+        <form action="{{ url_for('reminder.update_reminder_settings', reminder_id=reminder.id) }}" method="POST">
+            <label for="lead_minutes_{{ reminder.id }}">
+                Remind me before the scheduled time
+            </label>
+            <select id="lead_minutes_{{ reminder.id }}" name="lead_minutes">
+                <option value="0">At scheduled time</option>
+                <option value="10">10 minutes before</option>
+                <option value="15">15 minutes before</option>
+                <option value="30" selected>30 minutes before</option>
+                <option value="60">1 hour before</option>
+            </select>
+
+            <label for="repeat_minutes_{{ reminder.id }}">
+                Repeat reminder every
+            </label>
+            <select id="repeat_minutes_{{ reminder.id }}" name="repeat_minutes">
+                <option value="5" selected>5 minutes</option>
+                <option value="10">10 minutes</option>
+                <option value="15">15 minutes</option>
+                <option value="30">30 minutes</option>
+            </select>
+
+            <button type="submit">Save reminder settings</button>
+        </form>
+
+        <div class="card-actions">
+            <a href="{{ url_for('reminder.edit_reminder', reminder_id=reminder.id) }}">
+                Edit
+            </a>
+
+            <form action="{{ url_for('reminder.remove_reminder', reminder_id=reminder.id) }}" method="POST">
+                <button type="submit">Delete</button>
+            </form>
+
+            <form action="{{ url_for('reminder.toggle_reminder_status', reminder_id=reminder.id) }}" method="POST">
+                <button type="submit">
+                    {% if reminder.is_active %}
+                    Disable
+                    {% else %}
+                    Enable
+                    {% endif %}
+                </button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="medicine-card">
+    <h3>No reminders added yet.</h3>
+</div>
+{% endif %}
+{% endblock %}

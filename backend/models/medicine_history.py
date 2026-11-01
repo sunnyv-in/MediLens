@@ -4,36 +4,20 @@ from backend.extensions import db
 
 
 class MedicineHistory(db.Model):
-
     __tablename__ = "medicine_history"
 
-    id = db.Column(
-        db.Integer,
-        primary_key=True
-    )
+    id = db.Column(db.Integer, primary_key=True)
 
-    medicine_name = db.Column(
-        db.String(120),
-        nullable=False
-    )
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
+    guest_id = db.Column(db.String(36), nullable=True, index=True)
 
-    scan_time = db.Column(
-        db.DateTime,
-        default=datetime.utcnow
-    )
+    medicine_name = db.Column(db.String(120), nullable=False)
+    scan_time = db.Column(db.DateTime, default=datetime.utcnow)
 
-    expiry_date = db.Column(
-        db.String(30)
-    )
+    expiry_date = db.Column(db.String(30))
+    manufacturer = db.Column(db.String(120))
+    counterfeit_score = db.Column(db.Integer)
+    image_filename = db.Column(db.String(255))
 
-    manufacturer = db.Column(
-        db.String(120)
-    )
-
-    counterfeit_score = db.Column(
-        db.Integer
-    )
-
-    image_filename = db.Column(
-        db.String(255)
-    )
+    # Stores the complete OCR and analysis result as JSON.
+    scan_data = db.Column(db.JSON, nullable=True)

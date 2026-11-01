@@ -1,83 +1,191 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}
-Edit History
-{% endblock %}
+{% block title %}Edit Saved Scan | MediLens{% endblock %}
 
 {% block content %}
+{% set data = history.scan_data or {} %}
+{% set medicine_info = data.get("medicine_info", {}) %}
+{% set counterfeit = data.get("counterfeit_analysis", {}) %}
+{% set metadata = data.get("scan_metadata", {}) %}
+{% set ocr_items = data.get("ocr_text") %}
+{% set ranked_items = data.get("ranked_ocr") %}
 
-<div class="page-header">
+<section class="history-page">
+    <header class="history-heading">
+        <div>
+            <p class="eyebrow">YOUR HEALTH RECORDS</p>
+            <h1>Edit Saved Scan</h1>
+            <p class="history-subtitle">
+                Update the saved medicine details and review the scan information.
+            </p>
+        </div>
 
-<h1>
+        <a class="history-secondary-btn"
+            href="{{ url_for('medicine_history.history_details', history_id=history.id) }}">
+            Back to details
+        </a>
+    </header>
 
-Edit History
+    <div class="history-detail-grid">
+        <article class="history-detail-card">
+            <h2>Medicine details</h2>
 
-</h1>
+            <form class="history-edit-form" method="POST"
+                action="{{ url_for('medicine_history.edit_history', history_id=history.id) }}">
+                <label for="medicine_name">Medicine name</label>
+                <input id="medicine_name" name="medicine_name" type="text" value="{{ history.medicine_name or '' }}"
+                    required>
 
-<a
-href="{{ url_for('medicine_history.medicine_history') }}"
-class="btn">
+                <label for="manufacturer">Manufacturer</label>
+                <input id="manufacturer" name="manufacturer" type="text" value="{{ history.manufacturer or '' }}">
 
-Back
+                <label for="expiry_date">Expiry date</label>
+                <input id="expiry_date" name="expiry_date" type="text" value="{{ history.expiry_date or '' }}"
+                    placeholder="For example, 10/2027">
 
-</a>
+                <label for="counterfeit_score">Counterfeit score</label>
+                <input id="counterfeit_score" name="counterfeit_score" type="number"
+                    value="{{ history.counterfeit_score if history.counterfeit_score is not none else '' }}">
 
-</div>
+                <button class="history-primary-btn" type="submit">
+                    Save changes
+                </button>
+            </form>
+        </article>
 
-<form method="POST">
+        <article class="history-detail-card">
+            <h2>Medicine information</h2>
 
-<label>
+            {% if medicine_info %}
+            <dl class="history-detail-fields">
+                {% for key, value in medicine_info.items() %}
+                <div>
+                    <dt>{{ key|replace("_", " ")|title }}</dt>
+                    <dd>{{ value if value else "Not available" }}</dd>
+                </div>
+                {% endfor %}
+            </dl>
+            {% else %}
+            <p class="history-muted">
+                Medicine information was not saved for this scan.
+            </p>
+            {% endif %}
+        </article>
 
-Medicine Name
+        <article class="history-detail-card history-full-width">
+            <h2>AI explanation</h2>
+            <div class="history-long-text">
+                {{ data.get("ai_explanation") or "No AI explanation saved." }}
+            </div>
+        </article>
 
-</label>
+        <article class="history-detail-card history-full-width">
+            <h2>Counterfeit analysis</h2>
 
-<input
-type="text"
-name="medicine_name"
-value="{{ history.medicine_name }}">
+            {% if counterfeit %}
+            <dl class="history-detail-fields">
+                {% for key, value in counterfeit.items() %}
+                <div>
+                    <dt>{{ key|replace("_", " ")|title }}</dt>
+                    <dd>{{ value if value is not none else "Not available" }}</dd>
+                </div>
+                {% endfor %}
+            </dl>
+            {% else %}
+            <p class="history-muted">
+                No counterfeit analysis was saved for this scan.
+            </p>
+            {% endif %}
+        </article>
 
-<label>
+        <article class="history-detail-card history-full-width">
+            <h2>Scan text and OCR results</h2>
 
-Manufacturer
+            <details class="history-collapsible">
+                <summary>Show OCR text</summary>
 
-</label>
+                <div class="history-ocr-text">
+                    {% if ocr_items is string %}
+                    {{ ocr_items }}
+                    {% elif ocr_items is sequence and ocr_items is not mapping %}
+                    {% for item in ocr_items %}
+                    {% if item is mapping %}
+                    {{ item.get("text", "") }}{% if not loop.last %} {% endif %}
+                    {% else %}
+                    {{ item }}{% if not loop.last %} {% endif %}
+                    {% endif %}
+                    {% endfor %}
+                    {% elif ocr_items %}
+                    {{ ocr_items }}
+                    {% else %}
+                    No OCR text was saved for this scan.
+                    {% endif %}
+                </div>
+            </details>
 
-<input
-type="text"
-name="manufacturer"
-value="{{ history.manufacturer }}">
+            <details class="history-collapsible">
+                <summary>Show ranked OCR results</summary>
 
-<label>
+                {% if ranked_items is sequence
+                and ranked_items is not string
+                and ranked_items is not mapping %}
+                <ol class="ranked-ocr-list">
+                    {% for item in ranked_items %}
+                    <li>
+                        {% if item is mapping %}
+                        <strong>{{ item.get("text", "No text") }}</strong>
 
-Expiry Date
+                        {% if item.get("confidence") is not none %}
+                        <span>
+                            Confidence:
+                            {{ "%.1f"|format(item.get("confidence") * 100) }}%
+                        </span>
+                        {% endif %}
 
-</label>
+                        {% if item.get("score") is not none %}
+                        <span>
+                            Score: {{ "%.2f"|format(item.get("score")) }}
+                        </span>
+                        {% endif %}
+                        {% else %}
+                        {{ item }}
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ol>
+                {% elif ranked_items %}
+                <div class="history-ocr-text">{{ ranked_items }}</div>
+                {% else %}
+                <p>No ranked OCR data was saved for this scan.</p>
+                {% endif %}
+            </details>
+        </article>
 
-<input
-type="text"
-name="expiry_date"
-value="{{ history.expiry_date }}">
+        <article class="history-detail-card history-full-width">
+            <h2>Scan metadata</h2>
 
-<label>
+            <dl class="history-detail-fields">
+                <div>
+                    <dt>Scanned at</dt>
+                    <dd>
+                        {{ history.scan_time.strftime("%d %b %Y, %I:%M %p")
+                        if history.scan_time else "Not available" }}
+                    </dd>
+                </div>
 
-Counterfeit Score
+                <div>
+                    <dt>Image filename</dt>
+                    <dd>{{ history.image_filename or "Not available" }}</dd>
+                </div>
 
-</label>
-
-<input
-type="number"
-name="counterfeit_score"
-value="{{ history.counterfeit_score }}">
-
-<button
-class="btn"
-type="submit">
-
-Update History
-
-</button>
-
-</form>
-
+                {% for key, value in metadata.items() %}
+                <div>
+                    <dt>{{ key|replace("_", " ")|title }}</dt>
+                    <dd>{{ value if value else "Not available" }}</dd>
+                </div>
+                {% endfor %}
+            </dl>
+        </article>
+    </div>
+</section>
 {% endblock %}

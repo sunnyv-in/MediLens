@@ -5,6 +5,7 @@ from backend.services.emergency_service import get_active_interaction_warnings
 from backend.models.medicine import Medicine
 from backend.models.reminder import MedicationReminder
 from backend.services.reminder_service import reminder_status
+from backend.services.medicine_service import get_all_medicines
 
 home_bp = Blueprint("home", __name__)
 
@@ -12,7 +13,7 @@ home_bp = Blueprint("home", __name__)
 @home_bp.route("/")
 def home():
 
-    medicines = Medicine.query.all()
+    medicines = get_all_medicines()
 
     expiring_soon_count = 0
     expired_count = 0
@@ -36,7 +37,7 @@ def home():
         "expired": expired_count,
         "active_reminders": len(reminders),
         "due_now": due_count,
-        "interaction_warnings": warning_count
+        "interaction_warnings": warning_count,
     }
 
-    return render_template("index.html", dashboard=dashboard)
+    return render_template("home/index.html", dashboard=dashboard)

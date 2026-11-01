@@ -1,115 +1,359 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}
-History Details
-{% endblock %}
+{% block title %}Medicine Scan Details | MediLens{% endblock %}
 
 {% block content %}
 
-<div class="page-header">
+{% set data = history.scan_data or {} %}
+{% set info = data.get("medicine_info", {}) %}
+{% set analysis = data.get("counterfeit_analysis", {}) %}
+{% set ocr_items = data.get("ocr_text") %}
+{% set ranked_items = data.get("ranked_ocr") %}
 
-<h1>
+<section class="history-page">
 
-History Details
+    <header class="history-heading">
+        <div>
+            <p class="eyebrow">SAVED MEDICINE SCAN</p>
 
-</h1>
+            <h1>{{ history.medicine_name or "Medicine details" }}</h1>
 
-<a
-href="{{ url_for('medicine_history.medicine_history') }}"
-class="btn">
+            <p class="history-subtitle">
+                Complete information captured during this scan.
+            </p>
+        </div>
 
-Back
+        <a class="history-secondary-btn" href="{{ url_for('medicine_history.medicine_history') }}">
+            Back to history
+        </a>
+    </header>
 
-</a>
+    <div class="history-detail-grid">
 
-</div>
+        <!-- Uploaded Medicine Image -->
 
-<div class="details-card">
+        <section class="history-detail-card">
+            <h2>Uploaded medicine image</h2>
 
-<div class="details-grid">
+            {% if history.image_filename %}
 
-<div class="detail-box">
+            <img class="history-scan-image" src="{{ url_for('scan.uploaded_file', filename=history.image_filename) }}"
+                alt="Uploaded medicine packaging">
 
-<h3>
+            {% else %}
 
-Medicine
+            <p class="history-muted">
+                No image was saved for this scan.
+            </p>
 
-</h3>
+            {% endif %}
+        </section>
 
-<p>
+        <!-- Medicine Information -->
 
-{{ history.medicine_name }}
+        <section class="history-detail-card">
+            <h2>Medicine information</h2>
 
-</p>
+            <dl class="history-detail-fields">
 
-</div>
+                {% for label, key in [
+                ("Medicine name", "medicine_name"),
+                ("Generic name", "generic_name"),
+                ("Strength", "strength"),
+                ("Composition", "composition"),
+                ("Manufacturer", "manufacturer"),
+                ("Batch number", "batch_number"),
+                ("Manufacturing date", "manufacturing_date"),
+                ("Expiry date", "expiry_date"),
+                ("Dosage", "dosage"),
+                ("Storage", "storage"),
+                ("Warnings", "warnings"),
+                ("Pack size", "pack_size")
+                ] %}
 
-<div class="detail-box">
+                <div>
+                    <dt>{{ label }}</dt>
 
-<h3>
+                    <dd>
+                        {{ info.get(key)
+                        or (
+                        history.manufacturer
+                        if key == "manufacturer"
+                        else history.expiry_date
+                        if key == "expiry_date"
+                        else "Not available"
+                        ) }}
+                    </dd>
+                </div>
 
-Manufacturer
+                {% endfor %}
 
-</h3>
+            </dl>
+        </section>
 
-<p>
+        <!-- Gemini AI Explanation -->
 
-{{ history.manufacturer }}
+        <section class="history-detail-card history-full-width">
+            <h2>Gemini AI explanation</h2>
 
-</p>
+            <div class="history-long-text">
+                {{ data.get("ai_explanation") or "No explanation was saved." }}
+            </div>
+        </section>
 
-</div>
+        <!-- Counterfeit Risk Analysis -->
 
-<div class="detail-box">
+        <section class="history-detail-card history-full-width">
+            <h2>Counterfeit risk analysis</h2>
 
-<h3>
+            <div class="history-risk-grid">
 
-Expiry
+                <div>
+                    <span>Risk score</span>
 
-</h3>
+                    <strong>
+                        {{ analysis.get(
+                        "risk_score",
+                        history.counterfeit_score
+                        if history.counterfeit_score is not none
+                        else "Not available"
+                        ) }}
 
-<p>
+                        {% if analysis.get("risk_score") is not none %}
+                        %
+                        {% endif %}
+                    </strong>
+                </div>
 
-{{ history.expiry_date }}
+                <div>
+                    <span>Risk level</span>
 
-</p>
+                    <strong>
+                        {{ analysis.get("risk_level") or "Not available" }}
+                    </strong>
+                </div>
 
-</div>
+                <div>
+                    <span>Confidence</span>
 
-<div class="detail-box">
+                    <strong>
+                        {{ analysis.get("assessment_confidence") or "Not available" }}
+                    </strong>
+                </div>
 
-<h3>
+            </div>
 
-Counterfeit Score
+            <h3>Packaging validation</h3>
 
-</h3>
+            {% if analysis.get("checks") %}
 
-<p>
+            <ul class="history-checks">
+                {% for check in analysis.get("checks") %}
+                <li>{{ check }}</li>
+                {% endfor %}
+            </ul>
 
-{{ history.counterfeit_score }}
+            {% else %}
 
-</p>
+            <p class="history-muted">
+                No packaging validation checks were saved.
+            </p>
 
-</div>
+            {% endif %}
 
-<div class="detail-box">
+            {% if analysis.get("note") %}
 
-<h3>
+            <div class="history-analysis-note">
+                <strong>Important note</strong>
+                <p>{{ analysis.get("note") }}</p>
+            </div>
 
-Scan Time
+            {% endif %}
 
-</h3>
+        </section>
 
-<p>
+        <!-- OCR Results -->
 
-{{ history.scan_time }}
+        <section class="history-detail-card history-full-width">
+            <h2>Scan text and OCR results</h2>
 
-</p>
+            <details class="history-collapsible">
+                <summary>Show OCR text</summary>
 
-</div>
+                <div class="history-ocr-text">
 
-</div>
+                    {% if ocr_items is string %}
 
-</div>
+                    {{ ocr_items }}
+
+                    {% elif ocr_items is sequence and ocr_items is not mapping %}
+
+                    {% for item in ocr_items %}
+
+                    {% if item is mapping %}
+                    {{ item.get("text", "") }}
+                    {% else %}
+                    {{ item }}
+                    {% endif %}
+
+                    {% if not loop.last %} {% endif %}
+
+                    {% endfor %}
+
+                    {% elif ocr_items %}
+
+                    {{ ocr_items }}
+
+                    {% else %}
+
+                    No OCR text was saved for this scan.
+
+                    {% endif %}
+
+                </div>
+            </details>
+
+            <details class="history-collapsible">
+                <summary>Show ranked OCR results</summary>
+
+                {% if ranked_items is sequence
+                and ranked_items is not string
+                and ranked_items is not mapping %}
+
+                <ol class="ranked-ocr-list">
+
+                    {% for item in ranked_items %}
+
+                    <li>
+
+                        {% if item is mapping %}
+
+                        <strong>
+                            {{ item.get("text", "No text") }}
+                        </strong>
+
+                        {% if item.get("confidence") is not none %}
+
+                        <span>
+                            Confidence:
+                            {{ "%.1f"|format(item.get("confidence") * 100) }}%
+                        </span>
+
+                        {% endif %}
+
+                        {% if item.get("score") is not none %}
+
+                        <span>
+                            Score:
+                            {{ "%.2f"|format(item.get("score")) }}
+                        </span>
+
+                        {% endif %}
+
+                        {% else %}
+
+                        {{ item }}
+
+                        {% endif %}
+
+                    </li>
+
+                    {% endfor %}
+
+                </ol>
+
+                {% elif ranked_items %}
+
+                <div class="history-ocr-text">
+                    {{ ranked_items }}
+                </div>
+
+                {% else %}
+
+                <p>No ranked OCR data was saved for this scan.</p>
+
+                {% endif %}
+
+            </details>
+        </section>
+
+        <!-- Email Scan Details -->
+
+        <section class="history-detail-card history-full-width">
+
+            <h2>Email Scan Details</h2>
+
+            <p class="history-muted">
+                Send the medicine information, scan details, and uploaded
+                image to your email or another recipient.
+            </p>
+
+            <form method="POST" action="{{ url_for('medicine_history.email_history', history_id=history.id) }}">
+
+                <label for="recipient_email">
+                    Recipient email address
+                </label>
+
+                <input id="recipient_email" name="recipient_email" type="email"
+                    value="{{ current_user.email if current_user.is_authenticated else '' }}"
+                    placeholder="Enter recipient email" required>
+
+                <button type="submit" class="history-primary-btn">
+                    Email scan details and image
+                </button>
+
+            </form>
+
+        </section>
+
+        <!-- Scan Metadata -->
+
+        <section class="history-detail-card history-full-width">
+
+            <h2>Scan metadata</h2>
+
+            <dl class="history-detail-fields">
+
+                <div>
+                    <dt>Scanned at</dt>
+
+                    <dd>
+                        {{ history.scan_time.strftime("%d %b %Y, %I:%M %p")
+                        if history.scan_time else "Not available" }}
+                    </dd>
+                </div>
+
+                <div>
+                    <dt>Image filename</dt>
+
+                    <dd>
+                        {{ history.image_filename or "Not available" }}
+                    </dd>
+                </div>
+
+            </dl>
+
+        </section>
+
+    </div>
+
+    <!-- Record Actions -->
+
+    <div class="history-detail-actions">
+
+        <a class="history-primary-btn" href="{{ url_for('medicine_history.edit_history', history_id=history.id) }}">
+            Edit record
+        </a>
+
+        <form method="POST" action="{{ url_for('medicine_history.remove_history', history_id=history.id) }}"
+            onsubmit="return confirm('Delete this scan from History?');">
+            <button class="history-danger-btn" type="submit">
+                Delete record
+            </button>
+        </form>
+
+    </div>
+
+</section>
 
 {% endblock %}
