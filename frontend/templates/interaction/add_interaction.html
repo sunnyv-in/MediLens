@@ -1,0 +1,71 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}
+Add Drug Interaction
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+<h1>Add Drug Interaction</h1>
+
+<a
+href="{{ url_for('drug_interaction.interaction_list') }}"
+class="btn">
+
+Back
+
+</a>
+
+</div>
+
+<form method="POST">
+
+<label>Medicine One</label>
+
+<input
+type="text"
+name="drug_one"
+required>
+
+<label>Medicine Two</label>
+
+<input
+type="text"
+name="drug_two"
+required>
+
+<label>Severity</label>
+
+<select name="severity">
+
+<option>Low</option>
+
+<option>Moderate</option>
+
+<option>High</option>
+
+</select>
+
+<label>Description</label>
+
+<textarea
+name="description"></textarea>
+
+<label>Recommendation</label>
+
+<textarea
+name="recommendation"></textarea>
+
+<button
+class="btn"
+type="submit">
+
+Save Interaction
+
+</button>
+
+</form>
+
+{% endblock %}

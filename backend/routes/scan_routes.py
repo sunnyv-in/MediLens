@@ -1,6 +1,6 @@
 import os
 import time
-
+from backend.services.medicine_service import save_medicine
 from flask import (
     Blueprint,
     render_template,
@@ -11,24 +11,24 @@ from flask import (
 
 from werkzeug.utils import secure_filename
 
-from services.image_processor import process_image
+from backend.services.image_processor import process_image
 
-from services.ocr_service import (
+from backend.services.ocr_service import (
     extract_text,
     clean_ocr_text,
     rank_ocr_lines
 )
 
-from services.gemini_service import (
+from backend.services.gemini_service import (
     extract_medicine_info_ai,
     get_ai_explanation
 )
 
-from services.counterfeit_service import (
+from backend.services.counterfeit_service import (
     analyze_counterfeit_risk
 )
 
-from services.medicine_record_service import (
+from backend.services.medicine_record_service import (
     build_medicine_record
 )
 
@@ -88,6 +88,18 @@ def scan():
         print("\n========== STANDARD MEDICINE RECORD ==========")
         print(medicine_record)
         print("==============================================\n")
+        
+        db_record = {
+            "medicine_name": medicine_record["medicine_name"],
+            "strength": medicine_record["strength"],
+            "manufacturer": medicine_record["manufacturer"],
+            "batch_number": medicine_record["batch_number"],
+            "expiry_date": medicine_record["expiry_date"],
+            "counterfeit_score": medicine_record["counterfeit_analysis"].get("risk_score", 0),
+            "image_filename": medicine_record["scan_metadata"]["image_filename"]
+        }
+
+        saved_medicine = save_medicine(db_record)
 
         return render_template(
             "result.html",
@@ -107,6 +119,3 @@ def uploaded_file(filename):
         current_app.config["UPLOAD_FOLDER"],
         filename
     )
-
-
-

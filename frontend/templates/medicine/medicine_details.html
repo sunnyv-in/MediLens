@@ -1,0 +1,183 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}
+Medicine Details
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <h1>
+
+            {{ medicine.medicine_name }}
+
+        </h1>
+
+        <p>
+
+            Complete medicine information.
+
+        </p>
+
+    </div>
+
+    <div>
+
+        <a
+            href="{{ url_for('medicine_shelf.edit_medicine_page', medicine_id=medicine.id) }}"
+            class="btn">
+
+            Edit
+
+        </a>
+
+        <a
+            href="{{ url_for('medicine_shelf.medicine_shelf') }}"
+            class="btn">
+
+            Back
+
+        </a>
+
+    </div>
+
+</div>
+
+
+<div class="details-card">
+
+    <div class="details-grid">
+
+        <div class="detail-box">
+
+            <h3>Medicine Name</h3>
+
+            <p>{{ medicine.medicine_name }}</p>
+
+        </div>
+
+        <div class="detail-box">
+
+            <h3>Generic Name</h3>
+
+            <p>{{ medicine.generic_name or "-" }}</p>
+
+        </div>
+
+        <div class="detail-box">
+
+            <h3>Strength</h3>
+
+            <p>{{ medicine.strength or "-" }}</p>
+
+        </div>
+
+        <div class="detail-box">
+
+            <h3>Manufacturer</h3>
+
+            <p>{{ medicine.manufacturer or "-" }}</p>
+
+        </div>
+
+        <div class="detail-box">
+
+            <h3>Batch Number</h3>
+
+            <p>{{ medicine.batch_number or "-" }}</p>
+
+        </div>
+
+        <div class="detail-box">
+
+            <h3>Expiry Date</h3>
+
+            <p>{{ medicine.expiry_date or "-" }}</p>
+
+        </div>
+
+        <div class="detail-box">
+
+            <h3>Quantity</h3>
+
+            <p>{{ medicine.quantity }}</p>
+
+        </div>
+
+        <div class="detail-box">
+
+            <h3>Dosage</h3>
+
+            <p>{{ medicine.dosage or "-" }}</p>
+
+        </div>
+
+        <div class="detail-box">
+
+            <h3>Counterfeit Score</h3>
+
+            <p>{{ medicine.counterfeit_score }}</p>
+
+        </div>
+
+        <div class="detail-box">
+
+            <h3>Created</h3>
+
+            <p>{{ medicine.created_at }}</p>
+
+        </div>
+
+    </div>
+
+    <br>
+
+    <h3>
+
+        Uses
+
+    </h3>
+
+    <p>
+
+        {{ medicine.usage or "No information available." }}
+
+    </p>
+
+    <br>
+
+    <h3>
+
+        Side Effects
+
+    </h3>
+
+    <p>
+
+        {{ medicine.side_effects or "No information available." }}
+
+    </p>
+
+    <br>
+
+    <form
+        action="{{ url_for('medicine_shelf.remove_medicine', medicine_id=medicine.id) }}"
+        method="POST"
+        onsubmit="return confirmDelete()">
+
+        <button
+            class="delete-btn"
+            type="submit">
+
+            Delete Medicine
+
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

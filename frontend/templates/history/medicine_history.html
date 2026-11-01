@@ -1,0 +1,136 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}
+Medicine History
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <h1>Medicine History</h1>
+
+        <p>
+
+            View all scanned medicines.
+
+        </p>
+
+    </div>
+
+</div>
+
+{% if history %}
+
+<div class="medicine-grid">
+
+{% for item in history %}
+
+<div class="medicine-card">
+
+<h2>
+
+{{ item.medicine_name }}
+
+</h2>
+
+<p>
+
+<strong>Manufacturer</strong>
+
+<br>
+
+{{ item.manufacturer or "-" }}
+
+</p>
+
+<p>
+
+<strong>Expiry</strong>
+
+<br>
+
+{{ item.expiry_date or "-" }}
+
+</p>
+
+<p>
+
+<strong>Counterfeit Score</strong>
+
+<br>
+
+{{ item.counterfeit_score }}
+
+</p>
+
+<p>
+
+<strong>Scan Time</strong>
+
+<br>
+
+{{ item.scan_time }}
+
+</p>
+
+<div class="card-actions">
+
+<a
+href="{{ url_for('medicine_history.history_details', history_id=item.id) }}">
+
+View
+
+</a>
+
+<a
+href="{{ url_for('medicine_history.edit_history', history_id=item.id) }}">
+
+Edit
+
+</a>
+
+<form
+action="{{ url_for('medicine_history.remove_history', history_id=item.id) }}"
+method="POST"
+onsubmit="return confirmDelete()">
+
+<button type="submit">
+
+Delete
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="medicine-card">
+
+<h2>
+
+No History Available
+
+</h2>
+
+<p>
+
+No medicine scans have been saved yet.
+
+</p>
+
+</div>
+
+{% endif %}
+
+{% endblock %}

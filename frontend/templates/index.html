@@ -52,6 +52,54 @@ MediLens
 
 </section>
 
+<!-- ================= DASHBOARD SNAPSHOT ================= -->
+
+<section class="dashboard-widget">
+
+    <h2>Your Medicine Snapshot</h2>
+
+    <div class="dashboard-grid">
+
+        <div class="dash-card">
+            <i class="fa-solid fa-pills"></i>
+            <span class="dash-number">{{ dashboard.total_medicines }}</span>
+            <span class="dash-label">Medicines Tracked</span>
+        </div>
+
+        <div class="dash-card {% if dashboard.expiring_soon > 0 %}dash-warning{% endif %}">
+            <i class="fa-solid fa-hourglass-half"></i>
+            <span class="dash-number">{{ dashboard.expiring_soon }}</span>
+            <span class="dash-label">Expiring Soon</span>
+        </div>
+
+        <div class="dash-card {% if dashboard.expired > 0 %}dash-danger{% endif %}">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span class="dash-number">{{ dashboard.expired }}</span>
+            <span class="dash-label">Expired</span>
+        </div>
+
+        <div class="dash-card {% if dashboard.due_now > 0 %}dash-danger{% endif %}">
+            <i class="fa-solid fa-bell"></i>
+            <span class="dash-number">{{ dashboard.due_now }}</span>
+            <span class="dash-label">Reminders Due Now</span>
+        </div>
+
+        <div class="dash-card {% if dashboard.interaction_warnings > 0 %}dash-danger{% endif %}">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span class="dash-number">{{ dashboard.interaction_warnings }}</span>
+            <span class="dash-label">Interaction Warnings</span>
+        </div>
+
+    </div>
+
+    <div class="dashboard-actions">
+        <a href="{{ url_for('expiry.expiry_alerts') }}" class="primary-btn">View Expiry Alerts</a>
+        <a href="{{ url_for('reminder.reminders') }}" class="primary-btn">View Reminders</a>
+        <a href="{{ url_for('emergency.emergency_mode') }}" class="primary-btn">Emergency Mode</a>
+    </div>
+
+</section>
+
 <!-- ================= PIPELINE ================= -->
 
 <section class="pipeline">

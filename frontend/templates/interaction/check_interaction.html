@@ -1,0 +1,111 @@
+{% if result %}
+
+<div class="details-card">
+
+<h2>
+
+Interaction Found
+
+</h2>
+
+<div class="details-grid">
+
+<div class="detail-box">
+
+<h3>
+
+Medicine One
+
+</h3>
+
+<p>
+
+{{ result.drug_one }}
+
+</p>
+
+</div>
+
+<div class="detail-box">
+
+<h3>
+
+Medicine Two
+
+</h3>
+
+<p>
+
+{{ result.drug_two }}
+
+</p>
+
+</div>
+
+<div class="detail-box">
+
+<h3>
+
+Severity
+
+</h3>
+
+<p>
+
+{{ result.severity }}
+
+</p>
+
+</div>
+
+</div>
+
+<br>
+
+<h3>
+
+Description
+
+</h3>
+
+<p>
+
+{{ result.description }}
+
+</p>
+
+<br>
+
+<h3>
+
+Recommendation
+
+</h3>
+
+<p>
+
+{{ result.recommendation }}
+
+</p>
+
+</div>
+
+{% else %}
+
+<div class="medicine-card">
+
+<h2>
+
+No Interaction Found
+
+</h2>
+
+<p>
+
+The selected medicines have no known interaction in the current database.
+
+</p>
+
+</div>
+
+{% endif %}

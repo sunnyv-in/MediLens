@@ -1,0 +1,68 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}
+Edit Interaction
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+<h1>Edit Drug Interaction</h1>
+
+<a
+href="{{ url_for('drug_interaction.interaction_details', interaction_id=interaction.id) }}"
+class="btn">
+
+Back
+
+</a>
+
+</div>
+
+<form method="POST">
+
+<label>Medicine One</label>
+
+<input
+type="text"
+name="drug_one"
+value="{{ interaction.drug_one }}"
+required>
+
+<label>Medicine Two</label>
+
+<input
+type="text"
+name="drug_two"
+value="{{ interaction.drug_two }}"
+required>
+
+<label>Severity</label>
+
+<input
+type="text"
+name="severity"
+value="{{ interaction.severity }}">
+
+<label>Description</label>
+
+<textarea
+name="description">{{ interaction.description }}</textarea>
+
+<label>Recommendation</label>
+
+<textarea
+name="recommendation">{{ interaction.recommendation }}</textarea>
+
+<button
+class="btn"
+type="submit">
+
+Update Interaction
+
+</button>
+
+</form>
+
+{% endblock %}

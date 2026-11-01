@@ -2,7 +2,7 @@ import os
 import json
 from google import genai
 from dotenv import load_dotenv
-from services.fallback_extractor import extract_medicine_info_fallback
+from backend.services.fallback_extractor import extract_medicine_info_fallback
 
 load_dotenv()
 

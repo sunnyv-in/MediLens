@@ -1,0 +1,193 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}
+Edit Medicine
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <h1>Edit Medicine</h1>
+
+        <p>
+
+            Update medicine information.
+
+        </p>
+
+    </div>
+
+    <a
+        href="{{ url_for('medicine_shelf.medicine_details', medicine_id=medicine.id) }}"
+        class="btn">
+
+        ← Back
+
+    </a>
+
+</div>
+
+<form
+    action="{{ url_for('medicine_shelf.edit_medicine', medicine_id=medicine.id) }}"
+    method="POST">
+
+<div class="form-grid">
+
+<div>
+
+<label>
+
+Medicine Name
+
+</label>
+
+<input
+type="text"
+name="medicine_name"
+value="{{ medicine.medicine_name }}"
+required>
+
+</div>
+
+<div>
+
+<label>
+
+Generic Name
+
+</label>
+
+<input
+type="text"
+name="generic_name"
+value="{{ medicine.generic_name or '' }}">
+
+</div>
+
+<div>
+
+<label>
+
+Strength
+
+</label>
+
+<input
+type="text"
+name="strength"
+value="{{ medicine.strength or '' }}">
+
+</div>
+
+<div>
+
+<label>
+
+Manufacturer
+
+</label>
+
+<input
+type="text"
+name="manufacturer"
+value="{{ medicine.manufacturer or '' }}">
+
+</div>
+
+<div>
+
+<label>
+
+Batch Number
+
+</label>
+
+<input
+type="text"
+name="batch_number"
+value="{{ medicine.batch_number or '' }}">
+
+</div>
+
+<div>
+
+<label>
+
+Expiry Date
+
+</label>
+
+<input
+type="text"
+name="expiry_date"
+value="{{ medicine.expiry_date or '' }}">
+
+</div>
+
+<div>
+
+<label>
+
+Quantity
+
+</label>
+
+<input
+type="number"
+name="quantity"
+value="{{ medicine.quantity }}"
+min="1">
+
+</div>
+
+<div>
+
+<label>
+
+Dosage
+
+</label>
+
+<input
+type="text"
+name="dosage"
+value="{{ medicine.dosage or '' }}">
+
+</div>
+
+</div>
+
+<label>
+
+Uses
+
+</label>
+
+<textarea
+name="usage">{{ medicine.usage or '' }}</textarea>
+
+<label>
+
+Side Effects
+
+</label>
+
+<textarea
+name="side_effects">{{ medicine.side_effects or '' }}</textarea>
+
+<br>
+
+<button
+type="submit"
+class="btn">
+
+Update Medicine
+
+</button>
+
+</form>
+
+{% endblock %}
