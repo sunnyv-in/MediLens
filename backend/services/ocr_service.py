@@ -1,25 +1,25 @@
 import difflib
 import re
 import os
-import torch
 import subprocess
 import json
 
-USE_GPU = torch.cuda.is_available()
-
-print(f"EasyOCR GPU Enabled: {USE_GPU}")
-
 try:
-    reader = easyocr.Reader(
-        ['en'],
-        gpu=USE_GPU
-    )
-except Exception:
-    print("GPU unavailable. Using CPU.")
-    reader = easyocr.Reader(
-        ['en'],
-        gpu=False
-    )
+    import torch
+    import easyocr
+    USE_GPU = torch.cuda.is_available()
+    print(f"EasyOCR GPU Enabled: {USE_GPU}")
+    try:
+        reader = easyocr.Reader(['en'], gpu=USE_GPU)
+    except Exception:
+        print("GPU unavailable. Using CPU.")
+        reader = easyocr.Reader(['en'], gpu=False)
+except Exception as _ocr_init_err:
+    print(f"EasyOCR/Torch optional module notice: {_ocr_init_err}")
+    torch = None
+    easyocr = None
+    USE_GPU = False
+    reader = None
 
 CONFIDENCE_THRESHOLD = 0.30
 DEBUG = False
