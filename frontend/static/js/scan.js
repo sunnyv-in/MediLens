@@ -1,186 +1,270 @@
-// ======================================================
-// ELEMENTS
-// ======================================================
-console.log("scan.js loaded");
+document.addEventListener("DOMContentLoaded", () => {
 
-const loadingOverlay = document.getElementById("loadingOverlay");
+    const imageInput = document.getElementById("imageInput");
+    const scanForm = document.getElementById("scanForm");
 
-const loadingText = document.getElementById("loadingText");
+    const browseBtn = document.getElementById("browseBtn");
+    const cameraBtn = document.getElementById("cameraBtn");
 
-const cameraBtn = document.getElementById("cameraBtn");
+    const uploadArea = document.getElementById("uploadArea");
 
-const removeImage = document.getElementById("removeImage");
+    const previewImage = document.getElementById("previewImage");
+    const placeholder = document.getElementById("placeholder");
+    const removeImage = document.getElementById("removeImage");
 
-const imageInput = document.getElementById("imageInput");
+    const fileName = document.getElementById("fileName");
+    const fileSize = document.getElementById("fileSize");
+    const resolution = document.getElementById("resolution");
+    const previewStatus = document.getElementById("previewStatus");
 
-const browseBtn = document.getElementById("browseBtn");
+    const analyzeBtn = document.getElementById("analyzeBtn");
 
-const uploadArea = document.querySelector(".upload-area");
+    const loadingOverlay = document.getElementById("loadingOverlay");
 
-const previewImage = document.getElementById("previewImage");
+    let previewURL = null;
+    let isSubmitting = false;
 
-const placeholder = document.getElementById("placeholder");
+    const MAX_FILE_SIZE = 15 * 1024 * 1024;
 
-const fileName = document.getElementById("fileName");
+    // =====================================
+    // FILE PICKER
+    // =====================================
 
-const fileSize = document.getElementById("fileSize");
+    browseBtn.addEventListener("click", () => {
 
-const resolution = document.getElementById("resolution");
+        imageInput.removeAttribute("capture");
+        imageInput.click();
 
-const analyzeBtn = document.getElementById("analyzeBtn");
-
-const scanForm = document.getElementById("scanForm");
-
-// ======================================================
-// OPEN FILE PICKER
-// ======================================================
-
-browseBtn.addEventListener("click", function () {
-  imageInput.click();
-});
-
-cameraBtn.addEventListener("click", function () {
-  imageInput.setAttribute("capture", "environment");
-
-  imageInput.click();
-});
-
-// ======================================================
-// IMAGE SELECTED
-// ======================================================
-
-imageInput.addEventListener("change", function () {
-  if (this.files.length === 0) return;
-
-  loadImage(this.files[0]);
-});
-
-// ======================================================
-// LOAD IMAGE
-// ======================================================
-
-function loadImage(file) {
-  // Only images
-
-  if (!file.type.startsWith("image/")) {
-    alert("Please select an image.");
-
-    return;
-  }
-
-  // Preview
-
-  const reader = new FileReader();
-
-  reader.onload = function (e) {
-    previewImage.src = e.target.result;
-
-    previewImage.style.display = "block";
-
-    removeImage.style.display = "flex";
-
-    removeImage.addEventListener("click", function () {
-      imageInput.value = "";
-
-      previewImage.src = "";
-
-      previewImage.style.display = "none";
-
-      placeholder.style.display = "block";
-
-      removeImage.style.display = "none";
-
-      fileName.textContent = "-";
-
-      fileSize.textContent = "-";
-
-      resolution.textContent = "-";
-
-      analyzeBtn.disabled = true;
     });
 
-    placeholder.style.display = "none";
-  };
+    // =====================================
+    // CAMERA
+    // =====================================
 
-  reader.readAsDataURL(file);
+    cameraBtn.addEventListener("click", () => {
 
-  // Filename
+        imageInput.setAttribute("capture", "environment");
+        imageInput.click();
 
-  fileName.textContent = file.name;
+    });
 
-  // File Size
+    // =====================================
+    // IMAGE SELECTION
+    // =====================================
 
-  fileSize.textContent = (file.size / (1024 * 1024)).toFixed(2) + " MB";
+    imageInput.addEventListener("change", () => {
 
-  // Resolution
+        const file = imageInput.files[0];
 
-  const img = new Image();
+        if (file) {
+            loadImage(file);
+        }
 
-  img.onload = function () {
-    resolution.textContent = img.width + " × " + img.height;
-  };
+    });
 
-  img.src = URL.createObjectURL(file);
+    // =====================================
+    // LOAD IMAGE
+    // =====================================
 
-  // Enable Analyze
+    function loadImage(file) {
 
-  analyzeBtn.disabled = false;
-}
+        if (!file.type.startsWith("image/")) {
 
-// ======================================================
-// DRAG EVENTS
-// ======================================================
+            alert("Please select a valid image.");
 
-uploadArea.addEventListener("dragover", function (e) {
-  e.preventDefault();
+            resetImage();
 
-  uploadArea.classList.add("drag-active");
-});
+            return;
+        }
 
-uploadArea.addEventListener("dragleave", function () {
-  uploadArea.classList.remove("drag-active");
-});
+        if (file.size > MAX_FILE_SIZE) {
 
-uploadArea.addEventListener("drop", function (e) {
-  e.preventDefault();
+            alert("Image size must be less than 15 MB.");
 
-  uploadArea.classList.remove("drag-active");
+            resetImage();
 
-  const file = e.dataTransfer.files[0];
+            return;
+        }
 
-  if (!file) return;
+        if (previewURL) {
+            URL.revokeObjectURL(previewURL);
+        }
 
-  imageInput.files = e.dataTransfer.files;
+        previewURL = URL.createObjectURL(file);
 
-  loadImage(file);
-});
+        previewImage.onload = () => {
 
-// ======================================================
-// ANALYZE BUTTON
-// ======================================================
+            previewImage.style.display = "block";
 
-analyzeBtn.addEventListener("click", function (event) {
-  console.log("STEP 1");
+            placeholder.style.display = "none";
 
-  // Prevent the browser's default form submission.
-  event.preventDefault();
+            removeImage.style.display = "flex";
 
-  if (imageInput.files.length === 0) {
-    console.log("NO IMAGE");
-    return;
-  }
+            resolution.textContent =
+                `${previewImage.naturalWidth} × ${previewImage.naturalHeight}`;
 
-  console.log("STEP 2");
+        };
 
-  // Prevent accidental double-click submissions.
-  analyzeBtn.disabled = true;
+        previewImage.onerror = () => {
 
-  console.log("STEP 3");
+            alert("Unable to preview this image.");
 
-  loadingOverlay.style.display = "flex";
+            resetImage();
 
-  console.log("STEP 4");
+        };
 
-  // Submit only once.
-  scanForm.submit();
+        previewImage.src = previewURL;
+
+        fileName.textContent = file.name;
+
+        fileSize.textContent =
+            (file.size / (1024 * 1024)).toFixed(2) + " MB";
+
+        previewStatus.textContent = "Image ready";
+
+        analyzeBtn.disabled = false;
+
+    }
+
+    // =====================================
+    // RESET IMAGE
+    // =====================================
+
+    function resetImage() {
+
+        imageInput.value = "";
+
+        previewImage.removeAttribute("src");
+        previewImage.style.display = "none";
+
+        placeholder.style.display = "block";
+
+        removeImage.style.display = "none";
+
+        fileName.textContent = "Not selected";
+        fileSize.textContent = "-";
+        resolution.textContent = "-";
+
+        previewStatus.textContent = "No image";
+
+        analyzeBtn.disabled = true;
+
+        if (previewURL) {
+            URL.revokeObjectURL(previewURL);
+            previewURL = null;
+        }
+
+    }
+
+    // =====================================
+    // REMOVE IMAGE
+    // =====================================
+
+    removeImage.addEventListener("click", resetImage);
+
+    // =====================================
+    // DRAG AND DROP
+    // =====================================
+
+    ["dragenter", "dragover"].forEach(eventName => {
+
+        uploadArea.addEventListener(eventName, event => {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            uploadArea.classList.add("drag-active");
+
+        });
+
+    });
+
+    ["dragleave", "drop"].forEach(eventName => {
+
+        uploadArea.addEventListener(eventName, event => {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            uploadArea.classList.remove("drag-active");
+
+        });
+
+    });
+
+    uploadArea.addEventListener("drop", event => {
+
+        const file = event.dataTransfer.files[0];
+
+        if (!file) return;
+
+        try {
+
+            const transfer = new DataTransfer();
+
+            transfer.items.add(file);
+
+            imageInput.files = transfer.files;
+
+            loadImage(file);
+
+        } catch (error) {
+
+            console.error("File drop error:", error);
+
+            alert("Could not select this image. Please use Browse Files.");
+
+        }
+
+    });
+
+    // =====================================
+    // FORM SUBMISSION
+    // =====================================
+
+    scanForm.addEventListener("submit", event => {
+
+        if (isSubmitting) {
+
+            event.preventDefault();
+
+            return;
+
+        }
+
+        if (!imageInput.files.length) {
+
+            event.preventDefault();
+
+            alert("Please select a medicine image first.");
+
+            return;
+
+        }
+
+        isSubmitting = true;
+
+        analyzeBtn.disabled = true;
+
+        analyzeBtn.innerHTML =
+            '<i class="fa-solid fa-spinner fa-spin"></i> Analyzing...';
+
+        loadingOverlay.style.display = "flex";
+
+        loadingOverlay.setAttribute("aria-hidden", "false");
+
+    });
+
+    // =====================================
+    // CLEANUP
+    // =====================================
+
+    window.addEventListener("pagehide", () => {
+
+        if (previewURL) {
+            URL.revokeObjectURL(previewURL);
+        }
+
+    });
+
 });
