@@ -1,28 +1,27 @@
 # Python
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
 
-# Virtual environment
+# Virtual environments
 venv/
 .venv/
 
-# Environment variables
+# Secrets
 .env
-<<<<<<< HEAD
-<<<<<<< HEAD
 .env.*
-=======
+!.env.example
+
+# Databases
 *.db
->>>>>>> origin/Whatsapp_integration
+*.sqlite
+*.sqlite3
 
-
+# Uploaded and processed files
 backend/uploads/
-
 backend/processed/
-<<<<<<< HEAD
-backend/processed/*
+
+# Local OCR experiments
+experiments/
 
 # IDE
 .vscode/
@@ -34,17 +33,3 @@ Thumbs.db
 
 # Logs
 *.log
-
-# Local experiments and benchmarks
-experiments/
-test_*.py
-=======
-*.db
-
-
-backend/uploads/
-
-backend/processed/
->>>>>>> ef971a8 (Update gitignore)
-=======
->>>>>>> origin/Whatsapp_integration
