@@ -1,0 +1,140 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Emergency Mode | MediLens{% endblock %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/emergency.css') }}">
+
+<section class="emergency-page">
+
+    <header class="emergency-header">
+        <p class="med-eyebrow">QUICK ACCESS</p>
+
+        <h1>Emergency Mode</h1>
+
+        <p>
+            Quickly access your saved medicine list and contact emergency
+            services or a trusted person.
+        </p>
+    </header>
+
+    <!-- Emergency Contacts -->
+
+    <section class="emergency-panel">
+
+        <h2>Emergency contacts</h2>
+
+        <p class="emergency-note">
+            Enter a number with country code. WhatsApp opens a prepared
+            message for you to review and send.
+        </p>
+
+        <div class="emergency-actions">
+
+            <label for="guardianNumber">
+                Guardian or emergency contact number
+            </label>
+
+            <input id="guardianNumber" type="tel" inputmode="tel" autocomplete="tel" value="{{ phone_number or '' }}"
+                placeholder="e.g. +91 9876543210">
+
+            <a class="emergency-action emergency-action-danger" href="tel:112">
+                Call emergency services (112)
+            </a>
+
+            <button class="emergency-action emergency-action-whatsapp" type="button" onclick="openEmergencyWhatsApp()">
+                Prepare WhatsApp message
+            </button>
+
+            <p class="emergency-note" id="emergencyContactError" role="alert" aria-live="polite"></p>
+
+        </div>
+
+    </section>
+
+    <!-- Saved Medicines -->
+
+    <section class="emergency-panel">
+
+        <h2>Saved medicines</h2>
+
+        {% if medicines %}
+
+        {% for medicine in medicines %}
+
+        <article class="emergency-medicine">
+
+            <div class="emergency-medicine-heading">
+
+                <h3>
+                    {{ medicine.medicine_name or "Unnamed medicine" }}
+                </h3>
+
+                <span
+                    class="emergency-status status-{{ (medicine.expiry_status or 'unknown')|lower|replace(' ', '-') }}">
+                    {{ medicine.expiry_status or "Expiry status unavailable" }}
+                </span>
+
+            </div>
+
+            <p>
+                <strong>Dosage:</strong>
+                {{ medicine.dosage or "Not recorded" }}
+            </p>
+
+            <p>
+                <strong>Expiry date:</strong>
+                {{ medicine.expiry_date or "Not recorded" }}
+            </p>
+
+        </article>
+
+        {% endfor %}
+
+        {% else %}
+
+        <p class="emergency-note">
+            No medicines are currently saved on your shelf.
+        </p>
+
+        {% endif %}
+
+    </section>
+
+</section>
+
+<script>
+    function openEmergencyWhatsApp() {
+
+        const input = document.getElementById("guardianNumber");
+        const error = document.getElementById("emergencyContactError");
+
+        // Remove spaces, plus signs, and other formatting characters.
+        const number = input.value.replace(/\D/g, "");
+
+        // WhatsApp requires a number with country code.
+        if (number.length < 8 || number.length > 15) {
+
+            error.textContent =
+                "Enter a valid phone number including the country code.";
+
+            input.focus();
+
+            return;
+        }
+
+        error.textContent = "";
+
+        const message =
+            "This is an emergency. Please contact me as soon as possible.";
+
+        const url =
+            "https://wa.me/" + number +
+            "?text=" + encodeURIComponent(message);
+
+        window.open(url, "_blank", "noopener,noreferrer");
+    }
+</script>
+
+{% endblock %}

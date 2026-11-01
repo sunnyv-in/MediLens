@@ -1,0 +1,186 @@
+/* Emergency Mode */
+.emergency-page {
+    width: min(950px, calc(100% - 32px));
+    margin: 36px auto;
+    color: #172033;
+}
+
+.emergency-header {
+    margin-bottom: 26px;
+}
+
+.emergency-header h1 {
+    margin: 0 0 8px;
+    font-size: clamp(28px, 4vw, 36px);
+}
+
+.emergency-header p {
+    color: #667085;
+    line-height: 1.6;
+}
+
+.emergency-panel {
+    margin-bottom: 22px;
+    padding: 24px;
+    background: #fff;
+    border: 1px solid #e4e7ec;
+    border-radius: 14px;
+    box-shadow: 0 4px 14px rgba(16, 24, 40, 0.05);
+}
+
+.emergency-panel h2 {
+    margin: 0 0 14px;
+    font-size: 22px;
+}
+
+.emergency-actions {
+    display: grid;
+    gap: 12px;
+    max-width: 520px;
+    margin-top: 18px;
+}
+
+.emergency-actions label {
+    margin-top: 8px;
+    font-weight: 600;
+}
+
+.emergency-actions input {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 46px;
+    padding: 12px;
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+    background: #fff;
+    color: #172033;
+    font: inherit;
+}
+
+.emergency-actions input:focus {
+    outline: 3px solid rgba(36, 87, 214, 0.15);
+    border-color: #2457d6;
+}
+
+.emergency-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 46px;
+    padding: 12px 16px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    color: #fff;
+    font: inherit;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+a.emergency-action-danger,
+a.emergency-action-danger:visited {
+    border-color: #b42318;
+    background: #b42318;
+    color: #fff;
+}
+
+a.emergency-action-danger:hover {
+    background: #912018;
+}
+
+button.emergency-action-whatsapp {
+    border-color: #16803c;
+    background: #16803c;
+    color: #fff;
+}
+
+button.emergency-action-whatsapp:hover {
+    background: #11632e;
+}
+
+.emergency-note {
+    color: #667085;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+#emergencyContactError {
+    margin: 0;
+    color: #b42318;
+    font-weight: 600;
+}
+
+.emergency-medicine {
+    margin-top: 12px;
+    padding: 16px;
+    border-radius: 10px;
+    background: #f8fafc;
+}
+
+.emergency-medicine-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.emergency-medicine h3 {
+    margin: 0;
+    font-size: 16px;
+    overflow-wrap: anywhere;
+}
+
+.emergency-medicine p {
+    margin: 6px 0;
+    color: #475467;
+    font-size: 14px;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+}
+
+.emergency-status {
+    display: inline-block;
+    padding: 4px 9px;
+    border-radius: 20px;
+    background: #eef2f6;
+    color: #475467;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.status-expired {
+    background: #fff1f0;
+    color: #b42318;
+}
+
+.status-expiring-soon {
+    background: #fffaeb;
+    color: #b54708;
+}
+
+.status-safe {
+    background: #ecfdf3;
+    color: #027a48;
+}
+
+@media (max-width: 600px) {
+    .emergency-page {
+        width: calc(100% - 24px);
+        margin: 24px auto;
+    }
+
+    .emergency-panel {
+        padding: 18px;
+    }
+
+    .emergency-medicine-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}

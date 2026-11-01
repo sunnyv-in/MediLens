@@ -1,187 +1,74 @@
 {% extends "layouts/base.html" %}
-
-{% block title %}
-Add Medicine
-{% endblock %}
+{% block title %}Add Medicine | MediLens{% endblock %}
 
 {% block content %}
-
-<div class="page-header">
-
-    <div>
-
-        <h1>Add Medicine</h1>
-
-        <p>
-
-            Add a medicine to your medicine shelf.
-
-        </p>
-
-    </div>
-
-    <a
-        href="{{ url_for('medicine_shelf.medicine_shelf') }}"
-        class="btn">
-
-        ← Back
-
-    </a>
-
-</div>
-
-<form
-    action="{{ url_for('medicine_shelf.add_medicine') }}"
-    method="POST">
-
-<div class="form-grid">
-
-<div>
-
-<label>
-
-Medicine Name
-
-</label>
-
-<input
-type="text"
-name="medicine_name"
-required>
-
-</div>
-
-<div>
-
-<label>
-
-Generic Name
-
-</label>
-
-<input
-type="text"
-name="generic_name">
-
-</div>
-
-<div>
-
-<label>
-
-Strength
-
-</label>
-
-<input
-type="text"
-name="strength">
-
-</div>
-
-<div>
-
-<label>
-
-Manufacturer
-
-</label>
-
-<input
-type="text"
-name="manufacturer">
-
-</div>
-
-<div>
-
-<label>
-
-Batch Number
-
-</label>
-
-<input
-type="text"
-name="batch_number">
-
-</div>
-
-<div>
-
-<label>
-
-Expiry Date
-
-</label>
-
-<input
-type="text"
-name="expiry_date"
-placeholder="DD/MM/YYYY">
-
-</div>
-
-<div>
-
-<label>
-
-Quantity
-
-</label>
-
-<input
-type="number"
-name="quantity"
-value="1"
-min="1">
-
-</div>
-
-<div>
-
-<label>
-
-Dosage
-
-</label>
-
-<input
-type="text"
-name="dosage">
-
-</div>
-
-</div>
-
-<label>
-
-Uses
-
-</label>
-
-<textarea
-name="usage"></textarea>
-
-<label>
-
-Side Effects
-
-</label>
-
-<textarea
-name="side_effects"></textarea>
-
-<br>
-
-<button
-type="submit"
-class="btn">
-
-Save Medicine
-
-</button>
-
-</form>
-
+<section class="med-page med-form-page">
+    <header class="med-page-header">
+        <div>
+            <p class="med-eyebrow">MEDICINE RECORDS</p>
+            <h1>Add medicine</h1>
+            <p class="med-muted">Enter the medicine details you want to save.</p>
+        </div>
+        <a class="med-btn med-btn-secondary" href="{{ url_for('medicine_shelf.medicine_shelf') }}">Back to shelf</a>
+    </header>
+
+    <form class="med-form" action="{{ url_for('medicine_shelf.add_medicine') }}" method="POST">
+        <div class="med-form-section">
+            <h2>Basic information</h2>
+            <div class="med-form-grid">
+                <div class="med-field">
+                    <label for="medicine_name">Medicine name <span>*</span></label>
+                    <input id="medicine_name" name="medicine_name" type="text" maxlength="120" required>
+                </div>
+                <div class="med-field">
+                    <label for="generic_name">Generic name</label>
+                    <input id="generic_name" name="generic_name" type="text" maxlength="120">
+                </div>
+                <div class="med-field">
+                    <label for="strength">Strength</label>
+                    <input id="strength" name="strength" type="text" maxlength="50" placeholder="e.g. 500 mg">
+                </div>
+                <div class="med-field">
+                    <label for="manufacturer">Manufacturer</label>
+                    <input id="manufacturer" name="manufacturer" type="text" maxlength="120">
+                </div>
+                <div class="med-field">
+                    <label for="batch_number">Batch number</label>
+                    <input id="batch_number" name="batch_number" type="text" maxlength="80">
+                </div>
+                <div class="med-field">
+                    <label for="expiry_date">Expiry date</label>
+                    <input id="expiry_date" name="expiry_date" type="text"
+                        placeholder="Use the date format shown on the pack">
+                </div>
+                <div class="med-field">
+                    <label for="quantity">Quantity</label>
+                    <input id="quantity" name="quantity" type="number" min="0" step="1" value="1">
+                </div>
+                <div class="med-field">
+                    <label for="dosage">Dosage</label>
+                    <input id="dosage" name="dosage" type="text" maxlength="120"
+                        placeholder="As prescribed or printed on pack">
+                </div>
+            </div>
+        </div>
+
+        <div class="med-form-section">
+            <h2>Additional information</h2>
+            <div class="med-field">
+                <label for="usage">Uses</label>
+                <textarea id="usage" name="usage" rows="4"></textarea>
+            </div>
+            <div class="med-field">
+                <label for="side_effects">Side effects</label>
+                <textarea id="side_effects" name="side_effects" rows="4"></textarea>
+            </div>
+        </div>
+
+        <div class="med-form-actions">
+            <a class="med-btn med-btn-secondary" href="{{ url_for('medicine_shelf.medicine_shelf') }}">Cancel</a>
+            <button class="med-btn med-btn-primary" type="submit">Save medicine</button>
+        </div>
+    </form>
+</section>
 {% endblock %}

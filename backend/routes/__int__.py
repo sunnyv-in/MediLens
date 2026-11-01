@@ -1,3 +1,0 @@
-from backend.routes.medicine_shelf import medicine_shelf_bp
-from backend.routes.drug_interaction import drug_interaction_bp
-from backend.routes.medicine_history import medicine_history_bp

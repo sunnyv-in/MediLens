@@ -1,136 +1,88 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}
-Medicine History
-{% endblock %}
+{% block title %}Medicine History | MediLens{% endblock %}
 
 {% block content %}
+<section class="history-page">
+    <header class="history-heading">
+        <div>
+            <p class="eyebrow">YOUR HEALTH RECORDS</p>
+            <h1>Medicine History</h1>
+            <p class="history-subtitle">
+                Review the medicines you have scanned with MediLens.
+            </p>
+        </div>
 
-<div class="page-header">
+        <a class="history-primary-btn" href="{{ url_for('scan.scan') }}">
+            + Scan medicine
+        </a>
+    </header>
 
-    <div>
+    <p class="history-count">
+        <strong>{{ history_records|length }}</strong>
+        saved scan{% if history_records|length != 1 %}s{% endif %}
+    </p>
 
-        <h1>Medicine History</h1>
+    {% if history_records %}
+    <div class="history-list">
+        {% for item in history_records %}
+        <article class="history-list-card">
+            <div class="history-card-top">
+                <span class="history-status">Saved scan</span>
+            </div>
 
-        <p>
+            <h2>{{ item.medicine_name or "Unknown medicine" }}</h2>
 
-            View all scanned medicines.
+            <dl class="history-card-fields">
+                <div>
+                    <dt>Manufacturer</dt>
+                    <dd>{{ item.manufacturer or "Not available" }}</dd>
+                </div>
 
-        </p>
+                <div>
+                    <dt>Expiry date</dt>
+                    <dd>{{ item.expiry_date or "Not available" }}</dd>
+                </div>
 
+                <div>
+                    <dt>Scanned</dt>
+                    <dd>
+                        {{ item.scan_time.strftime("%d %b %Y, %I:%M %p")
+                        if item.scan_time else "Not available" }}
+                    </dd>
+                </div>
+            </dl>
+
+            <div class="history-card-actions">
+                <div class="history-card-links">
+                    <a href="{{ url_for('medicine_history.history_details', history_id=item.id) }}">
+                        View details
+                    </a>
+
+                    <a href="{{ url_for('medicine_history.edit_history', history_id=item.id) }}">
+                        Edit
+                    </a>
+                </div>
+
+                <form method="POST" action="{{ url_for('medicine_history.remove_history', history_id=item.id) }}"
+                    onsubmit="return confirm('Delete this scan from History?');">
+                    <button class="history-danger-btn" type="submit">
+                        Delete
+                    </button>
+                </form>
+            </div>
+        </article>
+        {% endfor %}
     </div>
+    {% else %}
+    <section class="history-empty">
+        <h2>No saved scans yet</h2>
+        <p>Your medicine scans will appear here after you scan a medicine.</p>
 
-</div>
-
-{% if history %}
-
-<div class="medicine-grid">
-
-{% for item in history %}
-
-<div class="medicine-card">
-
-<h2>
-
-{{ item.medicine_name }}
-
-</h2>
-
-<p>
-
-<strong>Manufacturer</strong>
-
-<br>
-
-{{ item.manufacturer or "-" }}
-
-</p>
-
-<p>
-
-<strong>Expiry</strong>
-
-<br>
-
-{{ item.expiry_date or "-" }}
-
-</p>
-
-<p>
-
-<strong>Counterfeit Score</strong>
-
-<br>
-
-{{ item.counterfeit_score }}
-
-</p>
-
-<p>
-
-<strong>Scan Time</strong>
-
-<br>
-
-{{ item.scan_time }}
-
-</p>
-
-<div class="card-actions">
-
-<a
-href="{{ url_for('medicine_history.history_details', history_id=item.id) }}">
-
-View
-
-</a>
-
-<a
-href="{{ url_for('medicine_history.edit_history', history_id=item.id) }}">
-
-Edit
-
-</a>
-
-<form
-action="{{ url_for('medicine_history.remove_history', history_id=item.id) }}"
-method="POST"
-onsubmit="return confirmDelete()">
-
-<button type="submit">
-
-Delete
-
-</button>
-
-</form>
-
-</div>
-
-</div>
-
-{% endfor %}
-
-</div>
-
-{% else %}
-
-<div class="medicine-card">
-
-<h2>
-
-No History Available
-
-</h2>
-
-<p>
-
-No medicine scans have been saved yet.
-
-</p>
-
-</div>
-
-{% endif %}
-
+        <a class="history-primary-btn" href="{{ url_for('scan.scan') }}">
+            Scan your first medicine
+        </a>
+    </section>
+    {% endif %}
+</section>
 {% endblock %}
