@@ -1,243 +1,147 @@
-{% extends "layouts/base.html" %} {% block title %}About | MediLens{% endblock
-%} {% block content %}
+{% extends "layouts/base.html" %}
 
+{% block title %}About | MediLens{% endblock %}
 
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/about.css') }}" />
+{% endblock %}
 
-
+{% block content %}
 <div class="about-page">
-  <section class="hero-section">
-    <div class="hero-inner">
-      <div class="hero-content">
-        <span class="hero-badge">About MediLens</span>
-        <h1>
-          AI Powered
-          <span>Medicine Analysis Platform</span>
-        </h1>
+
+  <!-- 1. HERO -->
+  <section class="about-hero">
+    <div class="about-badge">Platform Overview</div>
+    <h1>Medication Safety, <span>Simplified</span></h1>
+    <p>
+      MediLens turns physical medicine packaging into verified, accessible healthcare intelligence.
+      Combining computer vision with Gemini AI, we eliminate dosage ambiguity, track shelf inventories,
+      and safeguard patients and caregivers against medication errors.
+    </p>
+  </section>
+
+  <!-- 2. CORE CAPABILITIES (3 PILLARS) -->
+  <section class="about-section">
+    <div class="about-section-header">
+      <h2>Core Architecture</h2>
+      <p>Three integrated systems designed for patient safety and low cognitive load.</p>
+    </div>
+
+    <div class="pillars-grid">
+      <div class="pillar-card">
+        <div class="pillar-icon">
+          <i class="fa-solid fa-camera" aria-hidden="true"></i>
+        </div>
+        <h3>Computer Vision OCR</h3>
         <p>
-          MediLens is an intelligent healthcare assistant that uses Artificial
-          Intelligence, OCR and Computer Vision to identify medicines, extract
-          important packaging information, explain medicines in simple language
-          and help users make safer decisions.
+          Preprocesses strip packaging with OpenCV and performs multi-layer optical recognition with EasyOCR to extract active salts, batch codes, and expiration dates.
         </p>
       </div>
 
-      <div class="scan-panel" aria-hidden="true">
-        <div class="scan-panel__frame">
-          <span class="scan-panel__corner scan-panel__corner--tl"></span>
-          <span class="scan-panel__corner scan-panel__corner--tr"></span>
-          <span class="scan-panel__corner scan-panel__corner--bl"></span>
-          <span class="scan-panel__corner scan-panel__corner--br"></span>
-
-          <div class="scan-panel__stage">
-            <div class="scan-panel__raw">
-              PARACIT... 500MG TAB<br />
-              B.NO GP24O9A EXP 03/2027<br />
-              MFD BY XXXX PHARMA...
-            </div>
-            <div class="scan-panel__clean">
-              <div class="scan-panel__row">
-                <span>Medicine</span><strong>Paracetamol 500mg</strong>
-              </div>
-              <div class="scan-panel__row">
-                <span>Batch</span><strong>GP2409A</strong>
-              </div>
-              <div class="scan-panel__row">
-                <span>Expiry</span><strong>03/2027</strong>
-              </div>
-              <div class="scan-panel__row scan-panel__row--safe">
-                <span>Risk</span><strong>Low</strong>
-              </div>
-            </div>
-          </div>
-
-          <div class="scan-panel__line"></div>
+      <div class="pillar-card">
+        <div class="pillar-icon">
+          <i class="fa-solid fa-brain" aria-hidden="true"></i>
         </div>
-        <span class="scan-panel__tag">Live OCR + AI Pipeline</span>
+        <h3>Gemini Clinical AI</h3>
+        <p>
+          Translates dense pharmaceutical jargon into clear, patient-friendly guidance, highlighting precautions, contraindications, and authenticity indicators.
+        </p>
+      </div>
+
+      <div class="pillar-card">
+        <div class="pillar-icon">
+          <i class="fa-solid fa-bell" aria-hidden="true"></i>
+        </div>
+        <h3>Caregiver Command</h3>
+        <p>
+          Maintains an updated medicine shelf with automated expiry monitors, daily dose alarms, and instant emergency protocols to prevent missed or duplicate doses.
+        </p>
       </div>
     </div>
   </section>
 
-  <section class="result-card">
-    <h2>Project Overview</h2>
+  <!-- 3. TECHNICAL SPECIFICATIONS -->
+  <section class="about-section">
+    <div class="about-section-header">
+      <h2>Technical Specifications</h2>
+      <p>Engineered for high reliability, responsiveness, and privacy.</p>
+    </div>
 
-    <p>
-      MediLens combines EasyOCR, OpenCV and Gemini AI to analyze medicine
-      packaging. Instead of manually searching medicine information online,
-      users simply upload a medicine image and receive structured medicine
-      details, AI-powered explanations and a counterfeit risk assessment within
-      seconds.
-    </p>
-  </section>
-
-  <section class="result-card">
-    <h2>Why MediLens?</h2>
-
-    <ul>
-      <li>Medicine labels are difficult to understand.</li>
-
-      <li>Counterfeit medicines are becoming increasingly common.</li>
-
-      <li>Patients often forget dosage instructions and medicine history.</li>
-
-      <li>Finding reliable medicine information online can be confusing.</li>
-
-      <li>MediLens provides all important information in one place.</li>
-    </ul>
-  </section>
-
-  <section class="result-card">
-    <h2>Key Features</h2>
-
-    <div class="info-table">
-      <div class="info-row">
-        <span>Medicine Scanner</span>
-        <strong>Upload medicine images for instant analysis.</strong>
+    <div class="specs-grid">
+      <div class="spec-item">
+        <div class="spec-label">Backend</div>
+        <div class="spec-value">Python & Flask</div>
+        <div class="spec-desc">Lightweight, modular microframework architecture</div>
       </div>
 
-      <div class="info-row">
-        <span>OCR Extraction</span>
-        <strong>Reads medicine packaging using EasyOCR.</strong>
+      <div class="spec-item">
+        <div class="spec-label">Vision Engine</div>
+        <div class="spec-value">OpenCV + EasyOCR</div>
+        <div class="spec-desc">Local image filtering & optical character recognition</div>
       </div>
 
-      <div class="info-row">
-        <span>AI Medicine Detection</span>
-        <strong>Identifies medicine details using Gemini AI.</strong>
+      <div class="spec-item">
+        <div class="spec-label">Clinical Intelligence</div>
+        <div class="spec-value">Google Gemini AI</div>
+        <div class="spec-desc">Structured pharmacological analysis & reasoning</div>
       </div>
 
-      <div class="info-row">
-        <span>Medicine Explanation</span>
-        <strong>Explains medicines in patient-friendly language.</strong>
-      </div>
-
-      <div class="info-row">
-        <span>Counterfeit Analysis</span>
-        <strong>Evaluates packaging consistency and authenticity.</strong>
-      </div>
-
-      <div class="info-row">
-        <span>Medicine Shelf</span>
-        <strong>Save scanned medicines for future reference.</strong>
-      </div>
-
-      <div class="info-row">
-        <span>Medicine History</span>
-        <strong>Access previous medicine scans anytime.</strong>
-      </div>
-
-      <div class="info-row">
-        <span>Reminders</span>
-        <strong>Never miss important medication schedules.</strong>
+      <div class="spec-item">
+        <div class="spec-label">Data Security</div>
+        <div class="spec-value">SQLite & Privacy Shield</div>
+        <div class="spec-desc">Local patient records with client-side screen masking</div>
       </div>
     </div>
   </section>
 
-  <section class="result-card">
-    <h2>How MediLens Works</h2>
+  <!-- 4. ENGINEERING TEAM -->
+  <section class="about-section">
+    <div class="about-section-header">
+      <h2>Engineering Team</h2>
+      <p>Developed with focus on accessibility and clinical usability.</p>
+    </div>
 
-    <ol>
-      <li>Upload a medicine image.</li>
-
-      <li>Image preprocessing using OpenCV.</li>
-
-      <li>OCR text extraction with EasyOCR.</li>
-
-      <li>OCR cleaning and ranking.</li>
-
-      <li>AI medicine identification using Gemini AI.</li>
-
-      <li>Generate patient-friendly explanation.</li>
-
-      <li>Perform counterfeit risk analysis.</li>
-
-      <li>Store results in medicine history.</li>
-    </ol>
-  </section>
-
-  <section class="result-card">
-    <h2>Technology Stack</h2>
-
-    <div class="info-table">
-      <div class="info-row">
-        <span>Backend</span>
-        <strong>Python + Flask</strong>
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="team-avatar">S</div>
+        <div class="team-info">
+          <h3>Sunny</h3>
+          <p>OCR Pipeline & Gemini AI Integration</p>
+        </div>
       </div>
 
-      <div class="info-row">
-        <span>Artificial Intelligence</span>
-        <strong>Google Gemini AI</strong>
+      <div class="team-card">
+        <div class="team-avatar">N</div>
+        <div class="team-info">
+          <h3>Nikhil</h3>
+          <p>Medicine Shelf, Database & Frontend Experience</p>
+        </div>
       </div>
 
-      <div class="info-row">
-        <span>OCR Engine</span>
-        <strong>EasyOCR</strong>
-      </div>
-
-      <div class="info-row">
-        <span>Computer Vision</span>
-        <strong>OpenCV</strong>
-      </div>
-
-      <div class="info-row">
-        <span>Database</span>
-        <strong>SQLite</strong>
-      </div>
-
-      <div class="info-row">
-        <span>Frontend</span>
-        <strong>HTML • CSS • JavaScript</strong>
+      <div class="team-card">
+        <div class="team-avatar">A</div>
+        <div class="team-info">
+          <h3>Ankush</h3>
+          <p>Safety Engine, Dashboard & Core UI</p>
+        </div>
       </div>
     </div>
   </section>
 
-  <section class="result-card">
-    <h2>Meet the Team</h2>
-
-    <div class="info-table">
-      <div class="info-row">
-        <span>Sunny</span>
-        <strong>OCR Pipeline • AI Integration • Backend Development</strong>
-      </div>
-
-      <div class="info-row">
-        <span>Nikhil</span>
-        <strong>Medicine Database & Medicine Shelf</strong>
-      </div>
-
-      <div class="info-row">
-        <span>Ankush</span>
-        <strong>Safety Features • Dashboard • UI</strong>
-      </div>
+  <!-- 5. DISCLAIMER -->
+  <section class="clinical-disclaimer" role="note" aria-label="Medical Disclaimer">
+    <div class="disclaimer-icon">
+      <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+    </div>
+    <div class="disclaimer-content">
+      <h4>Clinical Notice & Educational Scope</h4>
+      <p>
+        MediLens is an assistive technology prototype designed for educational and informational support.
+        It is not a substitute for professional clinical judgment, diagnosis, or prescription validation.
+        Always consult a licensed healthcare professional before altering medication regimens.
+      </p>
     </div>
   </section>
 
-  <section class="result-card">
-    <h2>Future Scope</h2>
-
-    <ul>
-      <li>Barcode and QR code medicine verification.</li>
-
-      <li>Multi-language medicine explanations.</li>
-
-      <li>Drug interaction prediction.</li>
-
-      <li>Cloud medicine synchronization.</li>
-
-      <li>Doctor and pharmacist integration.</li>
-
-      <li>Offline AI medicine detection.</li>
-    </ul>
-  </section>
-
-  <section class="analysis-note">
-    <strong>Disclaimer</strong>
-
-    <p>
-      MediLens is designed for educational and informational purposes only. It
-      should not replace professional medical advice, diagnosis or treatment.
-      Always consult a qualified healthcare professional before taking any
-      medicine.
-    </p>
-  </section>
 </div>
-
 {% endblock %}

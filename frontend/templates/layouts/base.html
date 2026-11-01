@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
 
 <head>
   <meta charset="UTF-8" />
@@ -7,6 +7,18 @@
   <meta name="description" content="MediLens - AI-Powered Medicine Scanner, Safety Check & Patient Healthcare Command Center" />
 
   <title>{% block title %}MediLens | AI Medicine Scanner & Patient Care{% endblock %}</title>
+
+  <!-- Prevent theme flicker: apply saved or default light theme immediately -->
+  <script>
+    (function() {
+      var saved = localStorage.getItem("medilens_theme") || "light";
+      if (saved === "dark") {
+        document.documentElement.removeAttribute("data-theme");
+      } else {
+        document.documentElement.setAttribute("data-theme", "light");
+      }
+    })();
+  </script>
 
   <!-- Google Fonts: Space Grotesk, Inter, JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -108,12 +120,14 @@
             <i class="fa-solid fa-chevron-down" style="font-size: 0.72rem;" aria-hidden="true"></i>
           </a>
           <ul class="dropdown-menu">
+            {# Hidden from navigation temporarily as requested; route and template retained for future use:
             <li>
               <a href="{{ url_for('drug_interaction.interaction_list') }}">
                 <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
                 <span>Drug Interactions</span>
               </a>
             </li>
+            #}
             <li>
               <a href="{{ url_for('expiry.expiry_alerts') }}">
                 <i class="fa-solid fa-calendar-xmark" aria-hidden="true"></i>
@@ -302,23 +316,23 @@
   ====================================================== -->
   <script>
     (function() {
-      // 1. Theme Toggle (Slate-950 Dark / High-Contrast Light)
+      // 1. Theme Toggle (High-Contrast Light Default / Slate-950 Dark)
       const themeBtn = document.getElementById("themeModeToggle");
       const themeIcon = document.getElementById("themeModeIcon");
-      const savedTheme = localStorage.getItem("medilens_theme") || "dark";
+      const savedTheme = localStorage.getItem("medilens_theme") || "light";
 
       function applyTheme(theme) {
-        if (theme === "light") {
-          document.documentElement.setAttribute("data-theme", "light");
-          if (themeIcon) {
-            themeIcon.className = "fa-solid fa-sun";
-            themeIcon.style.color = "#f59e0b";
-          }
-        } else {
+        if (theme === "dark") {
           document.documentElement.removeAttribute("data-theme");
           if (themeIcon) {
             themeIcon.className = "fa-solid fa-moon";
             themeIcon.style.color = "";
+          }
+        } else {
+          document.documentElement.setAttribute("data-theme", "light");
+          if (themeIcon) {
+            themeIcon.className = "fa-solid fa-sun";
+            themeIcon.style.color = "#f59e0b";
           }
         }
       }
@@ -398,31 +412,69 @@
         });
       }
 
-      // 5. Accessible Dropdown Click Toggles & Outside Click Handler
+      // 5. Accessible Dropdowns with Hover Bridge & Hover Grace Period
+      const dropdowns = document.querySelectorAll(".dropdown");
+      const closeTimers = new Map();
+
+      dropdowns.forEach(dd => {
+        // Keep menu open when hovering trigger or menu
+        dd.addEventListener("mouseenter", function() {
+          if (closeTimers.has(dd)) {
+            clearTimeout(closeTimers.get(dd));
+            closeTimers.delete(dd);
+          }
+          // Close sibling dropdowns
+          dropdowns.forEach(other => {
+            if (other !== dd) other.classList.remove("is-open");
+          });
+          dd.classList.add("is-open");
+        });
+
+        // 350ms grace period so moving cursor across gap/diagonally never snaps shut
+        dd.addEventListener("mouseleave", function() {
+          const timer = setTimeout(() => {
+            dd.classList.remove("is-open");
+            closeTimers.delete(dd);
+          }, 350);
+          closeTimers.set(dd, timer);
+        });
+      });
+
+      // Click to toggle on mobile/touch and pin open
       const dropdownToggles = document.querySelectorAll(".dropdown-toggle");
       dropdownToggles.forEach(toggle => {
         toggle.addEventListener("click", function(e) {
           e.preventDefault();
           e.stopPropagation();
           const parent = this.closest(".dropdown");
+          if (closeTimers.has(parent)) {
+            clearTimeout(closeTimers.get(parent));
+            closeTimers.delete(parent);
+          }
           const wasOpen = parent.classList.contains("is-open");
-          // Close other open dropdowns
-          document.querySelectorAll(".dropdown.is-open").forEach(d => {
+          dropdowns.forEach(d => {
             if (d !== parent) d.classList.remove("is-open");
           });
           parent.classList.toggle("is-open", !wasOpen);
         });
       });
 
-      // Close dropdowns on click outside or Escape
+      // Prevent clicks inside dropdown menu from closing it prematurely (unless an actual link was clicked)
+      document.querySelectorAll(".dropdown-menu").forEach(menu => {
+        menu.addEventListener("click", function(e) {
+          e.stopPropagation();
+        });
+      });
+
+      // Close dropdowns on outside click or Escape
       document.addEventListener("click", function(e) {
         if (!e.target.closest(".dropdown")) {
-          document.querySelectorAll(".dropdown.is-open").forEach(d => d.classList.remove("is-open"));
+          dropdowns.forEach(d => d.classList.remove("is-open"));
         }
       });
       document.addEventListener("keydown", function(e) {
         if (e.key === "Escape") {
-          document.querySelectorAll(".dropdown.is-open").forEach(d => d.classList.remove("is-open"));
+          dropdowns.forEach(d => d.classList.remove("is-open"));
           if (navLinks && navLinks.classList.contains("is-open")) {
             navLinks.classList.remove("is-open");
             if (mobileToggle) mobileToggle.setAttribute("aria-expanded", "false");
